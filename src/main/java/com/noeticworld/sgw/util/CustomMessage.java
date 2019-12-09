@@ -4,33 +4,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public final class CustomMessage implements Serializable {
 
     private String text;
     private String msisdn;
     private String action;
-    private LocalDateTime dateTime;
+    private Timestamp dateTime;
     private String corelationId;
     private String vendorPlanId;
 
     public CustomMessage(@JsonProperty("text") String text,
                          @JsonProperty("msisdn") String msisdn,
                          @JsonProperty("action") String action,
-                         @JsonProperty("dateTime") LocalDateTime localDateTime,
+                        // @JsonProperty("dateTime") Timestamp localDateTime,
                          @JsonProperty("corelationId") String corelationId,
                          @JsonProperty("vendorPlanId") String vendorPlanId) {
         this.text = text;
         this.msisdn = msisdn;
         this.action = action;
-        this.dateTime = localDateTime;
+        //this.dateTime = localDateTime;
         this.corelationId = corelationId;
         this.vendorPlanId = vendorPlanId;
     }
 
     @Override
     public String toString() {
-        return String.format("Text: %s, MSISDN: %s, Action: %s, DateTime: %s, CorelationId: %s, VendorPlan: %s",
+        return String.format("Text: %s, MSISDN: %s, Action: %s, TimeStamp: %s, CorelationId: %s, VendorPlan: %s",
                 text, msisdn, dateTime, action, corelationId, vendorPlanId);
     }
 
@@ -58,11 +59,11 @@ public final class CustomMessage implements Serializable {
         this.action = action;
     }
 
-    public LocalDateTime getDateTime() {
+    public Timestamp getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
 
