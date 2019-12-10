@@ -1,9 +1,7 @@
 package com.noeticworld.sgw.util;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public final class CustomMessage implements Serializable {
 
@@ -19,6 +17,20 @@ public final class CustomMessage implements Serializable {
         return String.format("Text: %s, MSISDN: %s, Action: %s, DateTime: %s, CorelationId: %s, VendorPlan: %s",
                 text, msisdn, action, dateTime, corelationId, vendorPlanId);
     }
+
+    /*public CustomMessage(@JsonProperty("text") String text,
+                         @JsonProperty("msisdn") String msisdn,
+                         @JsonProperty("action") String action,
+                        // @JsonProperty("dateTime") Timestamp localDateTime,
+                         @JsonProperty("corelationId") String corelationId,
+                         @JsonProperty("vendorPlanId") String vendorPlanId) {
+        this.text = text;
+        this.msisdn = msisdn;
+        this.action = action;
+        //this.dateTime = localDateTime;
+        this.corelationId = corelationId;
+        this.vendorPlanId = vendorPlanId;
+    }*/
 
     public String getText() {
         return text;
