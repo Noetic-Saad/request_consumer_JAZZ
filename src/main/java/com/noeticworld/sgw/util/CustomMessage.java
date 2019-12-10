@@ -7,31 +7,17 @@ import java.time.LocalDateTime;
 
 public final class CustomMessage implements Serializable {
 
-    private String text;
+    private String text = "";
     private String msisdn;
     private String action;
-    private LocalDateTime dateTime;
+    private String dateTime;
     private String corelationId;
     private String vendorPlanId;
-
-    public CustomMessage(@JsonProperty("text") String text,
-                         @JsonProperty("msisdn") String msisdn,
-                         @JsonProperty("action") String action,
-                         @JsonProperty("dateTime") LocalDateTime localDateTime,
-                         @JsonProperty("corelationId") String corelationId,
-                         @JsonProperty("vendorPlanId") String vendorPlanId) {
-        this.text = text;
-        this.msisdn = msisdn;
-        this.action = action;
-        this.dateTime = localDateTime;
-        this.corelationId = corelationId;
-        this.vendorPlanId = vendorPlanId;
-    }
 
     @Override
     public String toString() {
         return String.format("Text: %s, MSISDN: %s, Action: %s, DateTime: %s, CorelationId: %s, VendorPlan: %s",
-                text, msisdn, dateTime, action, corelationId, vendorPlanId);
+                text, msisdn, action, dateTime, corelationId, vendorPlanId);
     }
 
     public String getText() {
@@ -58,11 +44,11 @@ public final class CustomMessage implements Serializable {
         this.action = action;
     }
 
-    public LocalDateTime getDateTime() {
+    public String getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
     }
 
