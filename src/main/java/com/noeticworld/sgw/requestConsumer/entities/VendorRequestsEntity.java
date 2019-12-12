@@ -1,12 +1,11 @@
-package com.noeticworld.sgw.requestConsumer.model;
+package com.noeticworld.sgw.requestConsumer.entities;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "vendor_requests", schema = "public", catalog = "sgw")
+@Table(name = "vendor_req", schema = "public", catalog = "sgw")
 public class VendorRequestsEntity {
     private long id;
     private String correlationid;
@@ -16,6 +15,8 @@ public class VendorRequestsEntity {
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @SequenceGenerator(name="vendor_requests_id_generator", sequenceName = "vendor_requests_seq")
     public long getId() {
         return id;
     }
