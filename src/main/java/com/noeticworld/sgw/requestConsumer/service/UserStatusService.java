@@ -1,8 +1,7 @@
-package com.noeticworld.sgw.requestConsumer.Service;
+package com.noeticworld.sgw.requestConsumer.service;
 
-import com.noeticworld.sgw.requestConsumer.Repository.UserStatusRepository;
-import com.noeticworld.sgw.requestConsumer.Repository.VendorPlanAccountsRepository;
-import com.noeticworld.sgw.requestConsumer.Repository.VendorPlansEntityRepository;
+import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
+import com.noeticworld.sgw.requestConsumer.repository.VendorPlansEntityRepository;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.util.CustomMessage;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
