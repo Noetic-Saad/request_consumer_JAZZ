@@ -1,42 +1,46 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.noeticworld.sgw.requestConsumer.entities.RequestEventsEntity;
+import com.noeticworld.sgw.requestConsumer.entities.EventTypesEntity;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.CustomMessage;
-import com.noeticworld.sgw.util.RequestEventCodeConstants;
+import com.noeticworld.sgw.util.RequestActionCodeConstants;
+import com.noeticworld.sgw.util.RequestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class RequestHandlerManager {
 
-    @Autowired
-    private ConfigurationDataManagerService configurationDataManagerService;
+    @Autowired private ConfigurationDataManagerService configurationDataManagerService;
+    @Autowired private SubscriptionEventHandler subscriptionEventHandler;
+    @Autowired private UnsubscriptionEventHandler unsubscriptionEventHandler;
+    @Autowired private ChargeOnlyEventHandler chargeOnlyEventHandler;
+    @Autowired private BlockingEventHandler blockingEventHandler;
 
-    public void manage(CustomMessage customMessage) {
-        RequestEventsEntity requestEventsEntity = configurationDataManagerService.getRequestEventsEntity(customMessage.getAction());
+    public void manage(RequestProperties requestProperties) {
+        EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
 
-        RequestEventHandler handler = null;
-        if(requestEventsEntity.getCode().equals(RequestEventCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||
-                requestEventsEntity.getCode().equals(RequestEventCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED) ||
-                requestEventsEntity.getCode().equals(RequestEventCodeConstants.SUBSCRIPTION_REQUEST_VENDOR_INITIATED)) {
-            handler = new SubscriptionEventHandler();
-        } else if(requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.UNSUBSCRIPTION_REQUEST_TELCO_INITIATED) ||
-                requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.UNSUBSCRIPTION_REQUEST_USER_INITIATED) ||
-                requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.UNSUBSCRIPTION_REQUEST_VENDOR_INITIATED)) {
-            handler = new UnsubscriptionEventHandler();
-        } else if(requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.CHARGE_ONLY_VENDOR_INITIATED)) {
-            handler = new ChargeOnlyEventHandler();
-        } else if(requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.BLOCKING_REQUEST_TELCO_INITIATED) ||
-                requestEventsEntity.getCode().equalsIgnoreCase(RequestEventCodeConstants.BLOCKING_REQUEST_VENDOR_INITIATED)) {
-            handler = new BlockingEventHandler();
+        if(eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||
+                eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED) ||
+                eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_VENDOR_INITIATED)) {
+
+            subscriptionEventHandler.handle(requestProperties);
+
+        } else if(eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.UNSUBSCRIPTION_REQUEST_TELCO_INITIATED) ||
+                eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.UNSUBSCRIPTION_REQUEST_USER_INITIATED) ||
+                eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.UNSUBSCRIPTION_REQUEST_VENDOR_INITIATED)) {
+
+            unsubscriptionEventHandler.handle(requestProperties);
+
+        } else if(eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.CHARGE_ONLY_VENDOR_INITIATED)) {
+
+            chargeOnlyEventHandler.handle(requestProperties);
+
+        } else if(eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.BLOCKING_REQUEST_TELCO_INITIATED) ||
+                eventTypesEntity.getCode().equalsIgnoreCase(RequestActionCodeConstants.BLOCKING_REQUEST_VENDOR_INITIATED)) {
+
+            blockingEventHandler.handle(requestProperties);
+
         }
-        if(handler == null) {
-            //store in db with no action available info
-            return;
-        }
-        handler.handle(customMessage);
-
     }
 }

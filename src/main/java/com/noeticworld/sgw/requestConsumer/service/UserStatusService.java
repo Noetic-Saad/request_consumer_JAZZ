@@ -2,15 +2,11 @@ package com.noeticworld.sgw.requestConsumer.service;
 
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorPlansEntityRepository;
-import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.util.CustomMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Service
 public
@@ -26,7 +22,7 @@ class UserStatusService {
     public
     void subscribe(CustomMessage msg){
 
-        logger.info("Testing Logs Here");
+        /*logger.info("Testing Logs Here");
        Integer days =vendorPlansEntityRepository.getValidityDays(Integer.parseInt(msg.getVendorPlanId()));
        UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
         usersStatusEntity.setMsisdn(msg.getMsisdn());
@@ -53,12 +49,12 @@ class UserStatusService {
             logger.info("Subscribed Successfully");
         }catch (Exception e){
             logger.error("Exception Caught Here "+e.getCause());
-        }
+        }*/
     }
     public
     void unsubscribe(CustomMessage msg){
 
-        logger.info("Testing Logs Here");
+        /*logger.info("Testing Logs Here");
         Integer days =vendorPlansEntityRepository.getValidityDays(Integer.parseInt(msg.getVendorPlanId()));
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
         long status_id;
@@ -80,13 +76,13 @@ class UserStatusService {
             userStatusRepository.save(usersStatusEntity);
         }catch (Exception e){
             System.out.println("Exception ->"+e.getCause());
-        }
+        }*/
     }
 
     public
     void getStatus(CustomMessage customMessage) {
         //userStatusRepository.findByMsisdnAndVendorPlanId(customMessage.getMsisdn(),Integer.parseInt(customMessage.getVendorPlanId()));
-        UsersStatusEntity usersStatusEntity = userStatusRepository.findByMsisdnAndVendorPlanId(customMessage.getMsisdn(),Long.parseLong(customMessage.getVendorPlanId()));
-        logger.info("Success"+usersStatusEntity.getStatusId());
+//        UsersStatusEntity usersStatusEntity = userStatusRepository.findByMsisdnAndVendorPlanId(customMessage.getMsisdn(),Long.parseLong(customMessage.getVendorPlanId()));
+//        logger.info("Success"+usersStatusEntity.getStatusId());
     }
 }

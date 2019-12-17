@@ -1,6 +1,6 @@
 package com.noeticworld.sgw.util;
 
-public class RequestEventCodeConstants {
+public class RequestActionCodeConstants {
 
     public static final String SUBSCRIPTION_REQUEST_USER_INITIATED = "Sb01";
     public static final String SUBSCRIPTION_REQUEST_TELCO_INITIATED = "Sb02";

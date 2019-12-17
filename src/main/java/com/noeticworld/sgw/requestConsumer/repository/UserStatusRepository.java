@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 public
 interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> {
 
-    Integer findStautsIdByMsisdnAndVendorPlanId(String msisds, Integer vendorPlanId);
-    UsersStatusEntity findByMsisdnAndVendorPlanId(String msisds, Long vendorPlanId);
+    UsersStatusEntity findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(long userId, long vendorPlanId, int userStatusId);
+
 }

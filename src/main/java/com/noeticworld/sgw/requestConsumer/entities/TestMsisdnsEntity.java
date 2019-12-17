@@ -4,30 +4,30 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "request_events", schema = "public", catalog = "sgw")
-public class RequestEventsEntity {
-    private int id;
-    private String code;
+@Table(name = "test_msisdns", schema = "public", catalog = "sgw")
+public class TestMsisdnsEntity {
+    private String id;
+    private Long msisdn;
     private String description;
 
     @Id
     @Column(name = "id")
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     @Basic
-    @Column(name = "code")
-    public String getCode() {
-        return code;
+    @Column(name = "msisdn")
+    public Long getMsisdn() {
+        return msisdn;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setMsisdn(Long msisdn) {
+        this.msisdn = msisdn;
     }
 
     @Basic
@@ -44,14 +44,14 @@ public class RequestEventsEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RequestEventsEntity that = (RequestEventsEntity) o;
-        return id == that.id &&
-                Objects.equals(code, that.code) &&
+        TestMsisdnsEntity that = (TestMsisdnsEntity) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(msisdn, that.msisdn) &&
                 Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, code, description);
+        return Objects.hash(id, msisdn, description);
     }
 }

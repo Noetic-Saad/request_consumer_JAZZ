@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RequestEventProcessorService implements ApplicationListener<RequestEvent> {
+public class ApplicationEventProcessorService implements ApplicationListener<RequestEvent> {
 
     @Autowired
     private RequestProcessorService requestProcessorService;
