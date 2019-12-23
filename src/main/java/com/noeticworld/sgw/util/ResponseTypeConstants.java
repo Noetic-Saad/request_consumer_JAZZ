@@ -14,5 +14,6 @@ public class ResponseTypeConstants {
     public static final String ALREADY_SUBSCRIBED = "110";
     public static final String USER_NOT_REGISTERED = "111";
     public static final String ALREADY_UNSUBSCRIBED = "112";
+    public static final String CHARGED_SUCCESSFUL = "113";
 
 }
