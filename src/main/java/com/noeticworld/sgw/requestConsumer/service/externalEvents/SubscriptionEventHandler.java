@@ -1,15 +1,15 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.noeticworld.sgw.requestConsumer.entities.UserStatusTypeEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
-import com.noeticworld.sgw.requestConsumer.entities.VendorRequestsEntity;
+import com.noeticworld.sgw.requestConsumer.entities.VendorRequestsStateEntity;
 import com.noeticworld.sgw.requestConsumer.repository.SubscriptionSettingRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
 import com.noeticworld.sgw.requestConsumer.service.BillingService;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
+import com.noeticworld.sgw.util.FiegnResponse;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -40,25 +39,39 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
         String responseType = ResponseTypeConstants.REQUEST_IN_PROGRESS;
+        boolean chargedSuccessful;
 
         boolean exisingUser = true;
-        if(_user == null) {
+        if (_user == null) {
             exisingUser = false;
             _user = registerNewUser(requestProperties);
         }
 
-        if(exisingUser) {
+        if (exisingUser) {
             //get user status
             UsersStatusEntity _usersStatusEntity = userStatusRepository.
                     findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(
-                    _user.getId(), requestProperties.getVendorPlanId(),
+                            _user.getId(), requestProperties.getVendorPlanId(),
                             dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED));
 
-            if(_usersStatusEntity == null ||
+            if (_usersStatusEntity == null ||
                     _usersStatusEntity.getExpiryDatetime().
                             before(new Timestamp(System.currentTimeMillis()))) {
-                boolean chargedSuccessful = billingService.charge(requestProperties);
-                if(chargedSuccessful) {
+                //TODO Changes Made By Rizwan
+                FiegnResponse fiegnResponse = billingService.charge(requestProperties);
+                if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    createResponse(fiegnResponse.getMsg(),ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+                } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
+                    createResponse(fiegnResponse.getMsg(),ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
+                } else if(fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+                    createResponse(fiegnResponse.getMsg(),ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+                } else if(fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)){
+                    createResponse(fiegnResponse.getMsg(),ResponseTypeConstants.UNAUTHORIZED_REQUEST, requestProperties.getCorrelationId());
+                }else {
+                    createResponse(fiegnResponse.getMsg(),ResponseTypeConstants.OTHER_ERROR, requestProperties.getCorrelationId());
+                }
+              /*  if(chargedSuccessful) {
                     createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                     createResponse(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
                 } else {
@@ -66,6 +79,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
             } else {
                 createResponse(ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+            }*/
             }
         }
     }
@@ -89,12 +103,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         return usersStatusEntity;
     }
 
-    private void createResponse(String resultStatus, String correlationId) {
-        VendorRequestsEntity entity = new VendorRequestsEntity();
-        entity.setCdatetime(new Date());
-        entity.setCorrelationid(correlationId);
+    private void createResponse(String desc,String resultStatus, String correlationId) {
+        VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        entity.setCdatetime(new Timestamp(new Date().getTime()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
+        entity.setDescription(desc);
         requestRepository.save(entity);
     }
 }

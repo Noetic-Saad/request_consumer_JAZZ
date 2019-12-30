@@ -15,5 +15,8 @@ public class ResponseTypeConstants {
     public static final String USER_NOT_REGISTERED = "111";
     public static final String ALREADY_UNSUBSCRIBED = "112";
     public static final String CHARGED_SUCCESSFUL = "113";
+    public static final String UNAUTHORIZED_REQUEST = "114";
+    public static final String SUBSCRIBER_NOT_FOUND = "115";
+    public static final String OTHER_ERROR = "116";
 
 }

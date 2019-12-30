@@ -12,6 +12,7 @@ public class ChargeRequestProperties {
     private String shortcode;
     private double taxAmount;
     private double shareAmount;
+    private long operatorId;
 
     public long getMsisdn() {
         return msisdn;
@@ -67,5 +68,13 @@ public class ChargeRequestProperties {
 
     public void setTaxAmount(double taxAmount) {
         this.taxAmount = taxAmount;
+    }
+
+    public long getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(long operatorId) {
+        this.operatorId = operatorId;
     }
 }

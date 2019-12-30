@@ -1,22 +1,23 @@
 package com.noeticworld.sgw.requestConsumer.entities;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table(name = "vendor_req", schema = "public", catalog = "sgw")
-public class VendorRequestsEntity {
+@Table(name = "vendor_requests_state", schema = "public", catalog = "sgw")
+public class VendorRequestsStateEntity {
     private long id;
     private String correlationid;
     private String resultStatus;
     private Boolean isFetched;
-    private Date cdatetime;
+    private Timestamp cdatetime;
+    private String description;
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @SequenceGenerator(name="vendor_requests_id_generator", sequenceName = "vendor_requests_seq")
+    @SequenceGenerator(name = "vendor_req_state_pk",sequenceName = "vendor_req_state_pk",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "vendor_req_state_pk")
     public long getId() {
         return id;
     }
@@ -57,28 +58,39 @@ public class VendorRequestsEntity {
 
     @Basic
     @Column(name = "cdatetime")
-    public Date getCdatetime() {
+    public Timestamp getCdatetime() {
         return cdatetime;
     }
 
-    public void setCdatetime(Date cdatetime) {
+    public void setCdatetime(Timestamp cdatetime) {
         this.cdatetime = cdatetime;
+    }
+
+    @Basic
+    @Column(name = "description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VendorRequestsEntity entity = (VendorRequestsEntity) o;
-        return id == entity.id &&
-                Objects.equals(correlationid, entity.correlationid) &&
-                Objects.equals(resultStatus, entity.resultStatus) &&
-                Objects.equals(isFetched, entity.isFetched) &&
-                Objects.equals(cdatetime, entity.cdatetime);
+        VendorRequestsStateEntity that = (VendorRequestsStateEntity) o;
+        return id == that.id &&
+                Objects.equals(correlationid, that.correlationid) &&
+                Objects.equals(resultStatus, that.resultStatus) &&
+                Objects.equals(isFetched, that.isFetched) &&
+                Objects.equals(cdatetime, that.cdatetime) &&
+                Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, correlationid, resultStatus, isFetched, cdatetime);
+        return Objects.hash(id, correlationid, resultStatus, isFetched, cdatetime, description);
     }
 }
