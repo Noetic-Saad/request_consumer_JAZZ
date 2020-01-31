@@ -18,5 +18,7 @@ public class ResponseTypeConstants {
     public static final String UNAUTHORIZED_REQUEST = "114";
     public static final String SUBSCRIBER_NOT_FOUND = "115";
     public static final String OTHER_ERROR = "116";
+    public static final String USER_IS_BLOCKED = "117";
+    public static final String ALREAD_SUBSCRIBED_MSG = "Already Subscribed";
 
 }

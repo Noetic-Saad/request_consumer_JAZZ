@@ -18,7 +18,7 @@ public class RequestConsumer {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @RabbitListener(queues = {"hello"})
+    @RabbitListener(queues = {"subscriptionQueue"})
     public void receive(String msg) {
         try {
             CustomMessage customMessage = objectMapper.readValue(msg, CustomMessage.class);

@@ -12,10 +12,13 @@ public class UsersEntity {
     private long vendorPlanId;
     private long msisdn;
     private Date cdate;
+    private Integer userStatusId;
+    private Long operatorId;
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "users_id_seq",sequenceName = "users_id_seq",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "users_id_seq")
     public long getId() {
         return id;
     }
@@ -24,6 +27,7 @@ public class UsersEntity {
         this.id = id;
     }
 
+    @Basic
     @Column(name = "vendor_plan_id")
     public long getVendorPlanId() {
         return vendorPlanId;
@@ -66,5 +70,25 @@ public class UsersEntity {
     @Override
     public int hashCode() {
         return Objects.hash(msisdn, cdate, id);
+    }
+
+    @Basic
+    @Column(name = "user_status_id")
+    public Integer getUserStatusId() {
+        return userStatusId;
+    }
+
+    public void setUserStatusId(Integer userStatusId) {
+        this.userStatusId = userStatusId;
+    }
+
+    @Basic
+    @Column(name = "operator_id")
+    public Long getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Long operatorId) {
+        this.operatorId = operatorId;
     }
 }

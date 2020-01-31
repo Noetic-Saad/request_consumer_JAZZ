@@ -8,15 +8,16 @@ import java.util.Objects;
 @Table(name = "subscription_setting", schema = "public", catalog = "sgw")
 public class SubscriptionSettingEntity {
     private long id;
-    private long vendorPlanId;
     private Integer vendorId;
     private Time autoRenewalStartTime;
     private Integer failedRenewalRetryCount;
     private Time failedRenewalRetryDelayHours;
     private Time timeOver;
-    private boolean active;
-    private Integer subscriptionCycleDays;
+    private Boolean isActive;
     private Integer purgeCycleDays;
+    private String expiryTime;
+    private long vendorPlanId;
+    private Integer subscriptionCycleDays;
 
     @Id
     @Column(name = "id")
@@ -26,16 +27,6 @@ public class SubscriptionSettingEntity {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "vendor_plan_id")
-    public long getVendorPlanId() {
-        return vendorPlanId;
-    }
-
-    public void setVendorPlanId(long vendorPlanId) {
-        this.vendorPlanId = vendorPlanId;
     }
 
     @Basic
@@ -90,22 +81,12 @@ public class SubscriptionSettingEntity {
 
     @Basic
     @Column(name = "is_active")
-    public boolean isActive() {
-        return active;
+    public Boolean getActive() {
+        return isActive;
     }
 
-    public void setActive(boolean isActive) {
-        this.active = isActive;
-    }
-
-    @Basic
-    @Column(name = "subscription_cycle_days")
-    public Integer getSubscriptionCycleDays() {
-        return subscriptionCycleDays;
-    }
-
-    public void setSubscriptionCycleDays(Integer subscriptionCycleDays) {
-        this.subscriptionCycleDays = subscriptionCycleDays;
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 
     @Basic
@@ -118,25 +99,54 @@ public class SubscriptionSettingEntity {
         this.purgeCycleDays = purgeCycleDays;
     }
 
+    @Basic
+    @Column(name = "expiry_time")
+    public String getExpiryTime() {
+        return expiryTime;
+    }
+
+    public void setExpiryTime(String expiryTime) {
+        this.expiryTime = expiryTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubscriptionSettingEntity that = (SubscriptionSettingEntity) o;
         return id == that.id &&
-                Objects.equals(vendorPlanId, that.vendorPlanId) &&
                 Objects.equals(vendorId, that.vendorId) &&
                 Objects.equals(autoRenewalStartTime, that.autoRenewalStartTime) &&
                 Objects.equals(failedRenewalRetryCount, that.failedRenewalRetryCount) &&
                 Objects.equals(failedRenewalRetryDelayHours, that.failedRenewalRetryDelayHours) &&
                 Objects.equals(timeOver, that.timeOver) &&
-                Objects.equals(active, that.active) &&
-                Objects.equals(subscriptionCycleDays, that.subscriptionCycleDays) &&
-                Objects.equals(purgeCycleDays, that.purgeCycleDays);
+                Objects.equals(isActive, that.isActive) &&
+                Objects.equals(purgeCycleDays, that.purgeCycleDays) &&
+                Objects.equals(expiryTime, that.expiryTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, vendorPlanId, vendorId, autoRenewalStartTime, failedRenewalRetryCount, failedRenewalRetryDelayHours, timeOver, active, subscriptionCycleDays, purgeCycleDays);
+        return Objects.hash(id, vendorId, autoRenewalStartTime, failedRenewalRetryCount, failedRenewalRetryDelayHours, timeOver, isActive, purgeCycleDays, expiryTime);
+    }
+
+    @Basic
+    @Column(name = "vendor_plan_id")
+    public long getVendorPlanId() {
+        return vendorPlanId;
+    }
+
+    public void setVendorPlanId(long vendorPlanId) {
+        this.vendorPlanId = vendorPlanId;
+    }
+
+    @Basic
+    @Column(name = "subscription_cycle_days")
+    public Integer getSubscriptionCycleDays() {
+        return subscriptionCycleDays;
+    }
+
+    public void setSubscriptionCycleDays(Integer subscriptionCycleDays) {
+        this.subscriptionCycleDays = subscriptionCycleDays;
     }
 }

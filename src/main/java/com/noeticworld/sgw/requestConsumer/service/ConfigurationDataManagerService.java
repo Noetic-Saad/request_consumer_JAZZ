@@ -14,18 +14,30 @@ import java.util.Map;
 @Singleton
 public class ConfigurationDataManagerService {
 
+    Map<Integer, Integer> operatorMap = new HashMap<>();
     private Map<Long, SubscriptionSettingEntity> subscriptionSettingEntityMap = new HashMap<>();
     private Map<String, ResponseTypeEntity> responseTypeEntityMap = new HashMap<>();
     private Map<String, EventTypesEntity> requestEventsEntityMap = new HashMap<>();
     private Map<Integer, UserStatusTypeEntity> userStatuseTypeMap = new HashMap<>();
     private Map<String, Integer> userStatusTypeIdsMap = new HashMap<>();
     private Map<Long, TestMsisdnsEntity> testMsisdnsMap = new HashMap<>();
+    private Map<Long,VendorPlansEntity> vendorPlansEntityMap = new HashMap<>();
+    private Map<String,MtMessagesEntity> mtMessagesEntityMap = new HashMap<>();
 
     @Autowired private ResponseTypeRepository responseTypeRepository;
     @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
     @Autowired private RequestEventsRepository requestEventsRepository;
     @Autowired private UserStatusesLookupRepository userStatusTypeRepository;
     @Autowired private TestMsisdnsRepository testMsisdnsRepository;
+    @Autowired private VendorPlanRepository vendorPlanRepository;
+    @Autowired private MtMessageRepository mtMessageRepository;
+    @Autowired private OperatorRepository operatorRepository;
+
+    private int jazz = 0;
+    private int warid = 0;
+    private int ufone = 0;
+    private int zong = 0;
+    private int telenor = 0;
 
     public SubscriptionSettingEntity getSubscriptionEntity(long vendorPlanId) {
         return subscriptionSettingEntityMap.get(vendorPlanId);
@@ -59,6 +71,9 @@ public class ConfigurationDataManagerService {
         loadRequestEvents();
         loadUserStatuseTypes();
         loadTestMsisdns();
+        loadVendorPlans();
+        loadMtMessage();
+        loadOperator();
     }
 
     private void loadUserStatuseTypes() {
@@ -101,7 +116,67 @@ public class ConfigurationDataManagerService {
         testMsisdnsMap = map;
     }
 
+    private void loadVendorPlans(){
+        List<VendorPlansEntity> list = vendorPlanRepository.findAll();
+        list.forEach(vendorPlansEntity -> vendorPlansEntityMap.put(vendorPlansEntity.getId(),vendorPlansEntity));
+    }
+
+    private void loadMtMessage(){
+        List<MtMessagesEntity> list = mtMessageRepository.findAll();
+        list.forEach(mtMessagesEntity -> mtMessagesEntityMap.put(mtMessagesEntity.getLabel(),mtMessagesEntity));
+    }
+
+    public void loadOperator(){
+        List<OperatorEntity> list = operatorRepository.findAll();
+        for (int i = 0; i < list.size() ; i++) {
+            if(list.get(i).getName().equalsIgnoreCase("jazz")){
+                jazz = list.get(i).getId();
+            }else if(list.get(i).getName().equalsIgnoreCase("warid")){
+                warid = list.get(i).getId();
+            } else if(list.get(i).getName().equalsIgnoreCase("ufone")){
+                ufone = list.get(i).getId();
+            }else if(list.get(i).getName().equalsIgnoreCase("zong")){
+                zong = list.get(i).getId();
+            }else {
+                telenor = list.get(i).getId();
+            }
+        }
+    }
+
+
     public boolean isTestMsisdn(long msisdn) {
         return testMsisdnsMap.get(msisdn) != null;
     }
+
+    public VendorPlansEntity getVendorPlans(Long vendorPlanId){
+        return vendorPlansEntityMap.get(vendorPlanId);
+    }
+    public SubscriptionSettingEntity getSubscriptionSetting(long vendorPlanId){
+        return subscriptionSettingEntityMap.get(vendorPlanId);
+    }
+
+    public MtMessagesEntity getMtMessage(String label){
+        return mtMessagesEntityMap.get(label);
+    }
+
+    public int getJazz() {
+        return jazz;
+    }
+
+    public int getWarid() {
+        return warid;
+    }
+
+    public int getUfone() {
+        return ufone;
+    }
+
+    public int getZong() {
+        return zong;
+    }
+
+    public int getTelenor() {
+        return telenor;
+    }
+
 }

@@ -16,13 +16,10 @@ public class BillingService {
     public FiegnResponse charge(RequestProperties requestProperties) {
         if (dataService.isTestMsisdn(requestProperties.getMsisdn()))
             return null;
-
-        VendorPlansEntity vendorPlansEntity = vendorPlanRepository.findById(requestProperties.getVendorPlanId()).orElse(null);
-        if (vendorPlansEntity == null)
-            return null;
+        VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
         ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
-        chargeRequestProperties.setOperatorId(1);//TODO OpertorID using static id for testing //Comment By Rizwan
+        chargeRequestProperties.setOperatorId(vendorPlansEntity.getOperatorId());//TODO OpertorID using static id for testing //Comment By Rizwan
         chargeRequestProperties.setCorrelationId(requestProperties.getCorrelationId());
         chargeRequestProperties.setMsisdn(requestProperties.getMsisdn());
         chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());

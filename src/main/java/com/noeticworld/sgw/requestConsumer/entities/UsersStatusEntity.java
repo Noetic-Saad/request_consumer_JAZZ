@@ -8,31 +8,22 @@ import java.util.Objects;
 @Table(name = "users_status", schema = "public", catalog = "sgw")
 public class UsersStatusEntity {
     private long id;
-    private Long userId;
     private Integer statusId;
     private Timestamp cdate;
     private Timestamp expiryDatetime;
+    private Integer attempts;
+    private Long userId;
     private Long vendorPlanId;
+    private Integer subCycleId;
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "user_id")
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     @Basic
@@ -66,6 +57,43 @@ public class UsersStatusEntity {
     }
 
     @Basic
+    @Column(name = "attempts")
+    public Integer getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(Integer attempts) {
+        this.attempts = attempts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UsersStatusEntity entity = (UsersStatusEntity) o;
+        return id == entity.id &&
+                Objects.equals(statusId, entity.statusId) &&
+                Objects.equals(cdate, entity.cdate) &&
+                Objects.equals(expiryDatetime, entity.expiryDatetime) &&
+                Objects.equals(attempts, entity.attempts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, statusId, cdate, expiryDatetime, attempts);
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Basic
     @Column(name = "vendor_plan_id")
     public Long getVendorPlanId() {
         return vendorPlanId;
@@ -75,21 +103,13 @@ public class UsersStatusEntity {
         this.vendorPlanId = vendorPlanId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UsersStatusEntity that = (UsersStatusEntity) o;
-        return id == that.id &&
-                Objects.equals(userId, that.userId) &&
-                Objects.equals(statusId, that.statusId) &&
-                Objects.equals(cdate, that.cdate) &&
-                Objects.equals(expiryDatetime, that.expiryDatetime) &&
-                Objects.equals(vendorPlanId, that.vendorPlanId);
+    @Basic
+    @Column(name = "sub_cycle_id")
+    public Integer getSubCycleId() {
+        return subCycleId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userId, statusId, cdate, expiryDatetime, vendorPlanId);
+    public void setSubCycleId(Integer subCycleId) {
+        this.subCycleId = subCycleId;
     }
 }

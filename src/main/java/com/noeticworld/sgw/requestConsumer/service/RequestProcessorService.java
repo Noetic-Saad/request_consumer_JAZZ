@@ -14,12 +14,6 @@ public class RequestProcessorService {
     @Autowired private ConfigurationDataManagerService configurationDataManagerService;
 
     public void process(CustomMessage customMessage) {
-
-        SubscriptionSettingEntity subscriptionSetting = configurationDataManagerService.getSubscriptionEntity(Long.parseLong(customMessage.getVendorPlanId()));
-        if(subscriptionSetting != null && !subscriptionSetting.isActive()) {
-            //TODO log
-            System.out.println("no subscription setting available. Request won't fulfill.");
-        }
         RequestProperties requestProperties = new RequestProperties(customMessage);
         requestHandlerManager.manage(requestProperties);
         System.out.println("<<<<<<<<<<<<<<<< Request Processed >>>>>>>>>>>>>>>");
