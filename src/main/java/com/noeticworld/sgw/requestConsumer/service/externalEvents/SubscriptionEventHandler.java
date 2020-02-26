@@ -1,14 +1,13 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.*;
-import com.noeticworld.sgw.requestConsumer.repository.SubscriptionSettingRepository;
-import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
-import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
-import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
+import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.BillingService;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,8 @@ import java.util.Date;
 @Transactional
 public class SubscriptionEventHandler implements RequestEventHandler {
 
+    Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
+
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -38,30 +39,54 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private BillingService billingService;
     @Autowired
     private ConfigurationDataManagerService dataService;
+    @Autowired
+    private VendorReportRepository vendorReportRepository;
+    @Autowired
+    private OtpRecordRepository otpRecordRepository;
+    @Autowired LogInRecordRepository logInRecordRepository;
 
-    private static final String JAZZ_MSG = "Dear Customer, you are successfully subscribed to Gamenow @PKR5+tax per day. To unsubscribe, go to http://bit.ly/2s7au8P";
 
     @Override
     public void handle(RequestProperties requestProperties) {
 
-        //get a user either existing or new
+        if (requestProperties.isOtp()) {
+            if(requestProperties.getOtpNumber()==0){
+                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+                return;
+            }
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndVendorPlanIdAndOtpNumber(requestProperties.getMsisdn(), requestProperties.getVendorPlanId(), (int) requestProperties.getOtpNumber());
+            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+                handleSubRequest(requestProperties);
+            } else {
+                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+            }
+        }else {
+            handleSubRequest(requestProperties);
+        }
+
+
+    }
+
+    public void handleSubRequest(RequestProperties requestProperties) {
+
         UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
-
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
-            _user = registerNewUser(requestProperties);
+            VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+            _user = registerNewUser(requestProperties,entity);
         }
 
         if (exisingUser) {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.
                     findTopByUserIdAndVendorPlanIdOrderByIdDesc(
                             _user.getId(), requestProperties.getVendorPlanId());
-            if(_usersStatusEntity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+            if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
-            }else {
-                if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED)) {
+            } else {
+                if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)) {
 
                     if (_usersStatusEntity == null ||
                             _usersStatusEntity.getExpiryDatetime() == null ||
@@ -69,22 +94,23 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                                     before(new Timestamp(System.currentTimeMillis()))) {
                         processUserRequest(requestProperties, _user);
                     } else {
-                        createResponse(ResponseTypeConstants.ALREAD_SUBSCRIBED_MSG, ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+                        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS ALREADY SUBSCRIBED");
+                        createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
                     }
-                } else {
-                    createResponse(ResponseTypeConstants.ALREAD_SUBSCRIBED_MSG, ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
                 }
             }
         } else {
-            processUserRequest(requestProperties,_user);
+            processUserRequest(requestProperties, _user);
         }
     }
 
-    private UsersEntity registerNewUser(RequestProperties requestProperties) {
+
+    private UsersEntity registerNewUser(RequestProperties requestProperties,VendorPlansEntity entity) {
         UsersEntity usersEntity = new UsersEntity();
         usersEntity.setMsisdn(requestProperties.getMsisdn());
         usersEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         usersEntity.setCdate(new Date());
+        usersEntity.setOperatorId(Long.valueOf(entity.getOperatorId()));
         return usersRepository.save(usersEntity);
     }
 
@@ -98,24 +124,27 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
         int hours = Integer.parseInt(expiryTime[0]);
         int minutes = Integer.parseInt(expiryTime[1]);
-        usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(entity.getSubCycle()), LocalTime.of(hours,minutes))));
+        usersStatusEntity.setSubCycleId(entity.getSubCycle());
+        usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(entity.getSubCycle()), LocalTime.of(hours, minutes))));
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
         usersStatusEntity = userStatusRepository.save(usersStatusEntity);
-        updateUserStatus(_user,usersStatusEntity.getId());
+        updateUserStatus(_user, usersStatusEntity.getId());
         userStatusRepository.flush();
         return usersStatusEntity;
     }
 
-    private void processUserRequest(RequestProperties requestProperties,UsersEntity _user){
+    private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-            if(entity.getMtResponse()==1) {
+            if (entity.getMtResponse() == 1) {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
+            createVendorReport(requestProperties);
             createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            saveLogInRecord(requestProperties,entity.getId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
@@ -139,5 +168,26 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void updateUserStatus(UsersEntity user, long userStatusId) {
         user.setUserStatusId((int) userStatusId);
         usersRepository.save(user);
+    }
+
+    private void createVendorReport(RequestProperties requestProperties) {
+        VendorReportEntity vendorReportEntity = new VendorReportEntity();
+        vendorReportEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
+        vendorReportEntity.setMsisdn(requestProperties.getMsisdn());
+        vendorReportEntity.setVenodorPlanId((int) requestProperties.getVendorPlanId());
+        vendorReportEntity.setTrackerId(requestProperties.getTrackerId());
+        vendorReportRepository.save(vendorReportEntity);
+    }
+
+    private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
+        LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
+        loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
+        loginRecordsEntity.setSessionId(requestProperties.getSessionId());
+        loginRecordsEntity.setAcitve(false);
+        loginRecordsEntity.setRemoteServerIp(requestProperties.getRemoteServerIp());
+        loginRecordsEntity.setLocalServerIp(requestProperties.getLocalServerIp());
+        loginRecordsEntity.setMsisdn(requestProperties.getMsisdn());
+        loginRecordsEntity.setVendorPlanId(vendorPlanId);
+        logInRecordRepository.save(loginRecordsEntity);
     }
 }

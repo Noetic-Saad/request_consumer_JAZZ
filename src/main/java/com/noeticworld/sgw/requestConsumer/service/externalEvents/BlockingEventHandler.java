@@ -37,7 +37,6 @@ public class BlockingEventHandler implements RequestEventHandler {
     public void handle(RequestProperties requestProperties) {
         UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
-        String responseType = ResponseTypeConstants.REQUEST_IN_PROGRESS;
 
         if (_user == null) {
             _user = registerNewUser(requestProperties);
