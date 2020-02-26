@@ -5,14 +5,33 @@ import java.util.Date;
 public class ChargeRequestProperties {
 
     private long msisdn;
-    private long vendorPlanId;
+    private Integer operatorId;
+    private Integer vendorPlanId;
     private String correlationId;
     private Date originDateTime;
     private double chargingAmount;
     private String shortcode;
     private double taxAmount;
     private double shareAmount;
-    private long operatorId;
+    private int attempts;
+    private int isRenewal;
+    private int dailyAttempts;
+
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public double getShareAmount() {
+        return shareAmount;
+    }
+
+    public void setShareAmount(double shareAmount) {
+        this.shareAmount = shareAmount;
+    }
 
     public long getMsisdn() {
         return msisdn;
@@ -22,11 +41,11 @@ public class ChargeRequestProperties {
         this.msisdn = msisdn;
     }
 
-    public long getVendorPlanId() {
+    public Integer getVendorPlanId() {
         return vendorPlanId;
     }
 
-    public void setVendorPlanId(long vendorPlanId) {
+    public void setVendorPlanId(Integer vendorPlanId) {
         this.vendorPlanId = vendorPlanId;
     }
 
@@ -70,11 +89,27 @@ public class ChargeRequestProperties {
         this.taxAmount = taxAmount;
     }
 
-    public long getOperatorId() {
-        return operatorId;
+    public int getAttempts() {
+        return attempts;
     }
 
-    public void setOperatorId(long operatorId) {
-        this.operatorId = operatorId;
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
+    }
+
+    public int getIsRenewal() {
+        return isRenewal;
+    }
+
+    public void setIsRenewal(int isRenewal) {
+        this.isRenewal = isRenewal;
+    }
+
+    public int getDailyAttempts() {
+        return dailyAttempts;
+    }
+
+    public void setDailyAttempts(int dailyAttempts) {
+        this.dailyAttempts = dailyAttempts;
     }
 }

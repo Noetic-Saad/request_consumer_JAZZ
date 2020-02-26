@@ -9,4 +9,5 @@ public interface MtClient {
 
     @PostMapping("/mt")
     public void sendMt(@RequestBody MtProperties mtProperties);
+
 }

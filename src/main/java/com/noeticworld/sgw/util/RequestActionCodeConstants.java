@@ -11,5 +11,8 @@ public class RequestActionCodeConstants {
     public static final String BLOCKING_REQUEST_VENDOR_INITIATED = "Blk01";
     public static final String BLOCKING_REQUEST_TELCO_INITIATED = "Blk02";
     public static final String CHARGE_ONLY_VENDOR_INITIATED = "Cr01";
+    public static final String LOGIN_REQUEST_USER ="LogIn";
+    public static final String LOGOUT_REQUEST_USER ="LogOut";
+    public static final String OTP_VERIFICATION = "OtpVerification";
 
 }

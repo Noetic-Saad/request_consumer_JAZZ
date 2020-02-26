@@ -19,6 +19,14 @@ public class ResponseTypeConstants {
     public static final String SUBSCRIBER_NOT_FOUND = "115";
     public static final String OTHER_ERROR = "116";
     public static final String USER_IS_BLOCKED = "117";
-    public static final String ALREAD_SUBSCRIBED_MSG = "Already Subscribed";
+    public static final String VALID = "118";
+    public static final String INVALID = "119";
+    public static final String INVALID_OTP = "120";
+    public static final String LOGGED_OUT = "121";
+    public static final String ALREAD_SUBSCRIBED_MSG = "ALREADY SUBSCRIBER";
+    public static final String UNSUBSCRIBEDFULL_MSG = "UNSUBSCRIBED SUCCESSFULLY";
+    public static final String SUBSCRIBER_NOT_FOUND_MSG = "SUBSCRIBER NOT FOUND";
+    public static final String OTHER_ERROR_MSG = "OTHER ERROR";
+
 
 }
