@@ -3,6 +3,8 @@ package com.noeticworld.sgw.requestConsumer.service;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
 import org.elasticsearch.common.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.Map;
 @Singleton
 public class ConfigurationDataManagerService {
 
+    Logger log = LoggerFactory.getLogger(ConfigurationDataManagerService.class.getName());
+
     Map<Integer, Integer> operatorMap = new HashMap<>();
     private Map<Long, SubscriptionSettingEntity> subscriptionSettingEntityMap = new HashMap<>();
     private Map<String, ResponseTypeEntity> responseTypeEntityMap = new HashMap<>();
@@ -23,6 +27,7 @@ public class ConfigurationDataManagerService {
     private Map<Long, TestMsisdnsEntity> testMsisdnsMap = new HashMap<>();
     private Map<Long,VendorPlansEntity> vendorPlansEntityMap = new HashMap<>();
     private Map<String,MtMessagesEntity> mtMessagesEntityMap = new HashMap<>();
+    private Map<Long,MtMessageSettingsEntity> mtMessageSettingsEntityMap = new HashMap<>();
 
     @Autowired private ResponseTypeRepository responseTypeRepository;
     @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
@@ -32,6 +37,7 @@ public class ConfigurationDataManagerService {
     @Autowired private VendorPlanRepository vendorPlanRepository;
     @Autowired private MtMessageRepository mtMessageRepository;
     @Autowired private OperatorRepository operatorRepository;
+    @Autowired private MtMessageSettingsRepository mtMessageSettingsRepository;
 
     private int jazz = 0;
     private int warid = 0;
@@ -66,6 +72,7 @@ public class ConfigurationDataManagerService {
 
     public void bootstapAndCacheConfigurationData() {
         //fetch data from db
+        log.info("TESTING LOGS");
         loadResponseTypes();
         loadSubscriptionSettings();
         loadRequestEvents();
@@ -74,6 +81,7 @@ public class ConfigurationDataManagerService {
         loadVendorPlans();
         loadMtMessage();
         loadOperator();
+        loadMtMessageSettings();
     }
 
     private void loadUserStatuseTypes() {
@@ -126,6 +134,11 @@ public class ConfigurationDataManagerService {
         list.forEach(mtMessagesEntity -> mtMessagesEntityMap.put(mtMessagesEntity.getLabel(),mtMessagesEntity));
     }
 
+    private void loadMtMessageSettings(){
+        List<MtMessageSettingsEntity> list = mtMessageSettingsRepository.findAll();
+        list.forEach(mtMessageSettingsEntity -> mtMessageSettingsEntityMap.put(Long.valueOf(mtMessageSettingsEntity.getVendorPlanId()),mtMessageSettingsEntity));
+    }
+
     public void loadOperator(){
         List<OperatorEntity> list = operatorRepository.findAll();
         for (int i = 0; i < list.size() ; i++) {
@@ -157,6 +170,10 @@ public class ConfigurationDataManagerService {
 
     public MtMessagesEntity getMtMessage(String label){
         return mtMessagesEntityMap.get(label);
+    }
+
+    public MtMessageSettingsEntity getMtMessageSetting(Long vendorPlanId){
+        return mtMessageSettingsEntityMap.get(vendorPlanId);
     }
 
     public int getJazz() {
