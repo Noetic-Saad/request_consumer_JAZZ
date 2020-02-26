@@ -10,11 +10,13 @@ public class VendorReportEntity {
     private int id;
     private Integer venodorPlanId;
     private String trackerId;
-    private int msisdn;
+    private Long msisdn;
     private Timestamp cdate;
 
     @Id
     @Column(name = "id")
+    @SequenceGenerator(name = "vendor_report_seq",sequenceName = "vendor_report_seq",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "vendor_report_seq")
     public int getId() {
         return id;
     }
@@ -45,11 +47,11 @@ public class VendorReportEntity {
 
     @Basic
     @Column(name = "msisdn")
-    public int getMsisdn() {
+    public Long getMsisdn() {
         return msisdn;
     }
 
-    public void setMsisdn(int msisdn) {
+    public void setMsisdn(Long msisdn) {
         this.msisdn = msisdn;
     }
 
