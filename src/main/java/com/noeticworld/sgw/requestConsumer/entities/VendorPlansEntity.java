@@ -20,6 +20,7 @@ public class VendorPlansEntity {
     private Integer subCycle;
     private Integer operatorId;
     private Integer mtResponse;
+    private String planName;
 
     @Id
     @Column(name = "id")
@@ -173,4 +174,18 @@ public class VendorPlansEntity {
     public void setMtResponse(Integer mtResponse) {
         this.mtResponse = mtResponse;
     }
+
+
+
+    @Basic
+    @Column(name = "plan_name")
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+
 }

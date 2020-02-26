@@ -23,9 +23,10 @@ public class BillingService {
         chargeRequestProperties.setCorrelationId(requestProperties.getCorrelationId());
         chargeRequestProperties.setMsisdn(requestProperties.getMsisdn());
         chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());
-        chargeRequestProperties.setVendorPlanId(requestProperties.getVendorPlanId());
+        chargeRequestProperties.setVendorPlanId((int) requestProperties.getVendorPlanId());
         chargeRequestProperties.setShortcode("3444"); //TODO shortcode??
         chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
+        chargeRequestProperties.setIsRenewal(0);
         // TODO Comment By Rizwan, Added a new Class FiegnResponse
         FiegnResponse fiegnResponse = billingClient.charge(chargeRequestProperties);
         return fiegnResponse;

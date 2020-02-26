@@ -10,5 +10,6 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
 
     UsersStatusEntity findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(long userId, long vendorPlanId, int userStatusId);
     UsersStatusEntity findTopByUserIdAndVendorPlanIdOrderByIdDesc(long userId, long vendorPlanId);
+    UsersStatusEntity findTopByIdAndVendorPlanId(long id,long vendorPlanId);
 
 }
