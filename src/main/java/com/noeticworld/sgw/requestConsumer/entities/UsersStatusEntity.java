@@ -18,6 +18,8 @@ public class UsersStatusEntity {
 
     @Id
     @Column(name = "id")
+    @SequenceGenerator(name = "users_status_id_seq",sequenceName = "users_status_id_seq",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "users_status_id_seq")
     public long getId() {
         return id;
     }

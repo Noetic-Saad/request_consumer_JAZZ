@@ -158,7 +158,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
-        entity.setCdatetime(new Timestamp(new Date().getTime()));
+        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);

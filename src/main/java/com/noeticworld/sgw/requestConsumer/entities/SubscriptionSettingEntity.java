@@ -17,7 +17,9 @@ public class SubscriptionSettingEntity {
     private Integer purgeCycleDays;
     private String expiryTime;
     private long vendorPlanId;
-    private Integer subscriptionCycleDays;
+    private Integer subCycleId;
+    private Integer operatorId;
+    private Boolean weeklyRenwalRetry;
 
     @Id
     @Column(name = "id")
@@ -141,12 +143,32 @@ public class SubscriptionSettingEntity {
     }
 
     @Basic
-    @Column(name = "subscription_cycle_days")
-    public Integer getSubscriptionCycleDays() {
-        return subscriptionCycleDays;
+    @Column(name = "sub_cycle_id")
+    public Integer getSubCycleId() {
+        return subCycleId;
     }
 
-    public void setSubscriptionCycleDays(Integer subscriptionCycleDays) {
-        this.subscriptionCycleDays = subscriptionCycleDays;
+    public void setSubCycleId(Integer subCycleId) {
+        this.subCycleId = subCycleId;
+    }
+
+    @Basic
+    @Column(name = "operator_id")
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    @Basic
+    @Column(name = "weekly_renwal_retry")
+    public Boolean getWeeklyRenwalRetry() {
+        return weeklyRenwalRetry;
+    }
+
+    public void setWeeklyRenwalRetry(Boolean weeklyRenwalRetry) {
+        this.weeklyRenwalRetry = weeklyRenwalRetry;
     }
 }
