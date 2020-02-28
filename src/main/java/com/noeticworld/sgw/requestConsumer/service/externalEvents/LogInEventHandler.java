@@ -34,13 +34,14 @@ public class LogInEventHandler implements RequestEventHandler {
     @Autowired SubscriptionEventHandler subscriptionEventHandler;
 
     @Override
-    public void handle(RequestProperties requestProperties) {
+    public void handle(RequestProperties requestProperties) throws InterruptedException {
 
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndVendorPlanIdAndOtpNumber(requestProperties.getMsisdn(), requestProperties.getVendorPlanId(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
+                Thread.sleep(100l);
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
         } else {
