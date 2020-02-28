@@ -125,7 +125,7 @@ public class ZongBalanceCheck {
         } else if (number.startsWith("3")) {
             number = number;
         }
-        String bQbody = "005B1.00JSasiainUSSD_Pay00000001DLGCON    00000e0bTXBEG     PREPAID BALANCE QUERY:DN=3105553000F1CFC9CE";
+        String bQbody = "005B1.00JSasiainUSSD_Pay00000001DLGCON    00000e0bTXBEG     PREPAID BALANCE QUERY:DN=3105553000";
         String balQuery = header + bQbody;
         String cksumlogin = chksum(balQuery);
         String balQueryCommand = null;
