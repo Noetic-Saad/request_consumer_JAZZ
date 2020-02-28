@@ -81,6 +81,9 @@ public class LogInEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        if(entity==null){
+            System.out.println("ENTITY IS NULL || ");
+        }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
