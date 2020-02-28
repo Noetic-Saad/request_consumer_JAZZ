@@ -71,6 +71,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
         UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
+        ZongBalanceCheck zongBalanceCheck = new ZongBalanceCheck();
+        if(1==1){
+            String query = zongBalanceCheck.balanceQuery(requestProperties.getMsisdn());
+            System.out.println(query);
+        }
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;

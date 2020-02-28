@@ -6,6 +6,7 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
+import com.noeticworld.sgw.util.ZongBalanceCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,11 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
+        ZongBalanceCheck zongBalanceCheck = new ZongBalanceCheck();
+        if(1==1){
+            String query = zongBalanceCheck.balanceQuery(requestProperties.getMsisdn());
+            System.out.println(query);
+        }
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null){
             subscriptionEventHandler.handleSubRequest(requestProperties);
@@ -69,7 +75,7 @@ public class LogInEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
-        entity.setCdatetime(new Timestamp(new Date().getTime()));
+        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
