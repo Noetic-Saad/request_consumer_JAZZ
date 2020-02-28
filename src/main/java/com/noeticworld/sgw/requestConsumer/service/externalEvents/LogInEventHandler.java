@@ -78,6 +78,11 @@ public class LogInEventHandler implements RequestEventHandler {
         VendorRequestsStateEntity entity = null;
         entity  = requestRepository.findByCorrelationid(correlationId);
         if(entity==null){
+            try {
+                Thread.sleep(100l);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             entity  = requestRepository.findByCorrelationid(correlationId);
         }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
