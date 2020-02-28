@@ -50,12 +50,6 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
-        ZongBalanceCheck zongBalanceCheck = new ZongBalanceCheck();
-        if(1==1){
-            zongBalanceCheck.logIn();
-            String query = zongBalanceCheck.balanceQuery(requestProperties.getMsisdn());
-            System.out.println(query);
-        }
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null){
             subscriptionEventHandler.handleSubRequest(requestProperties);

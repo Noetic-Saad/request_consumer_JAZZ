@@ -69,19 +69,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     public void handleSubRequest(RequestProperties requestProperties) {
 
+        VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
-        ZongBalanceCheck zongBalanceCheck = new ZongBalanceCheck();
-        if(1==1){
-            zongBalanceCheck.logIn();
-            String query = zongBalanceCheck.balanceQuery(requestProperties.getMsisdn());
-            System.out.println(query);
-        }
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
-            VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+
             _user = registerNewUser(requestProperties,entity);
+
         }
 
         if (exisingUser) {
@@ -196,4 +193,5 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
         logInRecordRepository.save(loginRecordsEntity);
     }
+
 }
