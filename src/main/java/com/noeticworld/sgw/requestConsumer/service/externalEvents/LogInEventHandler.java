@@ -41,11 +41,6 @@ public class LogInEventHandler implements RequestEventHandler {
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
-                try {
-                    Thread.sleep(100l);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
         } else {
