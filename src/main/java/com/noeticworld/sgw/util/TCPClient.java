@@ -1,56 +1,50 @@
 package com.noeticworld.sgw.util;
 
-import java.io.*;
-import java.net.*;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class TCPClient {
-	   
-	private static Socket clientSocket;
-		
-	public static void Connect(String ServerIP, int ServerPort) {
+
+	private Socket clientSocket;
+
+	public void Connect(String ServerIP, int ServerPort) {
 		//create client socket, connect to server
-			try {
-				clientSocket = new Socket(ServerIP,ServerPort);
+		try {
+			clientSocket = new Socket(ServerIP,ServerPort);
 
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public boolean socketIsOpen(){
-		return clientSocket.isConnected();
-	}
-	
 	//Input Stream
-	protected InputStream Read() {
+	public InputStream Read() {
 		InputStream MyInputStream=null;
 		try {
-			MyInputStream =  TCPClient.clientSocket.getInputStream();			
+			MyInputStream =  clientSocket.getInputStream();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return MyInputStream;
 	}
-	
-	//Get Stream	
-	protected OutputStream getStream() throws SocketException {
-		OutputStream outputStream=null;
-		System.out.println("Setting Time Out");
+
+	//Get Stream
+	public OutputStream getStream() {
+		OutputStream OutputStream=null;
 		try {
-			outputStream =  TCPClient.clientSocket.getOutputStream();
+			OutputStream =  clientSocket.getOutputStream();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return outputStream;
+		return OutputStream;
 	}
-
-	
-
 }

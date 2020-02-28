@@ -27,7 +27,7 @@ public class ZongBalanceCheck {
             OutputStream stream;
             //String message = "`SC`005A1.00JS123456PPSPPS  00000000DLGLGN    00000001TXBEG     LOGIN:USER=Noetic,PSWD=Noetic@123;AEBA9EF6";
             byte[] data = message.getBytes("US-ASCII");
-            stream = client.GetStream();
+            stream = client.getStream();
             stream.write(data, 0, data.length);
             output = "Sent: " + message;
             log.info("Sent : " + output);
