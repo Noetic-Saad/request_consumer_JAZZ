@@ -73,6 +73,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
         ZongBalanceCheck zongBalanceCheck = new ZongBalanceCheck();
         if(1==1){
+            zongBalanceCheck.logIn();
             String query = zongBalanceCheck.balanceQuery(requestProperties.getMsisdn());
             System.out.println(query);
         }
