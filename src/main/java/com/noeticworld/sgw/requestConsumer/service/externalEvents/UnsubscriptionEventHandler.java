@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -74,7 +75,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     private void createResponse(String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
-        entity.setCdatetime(new Timestamp(new Date().getTime()));
+        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         if(resultStatus.equals(ResponseTypeConstants.ALREADY_UNSUBSCRIBED)) {
