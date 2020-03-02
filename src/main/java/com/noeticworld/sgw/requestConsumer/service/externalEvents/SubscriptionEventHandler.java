@@ -100,6 +100,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS ALREADY SUBSCRIBED");
                         createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
                     }
+                }else {
+                    processUserRequest(requestProperties, _user);
                 }
             }
         } else {
