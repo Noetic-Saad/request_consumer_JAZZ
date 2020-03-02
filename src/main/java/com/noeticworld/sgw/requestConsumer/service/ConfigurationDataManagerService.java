@@ -28,6 +28,8 @@ public class ConfigurationDataManagerService {
     private Map<Long,VendorPlansEntity> vendorPlansEntityMap = new HashMap<>();
     private Map<String,MtMessagesEntity> mtMessagesEntityMap = new HashMap<>();
     private Map<Long,MtMessageSettingsEntity> mtMessageSettingsEntityMap = new HashMap<>();
+    private Map<String, SubscriptionCyclesEntity> subCycleMap = new HashMap<>();
+    private Map<Integer, SubscriptionCyclesEntity> subCycleDaysMap = new HashMap<>();
 
     @Autowired private ResponseTypeRepository responseTypeRepository;
     @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
@@ -38,6 +40,7 @@ public class ConfigurationDataManagerService {
     @Autowired private MtMessageRepository mtMessageRepository;
     @Autowired private OperatorRepository operatorRepository;
     @Autowired private MtMessageSettingsRepository mtMessageSettingsRepository;
+    @Autowired private SubscriptionCycleRepository cycleRepository;
 
     private int jazz = 0;
     private int warid = 0;
@@ -82,6 +85,7 @@ public class ConfigurationDataManagerService {
         loadMtMessage();
         loadOperator();
         loadMtMessageSettings();
+        loadSubscriptionCycle();
     }
 
     private void loadUserStatuseTypes() {
@@ -108,6 +112,12 @@ public class ConfigurationDataManagerService {
         List<ResponseTypeEntity> list = responseTypeRepository.findAll();
         list.forEach(entity -> map.put(entity.getCode(), entity));
         responseTypeEntityMap = map;
+    }
+
+    private void loadSubscriptionCycle(){
+        List<SubscriptionCyclesEntity> list = cycleRepository.findAll();
+        list.forEach(subscriptionCyclesEntity -> subCycleMap.put(subscriptionCyclesEntity.getLabel(),subscriptionCyclesEntity));
+        list.forEach(subscriptionCyclesEntity -> subCycleDaysMap.put(subscriptionCyclesEntity.getId(),subscriptionCyclesEntity));
     }
 
     private void loadSubscriptionSettings() {
@@ -154,6 +164,13 @@ public class ConfigurationDataManagerService {
                 telenor = list.get(i).getId();
             }
         }
+    }
+
+    public SubscriptionCyclesEntity getSubCycleId(String label){
+        return subCycleMap.get(label);
+    }
+    public SubscriptionCyclesEntity getSubCycleDays(Integer id){
+        return subCycleDaysMap.get(id);
     }
 
 
