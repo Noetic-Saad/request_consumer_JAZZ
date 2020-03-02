@@ -43,7 +43,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             String resultCode =  changeUserStatus(_user,vendorPlans.getSubCycle());
             createResponse(resultCode,requestProperties.getCorrelationId());
             if(vendorPlans.getMtResponse() == 1) {
-                mtService.sendUnsubMt(requestProperties.getMsisdn(), dataService.getVendorPlans(requestProperties.getVendorPlanId()));
+                mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
             }
         }
     }
