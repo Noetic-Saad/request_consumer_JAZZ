@@ -14,8 +14,7 @@ public class BillingService {
     @Autowired private BillingClient billingClient;
 
     public FiegnResponse charge(RequestProperties requestProperties) {
-        if (dataService.isTestMsisdn(requestProperties.getMsisdn()))
-            return null;
+
         VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
         ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
@@ -25,7 +24,12 @@ public class BillingService {
         chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());
         chargeRequestProperties.setVendorPlanId((int) requestProperties.getVendorPlanId());
         chargeRequestProperties.setShortcode("3444"); //TODO shortcode??
-        chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
+        if (dataService.isTestMsisdn(requestProperties.getMsisdn())){
+            chargeRequestProperties.setChargingAmount(1.0);
+        }else{
+            chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
+        }
+
         chargeRequestProperties.setIsRenewal(0);
         // TODO Comment By Rizwan, Added a new Class FiegnResponse
         FiegnResponse fiegnResponse = billingClient.charge(chargeRequestProperties);
