@@ -60,7 +60,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
             entity1.setSubCycleId(subCycleId);
             entity1.setAttempts(0);
-            userStatusRepository.save(entity1);
+            long userStatusId = userStatusRepository.save(entity1).getId();
+            users.setUserStatusId((int) userStatusId);
+            usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
             log.info("CONSUMER SERVICE | UnsubscriptionEventHandler CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
