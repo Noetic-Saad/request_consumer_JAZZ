@@ -77,6 +77,18 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     private void createResponse(String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        if(entity==null){
+            try {
+                System.out.println("Null Entity");
+                Thread.sleep(100l);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            entity  = requestRepository.findByCorrelationid(correlationId);
+            if(entity==null){
+                System.out.println("Null Entity");
+            }
+        }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);

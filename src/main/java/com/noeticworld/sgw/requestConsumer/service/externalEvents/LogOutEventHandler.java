@@ -43,6 +43,18 @@ public class LogOutEventHandler implements RequestEventHandler {
 
     private void createRequestState(String resultStatusDescription, String resultStatus, RequestProperties requestProperties) {
         VendorRequestsStateEntity vendorRequestsStateEntity = vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+        if(vendorRequestsStateEntity==null){
+            try {
+                System.out.println("Null Entity");
+                Thread.sleep(100l);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            vendorRequestsStateEntity  = vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+            if(vendorRequestsStateEntity==null){
+                System.out.println("Null Entity");
+            }
+        }
         vendorRequestsStateEntity.setResultStatus(resultStatus);
         vendorRequestsStateEntity.setDescription(resultStatusDescription);
         vendorRequestRepository.save(vendorRequestsStateEntity);
