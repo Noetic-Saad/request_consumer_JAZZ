@@ -85,7 +85,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.
                     findTopByUserIdAndVendorPlanIdOrderByIdDesc(
                             _user.getId(), requestProperties.getVendorPlanId());
-            if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+            if(_usersStatusEntity == null){
+                processUserRequest(requestProperties, _user);
+            }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
             } else {
