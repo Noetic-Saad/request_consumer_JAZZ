@@ -14,6 +14,8 @@ public class UsersEntity {
     private Date cdate;
     private Integer userStatusId;
     private Long operatorId;
+    private Integer isOtpVerifired;
+    private String trackerId;
 
     @Id
     @Column(name = "id")
@@ -53,6 +55,10 @@ public class UsersEntity {
         return cdate;
     }
 
+    public void setCdate(Timestamp cdate) {
+        this.cdate = cdate;
+    }
+
     public void setCdate(Date cdate) {
         this.cdate = cdate;
     }
@@ -90,5 +96,25 @@ public class UsersEntity {
 
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
+    }
+
+    @Basic
+    @Column(name = "is_otp_verifired")
+    public Integer getIsOtpVerifired() {
+        return isOtpVerifired;
+    }
+
+    public void setIsOtpVerifired(Integer isOtpVerifired) {
+        this.isOtpVerifired = isOtpVerifired;
+    }
+
+    @Basic
+    @Column(name = "tracker_id")
+    public String getTrackerId() {
+        return trackerId;
+    }
+
+    public void setTrackerId(String trackerId) {
+        this.trackerId = trackerId;
     }
 }

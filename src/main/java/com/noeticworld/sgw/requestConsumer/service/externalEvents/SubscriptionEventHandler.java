@@ -116,6 +116,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         usersEntity.setCdate(new Date());
         usersEntity.setOperatorId(Long.valueOf(entity.getOperatorId()));
+        if(requestProperties.isOtp()){
+            usersEntity.setIsOtpVerifired(1);
+        }
+        usersEntity.setTrackerId(requestProperties.getTrackerId());
         return usersRepository.save(usersEntity);
     }
 
@@ -141,6 +145,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
+        if(fiegnResponse==null){
+            return;
+        }
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
             if (entity.getMtResponse() == 1) {

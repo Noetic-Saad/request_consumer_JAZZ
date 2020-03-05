@@ -59,11 +59,14 @@ public class LogInEventHandler implements RequestEventHandler {
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
-        UsersStatusEntity statusEntity = userStatusRepository.findTopByIdAndVendorPlanId(usersEntity.getUserStatusId(), usersEntity.getVendorPlanId());
-        if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+        UsersStatusEntity statusEntity = null;
+        statusEntity = userStatusRepository.findTopByIdAndVendorPlanId(usersEntity.getUserStatusId(), usersEntity.getVendorPlanId());
+        if(statusEntity == null){
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+            subscriptionEventHandler.handleSubRequest(requestProperties);
+        } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS BLOCOKED");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
-            return;
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
                 && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now())) {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
