@@ -122,7 +122,7 @@ public class ConfigurationDataManagerService {
 
     private void loadSubscriptionSettings() {
         Map<Long, SubscriptionSettingEntity> map = new HashMap<>();
-        List<SubscriptionSettingEntity> list = subscriptionSettingRepository.findAll();
+        List<SubscriptionSettingEntity> list = subscriptionSettingRepository.findByRenewalSetting(0);
         list.forEach(entity -> map.put(entity.getVendorPlanId(), entity));
         subscriptionSettingEntityMap = map;
     }

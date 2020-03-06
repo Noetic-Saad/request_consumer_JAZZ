@@ -20,6 +20,9 @@ public class SubscriptionSettingEntity {
     private Integer subCycleId;
     private Integer operatorId;
     private Boolean weeklyRenwalRetry;
+    private Integer subscriptionCycleDays;
+    private Integer renewalSetting;
+    private Integer isRunning;
 
     @Id
     @Column(name = "id")
@@ -170,5 +173,35 @@ public class SubscriptionSettingEntity {
 
     public void setWeeklyRenwalRetry(Boolean weeklyRenwalRetry) {
         this.weeklyRenwalRetry = weeklyRenwalRetry;
+    }
+
+    @Basic
+    @Column(name = "subscription_cycle_days")
+    public Integer getSubscriptionCycleDays() {
+        return subscriptionCycleDays;
+    }
+
+    public void setSubscriptionCycleDays(Integer subscriptionCycleDays) {
+        this.subscriptionCycleDays = subscriptionCycleDays;
+    }
+
+    @Basic
+    @Column(name = "renewal_setting")
+    public Integer getRenewalSetting() {
+        return renewalSetting;
+    }
+
+    public void setRenewalSetting(Integer renewalSetting) {
+        this.renewalSetting = renewalSetting;
+    }
+
+    @Basic
+    @Column(name = "is_running")
+    public Integer getIsRunning() {
+        return isRunning;
+    }
+
+    public void setIsRunning(Integer isRunning) {
+        this.isRunning = isRunning;
     }
 }
