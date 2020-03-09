@@ -30,7 +30,8 @@ public class ConfigurationDataManagerService {
     private Map<Long,MtMessageSettingsEntity> mtMessageSettingsEntityMap = new HashMap<>();
     private Map<String, SubscriptionCyclesEntity> subCycleMap = new HashMap<>();
     private Map<Integer, SubscriptionCyclesEntity> subCycleDaysMap = new HashMap<>();
-
+    private Map<Long,VendorPostbackConfigEntity> vendorPostbackConfigEntityMap = new HashMap<>();
+    private Map<Long,String> vendorPostBackParamMap = new HashMap<>();
     @Autowired private ResponseTypeRepository responseTypeRepository;
     @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
     @Autowired private RequestEventsRepository requestEventsRepository;
@@ -41,6 +42,7 @@ public class ConfigurationDataManagerService {
     @Autowired private OperatorRepository operatorRepository;
     @Autowired private MtMessageSettingsRepository mtMessageSettingsRepository;
     @Autowired private SubscriptionCycleRepository cycleRepository;
+    @Autowired private VendorPostBackConfigRepository vendorPostBackConfigRepository;
 
     private int jazz = 0;
     private int warid = 0;
@@ -86,6 +88,7 @@ public class ConfigurationDataManagerService {
         loadOperator();
         loadMtMessageSettings();
         loadSubscriptionCycle();
+        loadVendorPostBackConfig();
     }
 
     private void loadUserStatuseTypes() {
@@ -148,6 +151,10 @@ public class ConfigurationDataManagerService {
         List<MtMessageSettingsEntity> list = mtMessageSettingsRepository.findAll();
         list.forEach(mtMessageSettingsEntity -> mtMessageSettingsEntityMap.put(Long.valueOf(mtMessageSettingsEntity.getVendorPlanId()),mtMessageSettingsEntity));
     }
+    private void loadVendorPostBackConfig(){
+        List<VendorPostbackConfigEntity> list = vendorPostBackConfigRepository.findAll();
+        list.forEach(vendorPostbackConfigEntity -> loadPostBackParams(vendorPostbackConfigEntity));
+    }
 
     public void loadOperator(){
         List<OperatorEntity> list = operatorRepository.findAll();
@@ -191,6 +198,23 @@ public class ConfigurationDataManagerService {
 
     public MtMessageSettingsEntity getMtMessageSetting(Long vendorPlanId){
         return mtMessageSettingsEntityMap.get(vendorPlanId);
+    }
+
+    public String getVendorPostBackConfig(Long vendorPlanId){
+        return vendorPostBackParamMap.get(vendorPlanId);
+    }
+
+    public void loadPostBackParams(VendorPostbackConfigEntity vendorPostbackConfigEntity){
+        String url = vendorPostbackConfigEntity.getUrl()+"?";
+        if(!vendorPostbackConfigEntity.getParam1Name().equalsIgnoreCase("none")){url=url+vendorPostbackConfigEntity.getParam1Name()+"="+vendorPostbackConfigEntity.getParam1Value();}
+        if(!vendorPostbackConfigEntity.getParam2Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam2Name()+"="+vendorPostbackConfigEntity.getParam2Value();}
+        if(!vendorPostbackConfigEntity.getParam3Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam3Name()+"="+vendorPostbackConfigEntity.getParam3Value();}
+        if(!vendorPostbackConfigEntity.getParam4Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam4Name()+"="+vendorPostbackConfigEntity.getParam4Value();}
+        if(!vendorPostbackConfigEntity.getParam5Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam5Name()+"="+vendorPostbackConfigEntity.getParam5Value();}
+        if(!vendorPostbackConfigEntity.getParam6Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam6Name()+"="+vendorPostbackConfigEntity.getParam6Value();}
+        if(!vendorPostbackConfigEntity.getParam7Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam7Name()+"="+vendorPostbackConfigEntity.getParam7Value();}
+        if(!vendorPostbackConfigEntity.getParam8Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam8Name()+"="+vendorPostbackConfigEntity.getParam8Value();}
+        vendorPostBackParamMap.put(Long.valueOf(vendorPostbackConfigEntity.getVendorPlanId()),url);
     }
 
     public int getJazz() {

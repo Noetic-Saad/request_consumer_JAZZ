@@ -5,6 +5,7 @@ import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.BillingService;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
+import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
 import com.noeticworld.sgw.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired
     private OtpRecordRepository otpRecordRepository;
     @Autowired LogInRecordRepository logInRecordRepository;
+    @Autowired private VendorPostBackService vendorPostBackService;
 
 
     @Override
@@ -159,6 +161,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
             saveLogInRecord(requestProperties,entity.getId());
+            vendorPostBackService.sendVendorPostBack(entity.getId(),requestProperties.getTrackerId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {

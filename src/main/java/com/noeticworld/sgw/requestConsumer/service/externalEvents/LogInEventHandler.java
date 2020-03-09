@@ -55,7 +55,7 @@ public class LogInEventHandler implements RequestEventHandler {
 
     private void processLogInRequest(RequestProperties requestProperties) {
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        if(usersEntity==null){
+        if(usersEntity==null || usersEntity.getUserStatusId() == null){
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
