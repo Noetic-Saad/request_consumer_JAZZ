@@ -28,6 +28,7 @@ public class BillingService {
             chargeRequestProperties.setChargingAmount(1.0);
         }else{
             chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
+            chargeRequestProperties.setTaxAmount(vendorPlansEntity.getTaxAmount());
         }
 
         chargeRequestProperties.setIsRenewal(0);
