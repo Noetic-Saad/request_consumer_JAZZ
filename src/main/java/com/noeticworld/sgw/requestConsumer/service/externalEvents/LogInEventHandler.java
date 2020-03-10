@@ -41,7 +41,7 @@ public class LogInEventHandler implements RequestEventHandler {
     public void handle(RequestProperties requestProperties)  {
 
         if (requestProperties.isOtp()) {
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndVendorPlanIdAndOtpNumber(requestProperties.getMsisdn(), requestProperties.getVendorPlanId(), (int) requestProperties.getOtpNumber());
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
