@@ -60,6 +60,11 @@ public class LogInEventHandler implements RequestEventHandler {
             return;
         }
         UsersStatusEntity statusEntity = null;
+        if(usersEntity.getUserStatusId()==null){
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+            subscriptionEventHandler.handleSubRequest(requestProperties);
+            return;
+        }
         statusEntity = userStatusRepository.findTopByIdAndVendorPlanId(usersEntity.getUserStatusId(), usersEntity.getVendorPlanId());
         if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
