@@ -20,6 +20,7 @@ public class VendorPostBackService {
     public void sendVendorPostBack(Long vendorPlanId,String trackerId){
         HttpResponse<String> response = Unirest.post(configurationDataManagerService.getVendorPostBackConfig(vendorPlanId))
                 .asString();
+        log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + configurationDataManagerService.getVendorPostBackConfig(vendorPlanId));
         if(response.getStatus()==200) {
             log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT FOR TRACKER-ID | " + trackerId);
         }
