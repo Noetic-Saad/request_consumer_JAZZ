@@ -18,9 +18,10 @@ public class VendorPostBackService {
 
 
     public void sendVendorPostBack(Long vendorPlanId,String trackerId){
-        HttpResponse<String> response = Unirest.post(configurationDataManagerService.getVendorPostBackConfig(vendorPlanId))
+        String url = configurationDataManagerService.getVendorPostBackConfig(vendorPlanId).replaceAll("=none",trackerId);
+        HttpResponse<String> response = Unirest.post(url)
                 .asString();
-        log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + configurationDataManagerService.getVendorPostBackConfig(vendorPlanId));
+        log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + url);
         if(response.getStatus()==200) {
             log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT FOR TRACKER-ID | " + trackerId);
         }
