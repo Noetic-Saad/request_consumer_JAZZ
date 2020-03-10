@@ -56,7 +56,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
                 return;
             }
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndVendorPlanIdAndOtpNumber(requestProperties.getMsisdn(), requestProperties.getVendorPlanId(), (int) requestProperties.getOtpNumber());
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 handleSubRequest(requestProperties);
             } else {
