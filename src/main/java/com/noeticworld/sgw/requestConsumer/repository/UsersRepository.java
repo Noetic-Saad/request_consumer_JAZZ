@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public
 interface UsersRepository extends JpaRepository<UsersEntity, Long> {
-    
+
     UsersEntity findByMsisdn(long msisdn);
 
 }

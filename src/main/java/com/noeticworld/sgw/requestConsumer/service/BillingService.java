@@ -18,12 +18,12 @@ public class BillingService {
         VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
         ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
-        chargeRequestProperties.setOperatorId(vendorPlansEntity.getOperatorId());//TODO OpertorID using static id for testing //Comment By Rizwan
+        chargeRequestProperties.setOperatorId(vendorPlansEntity.getOperatorId());
         chargeRequestProperties.setCorrelationId(requestProperties.getCorrelationId());
         chargeRequestProperties.setMsisdn(requestProperties.getMsisdn());
         chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());
         chargeRequestProperties.setVendorPlanId((int) requestProperties.getVendorPlanId());
-        chargeRequestProperties.setShortcode("3444"); //TODO shortcode??
+        chargeRequestProperties.setShortcode("3444");
         if (dataService.isTestMsisdn(requestProperties.getMsisdn())){
             chargeRequestProperties.setChargingAmount(1.0);
         }else{

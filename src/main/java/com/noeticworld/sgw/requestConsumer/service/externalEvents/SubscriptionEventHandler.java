@@ -54,12 +54,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (requestProperties.isOtp()) {
             if(requestProperties.getOtpNumber()==0){
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
                 return;
             }
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 handleSubRequest(requestProperties);
             } else {
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
         }else {
@@ -77,7 +79,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (_user == null) {
             exisingUser = false;
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-
+            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
 
         }
@@ -143,6 +145,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity = userStatusRepository.save(usersStatusEntity);
         updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
         userStatusRepository.flush();
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
         return usersStatusEntity;
     }
 

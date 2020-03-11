@@ -38,10 +38,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
         if(_user==null){
-            log.info("CONSUMER SERVICE | UnsubscriptionEventHandler CLASS | MSISDN "+requestProperties.getMsisdn()+" NOT FOUND");
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" NOT FOUND");
             createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties.getCorrelationId());
         }else {
             String resultCode =  changeUserStatus(_user,vendorPlans.getSubCycle());
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | UNSUBSCRIBED FROM SERVICE");
             createResponse(resultCode,requestProperties.getCorrelationId());
             if(vendorPlans.getMtResponse() == 1) {
                 mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
@@ -65,10 +66,10 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
-            log.info("CONSUMER SERVICE | UnsubscriptionEventHandler CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
             return ResponseTypeConstants.ALREADY_UNSUBSCRIBED;
         }else if (entity ==null){
-            log.info("CONSUMER SERVICE | UnsubscriptionEventHandler CLASS | MSISDN "+users.getMsisdn()+" NOT FOUND");
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" NOT FOUND");
             return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
         }else {
             return ResponseTypeConstants.OTHER_ERROR;

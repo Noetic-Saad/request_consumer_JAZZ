@@ -7,6 +7,8 @@ import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import java.time.LocalTime;
 
 @Service
 public class LogOutEventHandler implements RequestEventHandler {
+
+    Logger log = LoggerFactory.getLogger(LogOutEventHandler.class.getName());
 
     @Autowired
     LogInRecordRepository logInRecordRepository;
@@ -35,6 +39,7 @@ public class LogOutEventHandler implements RequestEventHandler {
             loginRecordsEntity.setSessionTime(sessionTotalTime);
             loginRecordsEntity.setAcitve(false);
             logInRecordRepository.save(loginRecordsEntity);
+            log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOGGED_OUT");
             createRequestState(dataManagerService.getResultStatusDescription(ResponseTypeConstants.LOGGED_OUT), ResponseTypeConstants.LOGGED_OUT, requestProperties);
         }else {
             createRequestState(dataManagerService.getResultStatusDescription(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND),ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties);
