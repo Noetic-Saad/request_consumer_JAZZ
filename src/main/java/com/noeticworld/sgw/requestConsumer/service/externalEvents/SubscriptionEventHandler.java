@@ -72,8 +72,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     public void handleSubRequest(RequestProperties requestProperties) {
 
         VendorPlansEntity entity = null;
-        UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
-                requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
+        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;

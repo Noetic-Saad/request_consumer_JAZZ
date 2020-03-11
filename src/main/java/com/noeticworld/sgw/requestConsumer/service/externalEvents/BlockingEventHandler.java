@@ -35,8 +35,7 @@ public class BlockingEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
-        UsersEntity _user = usersRepository.findByMsisdnAndVendorPlanId(
-                requestProperties.getMsisdn(), requestProperties.getVendorPlanId());
+        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         if (_user == null) {
             _user = registerNewUser(requestProperties);
