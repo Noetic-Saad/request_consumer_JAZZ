@@ -142,7 +142,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
         usersStatusEntity = userStatusRepository.save(usersStatusEntity);
-        updateUserStatus(_user, usersStatusEntity.getId());
+        updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
         userStatusRepository.flush();
         return usersStatusEntity;
     }
@@ -182,8 +182,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         requestRepository.save(entity);
     }
 
-    private void updateUserStatus(UsersEntity user, long userStatusId) {
+    private void updateUserStatus(UsersEntity user, long userStatusId,long vendorPLanId) {
         user.setUserStatusId((int) userStatusId);
+        if(user.getVendorPlanId()!=vendorPLanId){
+            user.setVendorPlanId(vendorPLanId);
+        }
         usersRepository.save(user);
     }
 
