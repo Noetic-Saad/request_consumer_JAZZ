@@ -1,14 +1,12 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
-import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
-import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
-import com.noeticworld.sgw.requestConsumer.entities.VendorRequestsStateEntity;
+import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
+import com.noeticworld.sgw.util.RequestActionCodeConstants;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
@@ -35,13 +33,19 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties) {
 
+        EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
         if(_user==null){
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" NOT FOUND");
             createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties.getCorrelationId());
         }else {
-            String resultCode =  changeUserStatus(_user,vendorPlans.getSubCycle());
+            String resultCode = "";
+            if(eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)){
+                resultCode = changeUserStatus(_user,vendorPlans.getSubCycle(),dataService.getUserStatusTypeId(UserStatusTypeConstants.TELCOUNSUB));
+            }else {
+                resultCode = changeUserStatus(_user,vendorPlans.getSubCycle(),dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
+            }
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | UNSUBSCRIBED FROM SERVICE");
             createResponse(resultCode,requestProperties.getCorrelationId());
             if(vendorPlans.getMtResponse() == 1) {
@@ -49,13 +53,13 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             }
         }
     }
-    private String changeUserStatus(UsersEntity users,Integer subCycleId){
+    private String changeUserStatus(UsersEntity users,Integer subCycleId,Integer statusId){
 
         UsersStatusEntity entity = userStatusRepository.findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(users.getId(),users.getVendorPlanId(),1);
         if(entity != null && entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
             UsersStatusEntity entity1 = new UsersStatusEntity();
             entity1.setUserId(users.getId());
-            entity1.setStatusId(dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
+            entity1.setStatusId(statusId);
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));

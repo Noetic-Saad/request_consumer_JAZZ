@@ -22,6 +22,7 @@ public class RequestHandlerManager {
     @Autowired private LogOutEventHandler logOutEventHandler;
     @Autowired private AutLogInHandler autLogInHandler;
 
+
     public void manage(RequestProperties requestProperties) {
         EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
 
