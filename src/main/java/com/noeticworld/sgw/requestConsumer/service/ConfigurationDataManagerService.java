@@ -32,6 +32,7 @@ public class ConfigurationDataManagerService {
     private Map<Integer, SubscriptionCyclesEntity> subCycleDaysMap = new HashMap<>();
     private Map<Long,VendorPostbackConfigEntity> vendorPostbackConfigEntityMap = new HashMap<>();
     private Map<Long,String> vendorPostBackParamMap = new HashMap<>();
+
     @Autowired private ResponseTypeRepository responseTypeRepository;
     @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
     @Autowired private RequestEventsRepository requestEventsRepository;
@@ -76,8 +77,6 @@ public class ConfigurationDataManagerService {
     }
 
     public void bootstapAndCacheConfigurationData() {
-        //fetch data from db
-        log.info("TESTING LOGS");
         loadResponseTypes();
         loadSubscriptionSettings();
         loadRequestEvents();

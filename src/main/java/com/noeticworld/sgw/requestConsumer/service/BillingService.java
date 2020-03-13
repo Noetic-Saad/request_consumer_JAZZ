@@ -24,6 +24,7 @@ public class BillingService {
         chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());
         chargeRequestProperties.setVendorPlanId((int) requestProperties.getVendorPlanId());
         chargeRequestProperties.setShortcode("3444");
+        chargeRequestProperties.setSubCycleId(vendorPlansEntity.getSubCycle());
         if (dataService.isTestMsisdn(requestProperties.getMsisdn())){
             chargeRequestProperties.setChargingAmount(1.0);
         }else{
