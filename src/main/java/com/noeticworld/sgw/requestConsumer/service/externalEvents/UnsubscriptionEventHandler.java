@@ -79,10 +79,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             users.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
-        }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
-            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
-            return ResponseTypeConstants.ALREADY_UNSUBSCRIBED;
-        }else if (entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
+        }else if (entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             UsersStatusEntity entity1 = new UsersStatusEntity();
             entity1.setUserId(users.getId());
             entity1.setStatusId(statusId);
@@ -96,6 +93,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             users.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
+        }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
+            return ResponseTypeConstants.ALREADY_UNSUBSCRIBED;
         }else {
             return ResponseTypeConstants.OTHER_ERROR;
         }
