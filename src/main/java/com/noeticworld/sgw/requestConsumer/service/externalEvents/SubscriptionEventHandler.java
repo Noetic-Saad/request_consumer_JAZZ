@@ -177,6 +177,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         VendorRequestsStateEntity entity = null;
         entity = requestRepository.findByCorrelationid(correlationId);
         if(entity == null){
+            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | ENTITY IS NULL | TRYING AGAIN");
             entity = requestRepository.findByCorrelationid(correlationId);
         }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
