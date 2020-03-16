@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -71,6 +72,7 @@ public class BlockingEventHandler implements RequestEventHandler {
 
     private void updateUserStatus(UsersEntity user, long userStatusId) {
         user.setUserStatusId((int) userStatusId);
+        user.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
         usersRepository.save(user);
     }
 

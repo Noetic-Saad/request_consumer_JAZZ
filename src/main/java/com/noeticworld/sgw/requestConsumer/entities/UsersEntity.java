@@ -16,6 +16,7 @@ public class UsersEntity {
     private Long operatorId;
     private Integer isOtpVerifired;
     private String trackerId;
+    private Timestamp modifyDate;
 
     @Id
     @Column(name = "id")
@@ -53,10 +54,6 @@ public class UsersEntity {
     @Column(name = "cdate")
     public Date getCdate() {
         return cdate;
-    }
-
-    public void setCdate(Timestamp cdate) {
-        this.cdate = cdate;
     }
 
     public void setCdate(Date cdate) {
@@ -116,5 +113,15 @@ public class UsersEntity {
 
     public void setTrackerId(String trackerId) {
         this.trackerId = trackerId;
+    }
+
+    @Basic
+    @Column(name = "modify_date")
+    public Timestamp getModifyDate() {
+        return modifyDate;
+    }
+
+    public void setModifyDate(Timestamp modifyDate) {
+        this.modifyDate = modifyDate;
     }
 }

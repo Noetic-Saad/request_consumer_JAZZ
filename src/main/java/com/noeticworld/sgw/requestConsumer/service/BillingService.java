@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BillingService {
 
-    @Autowired private VendorPlanRepository vendorPlanRepository;
     @Autowired private ConfigurationDataManagerService dataService;
     @Autowired private BillingClient billingClient;
 
@@ -26,16 +25,16 @@ public class BillingService {
         chargeRequestProperties.setShortcode("3444");
         chargeRequestProperties.setSubCycleId(vendorPlansEntity.getSubCycle());
         if (dataService.isTestMsisdn(requestProperties.getMsisdn())){
-            chargeRequestProperties.setChargingAmount(1.0);
+            chargeRequestProperties.setChargingAmount(1.0f);
         }else{
             chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
             chargeRequestProperties.setTaxAmount(vendorPlansEntity.getTaxAmount());
         }
-
         chargeRequestProperties.setIsRenewal(0);
         // TODO Comment By Rizwan, Added a new Class FiegnResponse
         FiegnResponse fiegnResponse = billingClient.charge(chargeRequestProperties);
         return fiegnResponse;
 
     }
+
 }

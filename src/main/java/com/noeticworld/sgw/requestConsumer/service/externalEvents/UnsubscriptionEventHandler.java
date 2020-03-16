@@ -67,6 +67,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity1.setAttempts(0);
             long userStatusId = userStatusRepository.save(entity1).getId();
             users.setUserStatusId((int) userStatusId);
+            users.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){

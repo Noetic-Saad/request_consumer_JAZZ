@@ -26,25 +26,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
 
-    @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
-    MtService mtService;
-    @Autowired
-    private VendorRequestRepository requestRepository;
-    @Autowired
-    private UserStatusRepository userStatusRepository;
-    @Autowired
-    private SubscriptionSettingRepository subscriptionSettingRepository;
-    @Autowired
-    private BillingService billingService;
-    @Autowired
-    private ConfigurationDataManagerService dataService;
-    @Autowired
-    private VendorReportRepository vendorReportRepository;
-    @Autowired
-    private OtpRecordRepository otpRecordRepository;
-    @Autowired LogInRecordRepository logInRecordRepository;
+    @Autowired private UsersRepository usersRepository;
+    @Autowired private MtService mtService;
+    @Autowired private VendorRequestRepository requestRepository;
+    @Autowired private UserStatusRepository userStatusRepository;
+    @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
+    @Autowired private BillingService billingService;
+    @Autowired private ConfigurationDataManagerService dataService;
+    @Autowired private VendorReportRepository vendorReportRepository;
+    @Autowired private OtpRecordRepository otpRecordRepository;
+    @Autowired private LogInRecordRepository logInRecordRepository;
     @Autowired private VendorPostBackService vendorPostBackService;
 
 
@@ -120,9 +111,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersEntity.setMsisdn(requestProperties.getMsisdn());
         usersEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         usersEntity.setCdate(new Date());
+        usersEntity.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
         usersEntity.setOperatorId(Long.valueOf(entity.getOperatorId()));
         if(requestProperties.isOtp()){
             usersEntity.setIsOtpVerifired(1);
+        }else {
+            usersEntity.setIsOtpVerifired(0);
         }
         usersEntity.setTrackerId(requestProperties.getTrackerId());
         return usersRepository.save(usersEntity);
@@ -186,6 +180,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void updateUserStatus(UsersEntity user, long userStatusId,long vendorPLanId) {
         user.setUserStatusId((int) userStatusId);
+        user.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
         if(user.getVendorPlanId()!=vendorPLanId){
             user.setVendorPlanId(vendorPLanId);
         }

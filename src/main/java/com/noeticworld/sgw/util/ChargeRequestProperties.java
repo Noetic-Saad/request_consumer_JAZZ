@@ -9,7 +9,7 @@ public class ChargeRequestProperties {
     private Integer vendorPlanId;
     private String correlationId;
     private Date originDateTime;
-    private double chargingAmount;
+    private Double chargingAmount;
     private String shortcode;
     private double taxAmount;
     private double shareAmount;
