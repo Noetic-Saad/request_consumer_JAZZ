@@ -65,7 +65,7 @@ public class LogInEventHandler implements RequestEventHandler {
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
-        statusEntity = userStatusRepository.findTopByIdAndVendorPlanId(usersEntity.getUserStatusId(), usersEntity.getVendorPlanId());
+        statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
         if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);

@@ -76,9 +76,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
 
         if (exisingUser) {
-            UsersStatusEntity _usersStatusEntity = userStatusRepository.
-                    findTopByUserIdAndVendorPlanIdOrderByIdDesc(
-                            _user.getId(), requestProperties.getVendorPlanId());
+            UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
             if(_usersStatusEntity == null){
                 processUserRequest(requestProperties, _user);
             }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
@@ -175,10 +173,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
-        entity = requestRepository.findByCorrelationid(correlationId);
-        if(entity == null){
-            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | ENTITY IS NULL | TRYING AGAIN");
-            entity = requestRepository.findByCorrelationid(correlationId);
+        boolean isNull = true;
+        if(entity==null){
+            while (isNull){
+                entity  = requestRepository.findByCorrelationid(correlationId);
+                if(entity!=null){
+                    isNull = false;
+                }
+            }
         }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);

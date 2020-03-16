@@ -60,7 +60,7 @@ public class AutLogInHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
             return;
         }
-        statusEntity = userStatusRepository.findTopByIdAndVendorPlanId(usersEntity.getUserStatusId(), usersEntity.getVendorPlanId());
+        statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
         System.out.println(statusEntity.getStatusId());
         if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
