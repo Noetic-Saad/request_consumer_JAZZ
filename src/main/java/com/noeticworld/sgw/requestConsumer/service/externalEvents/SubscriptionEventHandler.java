@@ -174,7 +174,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
-        VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        VendorRequestsStateEntity entity = null;
+        entity = requestRepository.findByCorrelationid(correlationId);
+        if(entity == null){
+            entity = requestRepository.findByCorrelationid(correlationId);
+        }
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
