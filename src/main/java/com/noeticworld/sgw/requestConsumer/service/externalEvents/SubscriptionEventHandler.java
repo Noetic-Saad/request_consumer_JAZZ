@@ -153,11 +153,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             if (entity.getMtResponse() == 1) {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
-            createVendorReport(requestProperties);
-            createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
-            saveLogInRecord(requestProperties,entity.getId());
-            vendorPostBackService.sendVendorPostBack(entity.getId(),requestProperties.getTrackerId());
+            try {
+                createVendorReport(requestProperties);
+                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                saveLogInRecord(requestProperties, entity.getId());
+                vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+            }finally {
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
@@ -170,12 +173,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
-        requestRepository.save(entity);
+        VendorRequestsStateEntity vre = requestRepository.save(entity);
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
 
     private void updateUserStatus(UsersEntity user, long userStatusId,long vendorPLanId) {
