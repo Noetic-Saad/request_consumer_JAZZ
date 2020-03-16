@@ -37,17 +37,23 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
         if(_user==null){
-            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" NOT FOUND");
-            createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties.getCorrelationId());
+            try {
+                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " NOT FOUND");
+            }finally {
+                createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties.getCorrelationId());
+            }
         }else {
             String resultCode = "";
-            if(eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)){
-                resultCode = changeUserStatus(_user,vendorPlans.getSubCycle(),dataService.getUserStatusTypeId(UserStatusTypeConstants.TELCOUNSUB));
-            }else {
-                resultCode = changeUserStatus(_user,vendorPlans.getSubCycle(),dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
+            try {
+                if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)) {
+                    resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.TELCOUNSUB));
+                } else {
+                    resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
+                }
+                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
+            }finally {
+                createResponse(resultCode, requestProperties.getCorrelationId());
             }
-            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | UNSUBSCRIBED FROM SERVICE");
-            createResponse(resultCode,requestProperties.getCorrelationId());
             if(vendorPlans.getMtResponse() == 1) {
                 mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
             }
