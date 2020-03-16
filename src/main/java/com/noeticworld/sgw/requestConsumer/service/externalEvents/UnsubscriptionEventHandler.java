@@ -55,11 +55,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     }
     private String changeUserStatus(UsersEntity users,Integer subCycleId,Integer statusId){
 
-        UsersStatusEntity entity = userStatusRepository.findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(users.getId(),users.getVendorPlanId(),1);
+        UsersStatusEntity entity = userStatusRepository.findTopById(users.getUserStatusId());
         if(entity == null){
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" STATUS ENTITY NOT FOUND");
-        }
-        if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
+            return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
+        } else if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
             UsersStatusEntity entity1 = new UsersStatusEntity();
             entity1.setUserId(users.getId());
             entity1.setStatusId(statusId);
@@ -76,9 +76,20 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         }else if(entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" ALREADY UNSUBSCRIBED");
             return ResponseTypeConstants.ALREADY_UNSUBSCRIBED;
-        }else if (entity ==null){
-            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" NOT FOUND");
-            return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
+        }else if (entity.getStatusId()!=dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
+            UsersStatusEntity entity1 = new UsersStatusEntity();
+            entity1.setUserId(users.getId());
+            entity1.setStatusId(statusId);
+            entity1.setVendorPlanId(users.getVendorPlanId());
+            entity1.setCdate(new Timestamp(new Date().getTime()));
+            entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
+            entity1.setSubCycleId(subCycleId);
+            entity1.setAttempts(0);
+            long userStatusId = userStatusRepository.save(entity1).getId();
+            users.setUserStatusId((int) userStatusId);
+            users.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
+            usersRepository.save(users);
+            return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else {
             return ResponseTypeConstants.OTHER_ERROR;
         }
