@@ -52,6 +52,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 }
                 log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
             }finally {
+                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREAT RESPONSE");
                 createResponse(resultCode, requestProperties.getCorrelationId());
             }
             if(vendorPlans.getMtResponse() == 1) {
@@ -105,6 +106,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
         boolean isNull = true;
         if(entity==null){
+            log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | NULL ENTITY");
             while (isNull){
                 entity  = requestRepository.findByCorrelationid(correlationId);
                 if(entity!=null){
@@ -126,5 +128,6 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity.setDescription(ResponseTypeConstants.OTHER_ERROR_MSG);
         }
         requestRepository.save(entity);
+        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED");
     }
 }
