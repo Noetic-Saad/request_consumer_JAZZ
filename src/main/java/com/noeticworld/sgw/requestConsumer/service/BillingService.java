@@ -27,11 +27,12 @@ public class BillingService {
     @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
 
     public FiegnResponse charge(RequestProperties requestProperties) {
-        FiegnResponse fiegnResponse = null;
+        FiegnResponse fiegnResponse = new FiegnResponse();
 
         if(isAlreadyChargedToday(requestProperties.getMsisdn())){
+            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | "+requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
-            //fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         }else {
@@ -72,7 +73,7 @@ public class BillingService {
     }
 
     private boolean isAlreadyChargedToday(long msisdn) {
-        log.info("RENEWAL SERVICE | CHARGING_ CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
+        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
