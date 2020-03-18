@@ -50,7 +50,6 @@ public class AutLogInHandler implements RequestEventHandler {
     private void processLogInRequest(RequestProperties requestProperties) {
 
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        System.out.println(usersEntity.getUserStatusId());
         if(usersEntity==null || usersEntity.getUserStatusId() == null){
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
             return;

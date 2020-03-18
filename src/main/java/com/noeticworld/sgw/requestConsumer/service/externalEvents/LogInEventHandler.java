@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
-@Transactional
 public class LogInEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(LogInEventHandler.class.getName());

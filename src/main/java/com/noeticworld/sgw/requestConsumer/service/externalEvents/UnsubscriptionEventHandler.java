@@ -35,7 +35,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
 
         EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
+        VendorPlansEntity vendorPlans = null;
         if(_user==null){
             try {
                 log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " NOT FOUND");
@@ -43,6 +43,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties.getCorrelationId());
             }
         }else {
+            vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
             try {
                 if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)) {

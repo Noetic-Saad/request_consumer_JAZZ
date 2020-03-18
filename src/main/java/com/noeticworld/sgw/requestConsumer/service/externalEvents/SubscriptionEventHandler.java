@@ -21,7 +21,6 @@ import java.time.LocalTime;
 import java.util.Date;
 
 @Service
-@Transactional
 public class SubscriptionEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
@@ -147,8 +146,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             return;
         }
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-        if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-            if (entity.getMtResponse() == 1) {
+        if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+            if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
             try {
