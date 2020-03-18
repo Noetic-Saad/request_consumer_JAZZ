@@ -31,7 +31,7 @@ public class BillingService {
 
         if(isAlreadyChargedToday(requestProperties.getMsisdn())){
             fiegnResponse.setCode(110);
-            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+            //fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         }else {
