@@ -43,6 +43,9 @@ public class LogOutEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOGGED_OUT");
             createRequestState(dataManagerService.getResultStatusDescription(ResponseTypeConstants.LOGGED_OUT), ResponseTypeConstants.LOGGED_OUT, requestProperties);
         }else {
+            log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOG OUT | " +requestProperties.getSessionId());
+            log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOG OUT | " +requestProperties.getMsisdn());
+            log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOG OUT | SESSIION ID NOT FOUND");
             createRequestState(dataManagerService.getResultStatusDescription(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND),ResponseTypeConstants.SUBSCRIBER_NOT_FOUND,requestProperties);
         }
     }
