@@ -101,6 +101,8 @@ public class AutLogInHandler implements RequestEventHandler {
     }
 
     private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
+        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID"+requestProperties.getSessionId());
+        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID"+requestProperties.getRemoteServerIp());
         LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
         loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
         loginRecordsEntity.setSessionId(requestProperties.getSessionId());
