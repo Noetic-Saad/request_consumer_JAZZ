@@ -32,6 +32,7 @@ public class LogOutEventHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties) {
 
+        log.info("CONSUMER SERVICE | LOGOUTEVENTHANDLER CLASS | "+requestProperties.getMsisdn()+" | LOG OUT | REQUEST RECIEVED");
         LoginRecordsEntity loginRecordsEntity = logInRecordRepository.findTopBySessionIdAndMsisdn(requestProperties.getSessionId(), requestProperties.getMsisdn());
         if (loginRecordsEntity != null) {
             long sessionStartTime = loginRecordsEntity.getCtime().getTime();
