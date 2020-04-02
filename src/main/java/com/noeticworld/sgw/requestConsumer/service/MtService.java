@@ -1,10 +1,15 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
+import com.noeticworld.sgw.requestConsumer.entities.SubscriptionMessageEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
+import com.noeticworld.sgw.requestConsumer.repository.SubscriptionMessageRepository;
 import com.noeticworld.sgw.util.MtClient;
 import com.noeticworld.sgw.util.MtProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Service
 public class MtService {
@@ -13,6 +18,8 @@ public class MtService {
     MtClient mtClient;
     @Autowired
     private ConfigurationDataManagerService dataService;
+    @Autowired
+    private SubscriptionMessageRepository subscriptionMessageRepository;
 
     private String msg = "";
 
@@ -51,6 +58,7 @@ public class MtService {
     }
 
     public void processMtRequest(long msisdn, String msg) {
+
         MtProperties mtProperties = new MtProperties();
         mtProperties.setUsername("tpay@noetic");
         mtProperties.setPassword("tpay@n03t1c2019");
@@ -59,6 +67,18 @@ public class MtService {
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
         mtClient.sendMt(mtProperties);
+        saveMessageRecord(msisdn,msg);
+    }
+
+    public void saveMessageRecord(Long msisnd,String msg){
+        SubscriptionMessageEntity subscriptionMessageEntity = new SubscriptionMessageEntity();
+        subscriptionMessageEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
+        subscriptionMessageEntity.setMessageType("mt");
+        subscriptionMessageEntity.setSmsStatus(1);
+        subscriptionMessageEntity.setMessage(msg);
+        subscriptionMessageEntity.setMsisdn(msisnd);
+        subscriptionMessageRepository.save(subscriptionMessageEntity);
+
     }
 }
 
