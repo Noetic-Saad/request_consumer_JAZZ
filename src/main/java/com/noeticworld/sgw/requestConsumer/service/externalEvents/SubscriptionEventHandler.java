@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SubscriptionEventHandler implements RequestEventHandler {
@@ -154,8 +155,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 createVendorReport(requestProperties);
                 createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
-                VendorReportEntity vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
-                if(vendorReportEntity == null) {
+                List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
+                if(vendorReportEntity.isEmpty()) {
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
                 }
             }finally {
