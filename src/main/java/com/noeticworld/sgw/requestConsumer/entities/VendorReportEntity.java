@@ -15,6 +15,8 @@ public class VendorReportEntity {
 
     @Id
     @Column(name = "id")
+    @SequenceGenerator(name = "vendor_report_seq",sequenceName = "vendor_report_seq",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "vendor_report_seq")
     public int getId() {
         return id;
     }
