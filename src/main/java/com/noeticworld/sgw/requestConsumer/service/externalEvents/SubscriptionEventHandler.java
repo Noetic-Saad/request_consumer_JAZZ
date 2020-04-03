@@ -152,12 +152,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
             try {
-                createVendorReport(requestProperties);
                 createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+                    createVendorReport(requestProperties);
                 }
             }finally {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
