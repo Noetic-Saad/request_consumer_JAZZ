@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VendorReportRepository extends JpaRepository<VendorReportEntity,Integer> {
 
-    VendorReportEntity findByMsisdnAndVenodorPlanId(Long msisdn,Long VendorPlanId);
+    VendorReportEntity findByMsisdnAndVenodorPlanId(Long msisdn,Integer VendorPlanId);
 }
