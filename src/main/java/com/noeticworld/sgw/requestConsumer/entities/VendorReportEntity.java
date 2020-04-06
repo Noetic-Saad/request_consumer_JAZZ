@@ -13,6 +13,7 @@ public class VendorReportEntity {
     private long msisdn;
     private Timestamp cdate;
     private Integer postbackSent;
+    private Integer operatorId;
 
     @Id
     @Column(name = "id")
@@ -91,5 +92,15 @@ public class VendorReportEntity {
 
     public void setPostbackSent(Integer postbackSent) {
         this.postbackSent = postbackSent;
+    }
+
+    @Basic
+    @Column(name = "operator_id")
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
     }
 }
