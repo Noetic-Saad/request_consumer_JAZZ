@@ -157,9 +157,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                    createVendorReport(requestProperties,1,_user.getOperatorId());
+                    createVendorReport(requestProperties,1,_user.getOperatorId().intValue());
                 }else {
-                    createVendorReport(requestProperties,0,_user.getOperatorId());
+                    createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
                 }
             }finally {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
