@@ -12,6 +12,7 @@ public class VendorReportEntity {
     private String trackerId;
     private long msisdn;
     private Timestamp cdate;
+    private Integer postbackSent;
 
     @Id
     @Column(name = "id")
@@ -80,5 +81,15 @@ public class VendorReportEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, venodorPlanId, trackerId, msisdn, cdate);
+    }
+
+    @Basic
+    @Column(name = "postback_sent")
+    public Integer getPostbackSent() {
+        return postbackSent;
+    }
+
+    public void setPostbackSent(Integer postbackSent) {
+        this.postbackSent = postbackSent;
     }
 }

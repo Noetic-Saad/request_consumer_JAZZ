@@ -157,7 +157,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                    createVendorReport(requestProperties);
+                    createVendorReport(requestProperties,1);
+                }else {
+                    createVendorReport(requestProperties,0);
                 }
             }finally {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
@@ -202,12 +204,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersRepository.save(user);
     }
 
-    private void createVendorReport(RequestProperties requestProperties) {
+    private void createVendorReport(RequestProperties requestProperties,int postBackSent) {
         VendorReportEntity vendorReportEntity = new VendorReportEntity();
         vendorReportEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         vendorReportEntity.setMsisdn(requestProperties.getMsisdn());
         vendorReportEntity.setVenodorPlanId((int) requestProperties.getVendorPlanId());
         vendorReportEntity.setTrackerId(requestProperties.getTrackerId());
+        vendorReportEntity.setPostbackSent(postBackSent);
         vendorReportRepository.save(vendorReportEntity);
     }
 
