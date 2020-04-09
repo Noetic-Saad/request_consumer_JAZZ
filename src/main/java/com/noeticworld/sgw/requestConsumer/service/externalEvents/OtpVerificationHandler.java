@@ -45,10 +45,10 @@ public class OtpVerificationHandler implements RequestEventHandler {
         String finalMessage = message.replaceAll("&otp",otpNumber.toString());
         mtProperties.setData(finalMessage);
         mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-        mtProperties.setShortCode(mtMessageSettingsEntity.getShortCode());
-        mtProperties.setPassword(mtMessageSettingsEntity.getServicePassword());
-        mtProperties.setUsername(mtMessageSettingsEntity.getServiceUsername());
-        mtProperties.setServiceId(Long.toString(mtMessageSettingsEntity.getServiceId()));
+        mtProperties.setShortCode("3444");
+        mtProperties.setPassword("g@m3now");
+        mtProperties.setUsername("gamenow@noetic");
+        mtProperties.setServiceId("1061");
         try {
             mtClient.sendMt(mtProperties);
         } catch (Exception e) {
