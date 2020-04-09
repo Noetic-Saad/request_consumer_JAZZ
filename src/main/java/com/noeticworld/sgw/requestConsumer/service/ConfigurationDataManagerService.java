@@ -200,6 +200,8 @@ public class ConfigurationDataManagerService {
     }
 
     public String getVendorPostBackConfig(Long vendorPlanId){
+        System.out.println("PostBack Vendor Plan Id--->"+vendorPlanId);
+        System.out.println(vendorPostBackParamMap.get(vendorPlanId));
         return vendorPostBackParamMap.get(vendorPlanId);
     }
 
