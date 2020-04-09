@@ -130,7 +130,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
         int hours = Integer.parseInt(expiryTime[0]);
         int minutes = Integer.parseInt(expiryTime[1]);
+        System.out.println("Sub Cylce Id ------>"+entity.getSubCycle());
         usersStatusEntity.setSubCycleId(entity.getSubCycle());
+        System.out.println("SUbscycle Days ------>"+ dataService.getSubCycleDays(entity.getSubCycle()));
         usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays((long) dataService.getSubCycleDays(entity.getSubCycle()).getDays()), LocalTime.of(hours, minutes))));
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
