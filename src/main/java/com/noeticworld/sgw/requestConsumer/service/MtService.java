@@ -60,9 +60,9 @@ public class MtService {
     public void processMtRequest(long msisdn, String msg) {
 
         MtProperties mtProperties = new MtProperties();
-        mtProperties.setUsername("tpay@noetic");
-        mtProperties.setPassword("tpay@n03t1c2019");
-        mtProperties.setServiceId("1044");
+        mtProperties.setUsername("gamenow@noetic");
+        mtProperties.setPassword("g@m3now");
+        mtProperties.setServiceId("1061");
         mtProperties.setData(msg);
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
