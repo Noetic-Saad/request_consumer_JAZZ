@@ -85,7 +85,7 @@ public class ConfigurationDataManagerService {
         loadVendorPlans();
         loadMtMessage();
         loadOperator();
-        loadMtMessageSettings();
+        //loadMtMessageSettings();
         loadSubscriptionCycle();
         loadVendorPostBackConfig();
     }
@@ -200,6 +200,7 @@ public class ConfigurationDataManagerService {
     }
 
     public String getVendorPostBackConfig(Long vendorPlanId){
+        System.out.println("PostBack Entity Map---> "+vendorPostBackParamMap.size());
         System.out.println("PostBack Vendor Plan Id--->"+vendorPlanId);
         System.out.println(vendorPostBackParamMap.get(vendorPlanId));
         return vendorPostBackParamMap.get(vendorPlanId);
