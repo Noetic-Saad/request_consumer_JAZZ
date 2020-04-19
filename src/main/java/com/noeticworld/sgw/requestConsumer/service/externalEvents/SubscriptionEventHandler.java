@@ -2,10 +2,7 @@ package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
-import com.noeticworld.sgw.requestConsumer.service.BillingService;
-import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
-import com.noeticworld.sgw.requestConsumer.service.MtService;
-import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
+import com.noeticworld.sgw.requestConsumer.service.*;
 import com.noeticworld.sgw.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +34,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired private OtpRecordRepository otpRecordRepository;
     @Autowired private LogInRecordRepository logInRecordRepository;
     @Autowired private VendorPostBackService vendorPostBackService;
+    @Autowired private VendorRequestService vendorRequestService;
 
 
     @Override
@@ -179,7 +177,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
     }
 
-    private void createResponse(String desc, String resultStatus, String correlationId) {
+    /*private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
         boolean isNull = true;
@@ -197,6 +195,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setDescription(desc);
         VendorRequestsStateEntity vre = requestRepository.save(entity);
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
+    }*/
+
+    private void createResponse(String desc, String resultStatus, String correlationId) {
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
+        VendorRequestsStateEntity entity = new VendorRequestsStateEntity();
+        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
+        entity.setFetched(false);
+        entity.setResultStatus(resultStatus);
+        entity.setDescription(desc);
+        vendorRequestService.saveVendorRequest(entity);
     }
 
     private void updateUserStatus(UsersEntity user, long userStatusId,long vendorPLanId) {
