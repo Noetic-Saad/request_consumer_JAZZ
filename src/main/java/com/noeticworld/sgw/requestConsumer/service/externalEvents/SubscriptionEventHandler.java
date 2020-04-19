@@ -204,6 +204,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
+        entity.setCorrelationid(correlationId);
         vendorRequestService.saveVendorRequest(entity);
     }
 
