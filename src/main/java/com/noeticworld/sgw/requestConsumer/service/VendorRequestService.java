@@ -14,6 +14,11 @@ public class VendorRequestService implements VendorRequestStateRedisRepository {
     private HashOperations hashOperations;
     private RedisTemplate redisTemplate;
 
+    public VendorRequestService(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+        this.hashOperations = this.redisTemplate.opsForHash();
+    }
+
     @CachePut(value = "vendor_request_state",key = "#p0")
     @Override
     public void saveVendorRequest(VendorRequestsStateEntity vendorRequestsStateEntity) {
