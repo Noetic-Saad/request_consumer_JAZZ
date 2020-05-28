@@ -24,6 +24,7 @@ public class VendorPostBackService {
         HttpResponse<String> response = Unirest.post(url)
                 .asString();
         log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + url);
+        System.out.println("response status " + response.getStatus());
         if(response.getStatus()==200) {
             log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT FOR TRACKER-ID | " + trackerId);
         }
