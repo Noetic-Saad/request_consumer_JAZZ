@@ -20,7 +20,7 @@ public class VendorPostBackService {
     public void sendVendorPostBack(Long vendorPlanId,String trackerId){
         System.out.println(trackerId);
         String url = configurationDataManagerService.getVendorPostBackConfig(vendorPlanId).replaceAll("=none","="+trackerId);
-        System.out.println(url);
+        System.out.println("url = " + url);
         HttpResponse<String> response = Unirest.post(url)
                 .asString();
         log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + url);

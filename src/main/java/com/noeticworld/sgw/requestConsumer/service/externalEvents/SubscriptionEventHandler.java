@@ -160,6 +160,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
+                    System.out.println("CALLING VENDOR POSTBACK");
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
                     createVendorReport(requestProperties,1,_user.getOperatorId().intValue());
                 }else {
