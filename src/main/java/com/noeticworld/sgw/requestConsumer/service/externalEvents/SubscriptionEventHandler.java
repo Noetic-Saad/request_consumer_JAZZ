@@ -186,6 +186,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if(entity==null){
             while (isNull){
                 entity  = requestRepository.findByCorrelationid(correlationId);
+                System.out.println("ENTITY IS NULL TAKING TIME");
                 if(entity!=null){
                     isNull = false;
                 }
