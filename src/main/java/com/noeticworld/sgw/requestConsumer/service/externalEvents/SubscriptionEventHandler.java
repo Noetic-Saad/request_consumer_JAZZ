@@ -158,6 +158,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
+                    log.info("CALLING VENDOR POSTBACK");
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
                     createVendorReport(requestProperties,1,_user.getOperatorId().intValue());
                 }else {
@@ -184,6 +185,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if(entity==null){
             while (isNull){
                 entity  = requestRepository.findByCorrelationid(correlationId);
+                System.out.println("ENTITY IS NULL TAKING TIME");
                 if(entity!=null){
                     isNull = false;
                 }
