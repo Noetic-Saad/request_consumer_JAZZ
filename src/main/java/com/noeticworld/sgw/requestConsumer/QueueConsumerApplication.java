@@ -25,7 +25,7 @@ public class QueueConsumerApplication {
 
 	@Bean
 	public Queue queue() {
-		return new Queue("hello", false);
+		return new Queue("subscriptionQueue", false);
 	}
 
 //    @Configuration

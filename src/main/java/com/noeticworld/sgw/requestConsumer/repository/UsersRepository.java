@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 public
 interface UsersRepository extends JpaRepository<UsersEntity, Long> {
 
-    UsersEntity findByMsisdnAndVendorPlanId(long msisdn, long vendorPlanId);
+    UsersEntity findByMsisdn(long msisdn);
 
 }

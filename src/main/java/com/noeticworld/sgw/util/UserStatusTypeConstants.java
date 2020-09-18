@@ -6,4 +6,6 @@ public class UserStatusTypeConstants {
     public static final String UNSUBSCRIBED = "unSubscribed";
     public static final String PURGED = "purged";
     public static final String BLOCKED = "blocked";
+    public static final String RENEWALUNSUB = "renewal_unsub";
+    public static final String TELCOUNSUB = "telco_unsub";
 }

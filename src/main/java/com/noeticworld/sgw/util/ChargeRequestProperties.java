@@ -5,13 +5,34 @@ import java.util.Date;
 public class ChargeRequestProperties {
 
     private long msisdn;
-    private long vendorPlanId;
+    private Integer operatorId;
+    private Integer vendorPlanId;
     private String correlationId;
     private Date originDateTime;
-    private double chargingAmount;
+    private Double chargingAmount;
     private String shortcode;
     private double taxAmount;
     private double shareAmount;
+    private int attempts;
+    private int isRenewal;
+    private int dailyAttempts;
+    private int subCycleId;
+
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public double getShareAmount() {
+        return shareAmount;
+    }
+
+    public void setShareAmount(double shareAmount) {
+        this.shareAmount = shareAmount;
+    }
 
     public long getMsisdn() {
         return msisdn;
@@ -21,11 +42,11 @@ public class ChargeRequestProperties {
         this.msisdn = msisdn;
     }
 
-    public long getVendorPlanId() {
+    public Integer getVendorPlanId() {
         return vendorPlanId;
     }
 
-    public void setVendorPlanId(long vendorPlanId) {
+    public void setVendorPlanId(Integer vendorPlanId) {
         this.vendorPlanId = vendorPlanId;
     }
 
@@ -68,4 +89,37 @@ public class ChargeRequestProperties {
     public void setTaxAmount(double taxAmount) {
         this.taxAmount = taxAmount;
     }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
+    }
+
+    public int getIsRenewal() {
+        return isRenewal;
+    }
+
+    public void setIsRenewal(int isRenewal) {
+        this.isRenewal = isRenewal;
+    }
+
+    public int getDailyAttempts() {
+        return dailyAttempts;
+    }
+
+    public void setDailyAttempts(int dailyAttempts) {
+        this.dailyAttempts = dailyAttempts;
+    }
+
+    public int getSubCycleId() {
+        return subCycleId;
+    }
+
+    public void setSubCycleId(int subCycleId) {
+        this.subCycleId = subCycleId;
+    }
+
 }

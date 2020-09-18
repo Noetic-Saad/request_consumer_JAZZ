@@ -17,6 +17,10 @@ public class VendorPlansEntity {
     private Float taxAmount;
     private Boolean active;
     private Timestamp startDate;
+    private Integer subCycle;
+    private Integer operatorId;
+    private Integer mtResponse;
+    private String planName;
 
     @Id
     @Column(name = "id")
@@ -140,4 +144,48 @@ public class VendorPlansEntity {
     public int hashCode() {
         return Objects.hash(id, vendorId, serviceId, pricePoint, cdate, validityDays, vendorCategoryId, taxAmount, active, startDate);
     }
+
+    @Basic
+    @Column(name = "sub_cycle")
+    public Integer getSubCycle() {
+        return subCycle;
+    }
+
+    public void setSubCycle(Integer subCycle) {
+        this.subCycle = subCycle;
+    }
+
+    @Basic
+    @Column(name = "operator_id")
+    public Integer getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(Integer operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    @Basic
+    @Column(name = "mt_response")
+    public Integer getMtResponse() {
+        return mtResponse;
+    }
+
+    public void setMtResponse(Integer mtResponse) {
+        this.mtResponse = mtResponse;
+    }
+
+
+
+    @Basic
+    @Column(name = "plan_name")
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+
 }

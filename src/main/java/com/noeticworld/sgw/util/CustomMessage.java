@@ -10,7 +10,13 @@ public final class CustomMessage implements Serializable {
     private String action;
     private String dateTime;
     private String corelationId;
+    private String trackerId;
     private String vendorPlanId;
+    private boolean otp;
+    private long otpNumber;
+    private String sessionId;
+    private String remoteServerIp;
+    private String localServerIp;
 
     @Override
     public String toString() {
@@ -78,5 +84,53 @@ public final class CustomMessage implements Serializable {
 
     public void setVendorPlanId(String vendorPlanId) {
         this.vendorPlanId = vendorPlanId;
+    }
+
+    public String getTrackerId() {
+        return trackerId;
+    }
+
+    public void setTrackerId(String trackerId) {
+        this.trackerId = trackerId;
+    }
+
+    public boolean isOtp() {
+        return otp;
+    }
+
+    public void setOtp(boolean otp) {
+        this.otp = otp;
+    }
+
+    public long getOtpNumber() {
+        return otpNumber;
+    }
+
+    public void setOtpNumber(long otpNumber) {
+        this.otpNumber = otpNumber;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getRemoteServerIp() {
+        return remoteServerIp;
+    }
+
+    public void setRemoteServerIp(String remoteServerIp) {
+        this.remoteServerIp = remoteServerIp;
+    }
+
+    public String getLocalServerIp() {
+        return localServerIp;
+    }
+
+    public void setLocalServerIp(String localServerIp) {
+        this.localServerIp = localServerIp;
     }
 }
