@@ -14,6 +14,8 @@ public interface GamesBillingRecordRepository  extends JpaRepository<GamesBillin
 
     @Query(value = "SELECT * FROM public.games_billing_record WHERE msisdn=:msisdn and is_charged = 1 and cdate BETWEEN :fromDate and :toDate",nativeQuery = true)
     List<GamesBillingRecordEntity> isAlreadyChargedForToday(@Param("msisdn") Long msisdn, @Param("fromDate") Timestamp fromDate, @Param("toDate") Timestamp toDate);
+    @Query(value = "SELECT * FROM public.games_billing_record WHERE msisdn=:msisdn and is_charged = 0 and cdate BETWEEN :fromDate and :toDate",nativeQuery = true)
+    List<GamesBillingRecordEntity> checkfreetrialexpiration(@Param("msisdn") Long msisdn, @Param("fromDate") Timestamp fromDate, @Param("toDate") Timestamp toDate);
 
     @Query(value = "SELECT * FROM public.games_billing_record WHERE msisdn=:msisdn and is_charged = 1 and cdate BETWEEN :fromDate and :toDate",nativeQuery = true)
     List<GamesBillingRecordEntity> isAlreadyChargedFor7Days(@Param("msisdn") Long msisdn, @Param("fromDate") Timestamp fromDate, @Param("toDate") Timestamp toDate);

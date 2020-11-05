@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -64,6 +65,7 @@ public class BlockingEventHandler implements RequestEventHandler {
         usersStatusEntity.setSubCycleId(entity.getSubCycle());
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
+        usersStatusEntity.setfreeTrialExpiry(Timestamp.from(Instant.from(LocalDateTime.now().plusDays(3))));
         usersStatusEntity = userStatusRepository.save(usersStatusEntity);
         updateUserStatus(_user, usersStatusEntity.getId());
         userStatusRepository.flush();

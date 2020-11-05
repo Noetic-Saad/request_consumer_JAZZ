@@ -35,7 +35,16 @@ public class BillingService {
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
-        }else {
+        }
+        else if (CheckFreeTrials(requestProperties.getMsisdn())){
+            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Expired Or Not| "+requestProperties.getMsisdn());
+            fiegnResponse.setCode(110);
+            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+            fiegnResponse.setMsg("ALREADY SUBSCRIBED");
+            return fiegnResponse;
+
+        }
+        else {
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -77,6 +86,18 @@ public class BillingService {
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
+        if(gamesBillingRecordEntity.isEmpty()){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    private boolean CheckFreeTrials(long msisdn) {
+        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
+        Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
+        Timestamp toDate = Timestamp.valueOf(String.valueOf(LocalDate.now().plusDays(2)));
+        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.checkfreetrialexpiration(msisdn,fromDate,toDate);
         if(gamesBillingRecordEntity.isEmpty()){
             return false;
         }else {
