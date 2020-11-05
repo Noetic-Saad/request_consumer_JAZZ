@@ -74,7 +74,7 @@ public class LogInEventHandler implements RequestEventHandler {
         }
         //Code Added By Habib Ur Rehman 5/11/2020 Added Status Free Trial If user free trial doesn't expire he will be able to login
         else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
-                && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now()) ||statusEntity.getExpiryDatetime().toLocalDateTime().isBefore(LocalDateTime.now())) {
+                && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now()) ||statusEntity.getfreeTrialExpiry().toLocalDateTime().isBefore(LocalDateTime.now())) {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
