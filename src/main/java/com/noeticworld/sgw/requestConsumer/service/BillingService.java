@@ -96,7 +96,7 @@ public class BillingService {
     private boolean CheckFreeTrials(long msisdn) {
         log.info("BILLING SERVICE | CHARGING CLASS | CheckFreeTrials | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-        Timestamp toDate = Timestamp.valueOf(LocalDate.now().plusDays(2).toString());
+        Timestamp toDate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23,59));
         log.info("Checking Expiry Time"+toDate);
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.checkfreetrialexpiration(msisdn,fromDate,toDate);
 
