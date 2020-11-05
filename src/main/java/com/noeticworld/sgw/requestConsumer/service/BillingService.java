@@ -1,8 +1,11 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
 import com.noeticworld.sgw.requestConsumer.entities.GamesBillingRecordEntity;
+import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.GamesBillingRecordRepository;
+import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
+import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorPlanRepository;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.LogInEventHandler;
 import com.noeticworld.sgw.util.*;
@@ -23,8 +26,9 @@ public class BillingService {
 
     @Autowired private ConfigurationDataManagerService dataService;
     @Autowired private BillingClient billingClient;
-
+    @Autowired private UsersRepository usersRepository;
     @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
+    @Autowired private UserStatusRepository userStatusRepository;
 
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
@@ -97,12 +101,15 @@ public class BillingService {
         log.info("BILLING SERVICE | CHARGING CLASS | CheckFreeTrials | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23,59));
-        log.info("Checking Expiry Time"+toDate);
-        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.checkfreetrialexpiration(msisdn,fromDate,toDate);
+        Long userstatusid=usersRepository.returnUserStatusId(msisdn);
+        UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
+        log.info("Current Expiry Time"+us.getExpiryDatetime());
 
-        if(gamesBillingRecordEntity.isEmpty()){
+        if(us==null){
+            log.info("User Trial Expired");
             return false;
         }else {
+            log.info("User Trial Still In Process");
             return true;
         }
     }
