@@ -99,7 +99,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
             }
         } else {
-            processUserRequest(requestProperties, _user);
+           processUserRequest(requestProperties, _user);
+
         }
     }
 
@@ -121,6 +122,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
+        log.info("Saving Record In UserStatus Entiry" + requestProperties.getMsisdn() + " | Setting Expiry"+LocalDate.now().plusDays(2).atTime(23,59));
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
