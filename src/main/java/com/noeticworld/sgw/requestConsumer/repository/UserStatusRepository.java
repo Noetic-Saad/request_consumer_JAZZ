@@ -21,7 +21,7 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
     UsersStatusEntity returnUserExpiredOrnOt(@Param("id") Long id, @Param("fromDate") Timestamp fromDate);
 
     @Modifying
-    @Query("update public.users_status us set us.free_trial_expiry = ?1, us.status = ?2 where u.id = ?3")
+    @Query(value ="update public.users_status us set us.free_trial_expiry = ?1, us.status = ?2 where u.id = ?3",nativeQuery = true)
     void setUserInfoById(Timestamp freetrial, Integer status,Long Id);
 
 }
