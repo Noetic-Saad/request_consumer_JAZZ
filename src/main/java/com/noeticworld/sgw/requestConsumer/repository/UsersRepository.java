@@ -15,7 +15,7 @@ public
 interface UsersRepository extends JpaRepository<UsersEntity, Long> {
 
     UsersEntity findByMsisdn(long msisdn);
-    @Query(value = "SELECT * FROM public.users WHERE msisdn=:msisdn ",nativeQuery = true)
+    @Query(value = "SELECT id FROM public.users WHERE msisdn=:msisdn ",nativeQuery = true)
     Long returnUserStatusId(@Param("msisdn") Long msisdn);
 
 }
