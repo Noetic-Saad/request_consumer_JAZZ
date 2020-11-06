@@ -76,7 +76,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (exisingUser) {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
             if(_usersStatusEntity == null){
-                processUserRequest(requestProperties, _user);
+                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+               // processUserRequest(requestProperties, _user);
             }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
@@ -155,7 +157,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
             try {
-                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+               // createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {

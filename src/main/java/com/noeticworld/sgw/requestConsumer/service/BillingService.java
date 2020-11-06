@@ -102,10 +102,12 @@ public class BillingService {
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23,59));
         Long userstatusid=usersRepository.returnUserStatusId(msisdn);
+        log.info("User Status Id"+userstatusid);
         UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
-        log.info("Current Expiry Time"+us.getExpiryDatetime());
+
 
         if(us==null){
+            log.info("Current Expiry Time"+us.getExpiryDatetime());
             log.info("User Trial Expired");
             return false;
         }else {
