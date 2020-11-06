@@ -73,7 +73,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
             log.info("Saving UserStatusEntity");
-          //   createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+            Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
+            userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
 
         }
 
