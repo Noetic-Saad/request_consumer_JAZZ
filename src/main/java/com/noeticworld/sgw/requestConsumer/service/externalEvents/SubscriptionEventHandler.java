@@ -150,7 +150,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
         try {
+            log.info("Setting Freetrail");
             usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
+            log.info("Ending Freetrail");
         }
         catch (Exception ex){
             log.error("Exception in setting free trial"+ex);
