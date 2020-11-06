@@ -16,7 +16,16 @@ public class UsersStatusEntity {
     private Long vendorPlanId;
     private Integer subCycleId;
     private Timestamp freeTrialExpiry;
+    private Integer status;
+    @Basic
+    @Column(name = "status")
+    public Integer getStatus() {
+        return status;
+    }
 
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     @Id
     @Column(name = "id")
@@ -124,6 +133,8 @@ public class UsersStatusEntity {
     public Integer getSubCycleId() {
         return subCycleId;
     }
+
+
 
     public void setSubCycleId(Integer subCycleId) {
         this.subCycleId = subCycleId;

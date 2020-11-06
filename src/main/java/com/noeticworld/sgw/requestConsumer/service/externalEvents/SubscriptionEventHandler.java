@@ -151,6 +151,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setUserId(_user.getId());
       //  usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
         usersStatusEntity.setFreeTrialExpiry(Timestamp.from(Instant.now()));
+        usersStatusEntity.setStatus(1);
         userStatusRepository.save(usersStatusEntity);
         updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
        // userStatusRepository.flush();
