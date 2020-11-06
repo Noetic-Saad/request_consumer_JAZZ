@@ -11,8 +11,11 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.rmi.runtime.Log;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -22,7 +25,7 @@ import java.util.Date;
 
 @Service
 public class BlockingEventHandler implements RequestEventHandler {
-
+    Logger log = LoggerFactory.getLogger(RequestEventHandler.class.getName());
     @Autowired
     private UsersRepository usersRepository;
 
@@ -56,6 +59,7 @@ public class BlockingEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
+        log.info("Blocking Event Handler Savigng UserStatusEntity");
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         usersStatusEntity.setCdate(Timestamp.from(Instant.now()));

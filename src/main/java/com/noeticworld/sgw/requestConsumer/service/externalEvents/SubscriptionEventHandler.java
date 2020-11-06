@@ -81,8 +81,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
 
             if(_usersStatusEntity == null){
-                log.info("Saving UserStatusEntity");
-           createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                log.info("Not Saving UserStatusEntity");
+         //  createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
                 processUserRequest(requestProperties, _user);
             }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
