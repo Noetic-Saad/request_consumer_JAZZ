@@ -65,6 +65,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
         VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+        log.info("USer Found" +_user.getMsisdn());
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
@@ -76,14 +77,17 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
         if (exisingUser) {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
+
             if(_usersStatusEntity == null){
-                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                log.info("Saving UserStatusEntity");
+           createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
-               // processUserRequest(requestProperties, _user);
+                processUserRequest(requestProperties, _user);
             }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
             } else {
+                log.info("Not Saving UserStatusEntity");
                 if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)) {
 
                     if (_usersStatusEntity == null ||
@@ -153,7 +157,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         log.info("Entering Function ProcessUserRequest");
-        FiegnResponse fiegnResponse = billingService.charge(requestProperties);
+       FiegnResponse fiegnResponse = billingService.charge(requestProperties);
+
         if(fiegnResponse==null){
             return;
         }
@@ -163,7 +168,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
             try {
-               // createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                log.info("Sending to createUserStatusEntity");
+             //   createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
