@@ -73,7 +73,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
             log.info("Saving UserStatusEntity");
-             createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+          //   createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
 
         }
 
