@@ -89,13 +89,14 @@ public class UsersStatusEntity {
         return id == entity.id &&
                 Objects.equals(statusId, entity.statusId) &&
                 Objects.equals(cdate, entity.cdate) &&
+                Objects.equals(freeTrialExpiry, entity.freeTrialExpiry) &&
                 Objects.equals(expiryDatetime, entity.expiryDatetime) &&
                 Objects.equals(attempts, entity.attempts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, statusId, cdate, expiryDatetime, attempts);
+        return Objects.hash(id, statusId, cdate, expiryDatetime,freeTrialExpiry, attempts);
     }
 
     @Basic
