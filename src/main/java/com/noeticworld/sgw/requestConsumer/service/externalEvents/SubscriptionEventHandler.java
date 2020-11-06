@@ -73,7 +73,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
             log.info("Saving UserStatusEntity");
-            createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+             createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
 
         }
 
@@ -149,17 +149,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
-        try {
-            log.info("Setting Freetrail");
-            usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
-            log.info("Ending Freetrail");
-        }
-        catch (Exception ex){
-            log.error("Exception in setting free trial"+ex);
-        }
-        usersStatusEntity = userStatusRepository.save(usersStatusEntity);
+        usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
+        userStatusRepository.save(usersStatusEntity);
         updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
-        userStatusRepository.flush();
+       // userStatusRepository.flush();
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
         return usersStatusEntity;
     }
