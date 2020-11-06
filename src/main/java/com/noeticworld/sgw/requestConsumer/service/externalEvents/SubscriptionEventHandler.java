@@ -39,7 +39,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
-
+        log.info("Entering Function handle | SubscriptionEventHandler");
         if (requestProperties.isOtp()) {
             if(requestProperties.getOtpNumber()==0){
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
@@ -61,6 +61,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     public void handleSubRequest(RequestProperties requestProperties) {
+        log.info("Entering Function handleSubRequest");
 
         VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
@@ -106,6 +107,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 
     private UsersEntity registerNewUser(RequestProperties requestProperties,VendorPlansEntity entity) {
+        log.info("Entering Function registerNewUser");
         UsersEntity usersEntity = new UsersEntity();
         usersEntity.setMsisdn(requestProperties.getMsisdn());
         usersEntity.setVendorPlanId(requestProperties.getVendorPlanId());
@@ -122,6 +124,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
+        log.info("Entering Function createUserStatusEntity");
         log.info("Saving Record In UserStatus Entiry" + requestProperties.getMsisdn() + " | Setting Expiry"+LocalDate.now().plusDays(2).atTime(23,59));
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
@@ -149,6 +152,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
+        log.info("Entering Function ProcessUserRequest");
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
         if(fiegnResponse==null){
             return;
