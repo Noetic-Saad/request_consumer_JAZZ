@@ -65,13 +65,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
         VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        log.info("USer Found" +_user.getMsisdn());
+
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
+            log.info("Saving UserStatusEntity");
+            createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
 
         }
 
