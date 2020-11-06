@@ -17,6 +17,7 @@ public class UsersStatusEntity {
     private Integer subCycleId;
     private Timestamp freeTrialExpiry;
 
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "users_status_id_seq",sequenceName = "users_status_id_seq",allocationSize=1, initialValue=1)
@@ -27,6 +28,15 @@ public class UsersStatusEntity {
 
     public void setId(long id) {
         this.id = id;
+    }
+    @Basic
+    @Column(name = "free_trial_expiry")
+    public Timestamp getFreeTrialExpiry() {
+        return freeTrialExpiry;
+    }
+
+    public void setFreeTrialExpiry(Timestamp freeTrialExpiry) {
+        this.freeTrialExpiry = freeTrialExpiry;
     }
 
     @Basic
@@ -39,15 +49,7 @@ public class UsersStatusEntity {
         this.statusId = statusId;
     }
 
-    @Basic
-    @Column(name = "free_trial_expiry")
-    public Timestamp getfreeTrialExpiry() {
-        return freeTrialExpiry;
-    }
 
-    public void setfreeTrialExpiry(Timestamp freeTrialExpiry) {
-        this.freeTrialExpiry = freeTrialExpiry;
-    }
 
     @Basic
     @Column(name = "cdate")
