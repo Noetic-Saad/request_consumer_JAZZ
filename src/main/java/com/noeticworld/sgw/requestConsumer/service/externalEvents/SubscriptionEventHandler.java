@@ -72,7 +72,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
-
+            updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
             Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
             log.info("Updating UserStatusEntity"+_user.getId()+" Expire TIme"+Expiredate);
             userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
