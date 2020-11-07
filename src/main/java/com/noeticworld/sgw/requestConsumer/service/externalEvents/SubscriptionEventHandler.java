@@ -76,8 +76,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
           //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
             Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
             log.info("Crreated UserStatusEntity"+usersStatusEntity.getId());
-            createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
-            processUserRequest(requestProperties, _user);
+            createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+           // processUserRequest(requestProperties, _user);
           //  userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
 
         }
@@ -202,7 +202,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
     }
 
-    /*private void createResponse(String desc, String resultStatus, String correlationId) {
+    private void createResponse1(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
         boolean isNull = true;
@@ -221,7 +221,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setDescription(desc);
         VendorRequestsStateEntity vre = requestRepository.save(entity);
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
-    }*/
+    }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS |createResponse " + correlationId + " | TRYING TO CREATE RESPONSE "+resultStatus+" Message :"+desc);
@@ -244,6 +244,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private void createVendorReport(RequestProperties requestProperties,int postBackSent,Integer operatorId) {
+        log.info("Entering Method createVendorReport");
         VendorReportEntity vendorReportEntity = new VendorReportEntity();
         vendorReportEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         vendorReportEntity.setMsisdn(requestProperties.getMsisdn());
