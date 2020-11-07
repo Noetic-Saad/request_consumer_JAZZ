@@ -76,7 +76,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
           //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
             Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
             log.info("Crreated UserStatusEntity"+usersStatusEntity.getId());
-            createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+            createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             BillingService bl=new BillingService();
 
            // processUserRequest(requestProperties, _user);
@@ -223,7 +223,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         VendorRequestsStateEntity vre = requestRepository.save(entity);
-        createResponse("Free Trial", ResponseTypeConstants.ALREADY_SUBSCRIBED, correlationId);
+        //createResponse("Free Trial", ResponseTypeConstants.ALREADY_SUBSCRIBED, correlationId);
 
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
