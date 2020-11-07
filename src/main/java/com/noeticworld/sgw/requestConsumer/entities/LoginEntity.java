@@ -44,6 +44,7 @@ public class LoginEntity {
     @Basic
     @Column(name = "id")
     @SequenceGenerator(name = "tbl_login_id",sequenceName = "tbl_login_id",allocationSize=1, initialValue=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "tbl_login_id")
     public Integer getId() {
         return id;
     }
