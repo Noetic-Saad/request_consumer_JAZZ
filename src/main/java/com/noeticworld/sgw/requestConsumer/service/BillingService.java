@@ -41,10 +41,10 @@ public class BillingService {
             return fiegnResponse;
         }
         else if (CheckFreeTrials(requestProperties.getMsisdn())){
-            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Expired Or Not| "+requestProperties.getMsisdn());
+            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Expiry "+requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
-            fiegnResponse.setMsg("ALREADY SUBSCRIBED");
+            fiegnResponse.setMsg("Free Trial Still In Progess");
             return fiegnResponse;
 
         }

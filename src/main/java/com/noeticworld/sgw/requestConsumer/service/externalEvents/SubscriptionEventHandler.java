@@ -175,7 +175,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
             try {
                 log.info("Sending to createUserStatusEntity");
-             //   createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+               // createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
                 if(vendorReportEntity.isEmpty()) {
@@ -221,7 +221,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }*/
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
-        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS |createResponse " + correlationId + " | TRYING TO CREATE RESPONSE "+resultStatus+" Message :"+desc);
         VendorRequestsStateEntity entity = new VendorRequestsStateEntity();
         entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
         entity.setFetched(false);
