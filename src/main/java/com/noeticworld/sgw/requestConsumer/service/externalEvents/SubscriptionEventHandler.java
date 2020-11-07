@@ -72,12 +72,18 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
-            UsersStatusEntity usersStatusEntity= createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-          //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
-            Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
-            log.info("Crreated UserStatusEntity"+usersStatusEntity.getId());
-            createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
-            BillingService bl=new BillingService();
+            if (entity.getOperatorId() == dataService.getJazz()) {
+                UsersStatusEntity usersStatusEntity = createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
+                Timestamp Expiredate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
+                log.info("Crreated UserStatusEntity For Jazz Only : " + usersStatusEntity.getId()+"Get Mt Response : "+entity.getMtResponse() );
+                createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
+                if (entity.getMtResponse() == 1) {
+                    mtService.sendSubMt(requestProperties.getMsisdn(), entity);
+                }
+            }
+
+
 
            // processUserRequest(requestProperties, _user);
           //  userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
