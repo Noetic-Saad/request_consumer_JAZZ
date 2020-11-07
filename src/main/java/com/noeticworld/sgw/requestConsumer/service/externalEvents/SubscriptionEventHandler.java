@@ -174,7 +174,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 mtService.sendSubMt(requestProperties.getMsisdn(), entity);
             }
             try {
-                log.info("Sending to createUserStatusEntity");
+                log.info("Sending to createUserStatusEntity sas");
                // createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());

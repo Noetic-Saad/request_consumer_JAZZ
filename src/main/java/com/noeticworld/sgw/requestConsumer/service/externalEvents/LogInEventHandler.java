@@ -53,6 +53,7 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
+        log.info("Entering Function ProcessLoginRequest");
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null || usersEntity.getUserStatusId() == null){
             subscriptionEventHandler.handleSubRequest(requestProperties);
@@ -73,12 +74,23 @@ public class LogInEventHandler implements RequestEventHandler {
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         }
         //Code Added By Habib Ur Rehman 5/11/2020 Added Status Free Trial If user free trial doesn't expire he will be able to login
-        else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
+ /*       else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
                 && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now()) ||statusEntity.getFreeTrialExpiry().toLocalDateTime().isBefore(LocalDateTime.now())) {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
+           */
+                else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
+                    && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now()) ) {
+
+                log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
-        } else {
+        }
+                else if(statusEntity.getFreeTrialExpiry().toLocalDateTime().isBefore(LocalDateTime.now()))
+        {
+            log.info("Successfull Login through Free Trial ");
+            createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
+            saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
+        }
+                    else {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
         }
