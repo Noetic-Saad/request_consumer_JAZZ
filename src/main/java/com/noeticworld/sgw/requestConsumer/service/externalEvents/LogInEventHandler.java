@@ -85,11 +85,13 @@ public class LogInEventHandler implements RequestEventHandler {
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
         }
-                else if(statusEntity.getFreeTrialExpiry().toLocalDateTime().isBefore(LocalDateTime.now()))
+                else if(statusEntity.getFreeTrialExpiry()!=null)
         {
+            if(statusEntity.getFreeTrialExpiry().toLocalDateTime().isBefore(LocalDateTime.now())) {
             log.info("Successfull Login through Free Trial ");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
-            saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
+            saveLogInRecord(requestProperties, usersEntity.getVendorPlanId());
+        }
         }
                     else {
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
