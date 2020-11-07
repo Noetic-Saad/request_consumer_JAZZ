@@ -37,6 +37,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired private VendorRequestService vendorRequestService;
 
 
+
     @Override
     public void handle(RequestProperties requestProperties) {
         log.info("Entering Function handle | SubscriptionEventHandler");
@@ -72,12 +73,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
-            if (entity.getOperatorId() == dataService.getJazz()) {
+            if (entity.getOperatorId() == dataService.getJazz() || entity.getOperatorId()==dataService.getWarid()) {
                 UsersStatusEntity usersStatusEntity = createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
                 Timestamp Expiredate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
                 log.info("Crreated UserStatusEntity For Jazz Only : " + usersStatusEntity.getId()+"Get Mt Response : "+entity.getMtResponse() );
                 createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
+
                 if (entity.getMtResponse() == 1) {
                     mtService.sendSubMt(requestProperties.getMsisdn(), entity);
                 }

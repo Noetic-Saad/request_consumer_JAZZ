@@ -26,8 +26,9 @@ public class BillingService {
 
     @Autowired private ConfigurationDataManagerService dataService;
     @Autowired private BillingClient billingClient;
-    @Autowired private UsersRepository usersRepository;
+
     @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
+    @Autowired private UsersRepository usersRepository;
     @Autowired private UserStatusRepository userStatusRepository;
 
     public FiegnResponse charge(RequestProperties requestProperties) {

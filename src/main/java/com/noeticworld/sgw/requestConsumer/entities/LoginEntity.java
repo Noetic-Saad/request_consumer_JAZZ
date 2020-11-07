@@ -1,31 +1,32 @@
 package com.noeticworld.sgw.requestConsumer.entities;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "login", schema = "public", catalog = "sgw")
 public class LoginEntity {
     private Integer id;
-    private String msisdn;
+    private Long msisdn;
     @Basic
     @Column(name = "updateddate")
-    public String getUpdateddate() {
+    public Timestamp getUpdateddate() {
         return updateddate;
     }
 
-    public void setUpdateddate(String updateddate) {
+    public void setUpdateddate(Timestamp updateddate) {
         this.updateddate = updateddate;
     }
 
-    private String updateddate;
+    private Timestamp updateddate;
     @Basic
     @Column(name = "msisdn")
-    public String getMsisdn() {
+    public Long getMsisdn() {
         return msisdn;
     }
 
-    public void setMsisdn(String msisdn) {
+    public void setMsisdn(Long msisdn) {
         this.msisdn = msisdn;
     }
 

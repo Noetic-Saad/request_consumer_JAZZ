@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -57,6 +58,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 createResponse(resultCode, requestProperties.getCorrelationId());
             }
             if(vendorPlans.getMtResponse() == 1) {
+
+
                 mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
             }
         }
