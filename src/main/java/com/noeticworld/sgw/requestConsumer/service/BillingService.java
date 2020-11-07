@@ -107,10 +107,11 @@ public class BillingService {
 
 
         if(us==null){
-            log.info("Current Free Trial Expiry Time"+us.getFreeTrialExpiry());
+
             log.info("User Trial Expired");
             return false;
         }else {
+            log.info("Current Free Trial Expiry Time"+us.getFreeTrialExpiry());
             log.info("User Trial Still In Process");
             return true;
         }
