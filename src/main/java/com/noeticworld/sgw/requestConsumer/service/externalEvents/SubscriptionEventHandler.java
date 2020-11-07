@@ -72,10 +72,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
             _user = registerNewUser(requestProperties,entity);
-            updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
+            UsersStatusEntity usersStatusEntity= createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+          //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
             Timestamp Expiredate=Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
-            log.info("Updating UserStatusEntity"+_user.getId()+" Expire TIme"+Expiredate);
-            userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
+            log.info("Crreated UserStatusEntity"+usersStatusEntity.getId());
+            createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+            processUserRequest(requestProperties, _user);
+          //  userStatusRepository.setUserInfoById(Expiredate,0,_user.getId());
 
         }
 
@@ -84,14 +87,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             if(_usersStatusEntity == null){
                 log.info("Not Saving UserStatusEntity");
-         //  createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
-                processUserRequest(requestProperties, _user);
+         createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+
             }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
             } else {
-                log.info("Not Saving UserStatusEntity");
+                log.info("Not Saving UserStatusEntity");  createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+                processUserRequest(requestProperties, _user);
                 if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)) {
 
                     if (_usersStatusEntity == null ||
@@ -108,7 +111,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
             }
         } else {
-           processUserRequest(requestProperties, _user);
+         //  processUserRequest(requestProperties, _user);
 
         }
     }
@@ -151,12 +154,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
-      //  usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
-        usersStatusEntity.setFreeTrialExpiry(Timestamp.from(Instant.now()));
+       usersStatusEntity.setFreeTrialExpiry(Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59)));
+      //  usersStatusEntity.setFreeTrialExpiry(Timestamp.from(Instant.now()));
         usersStatusEntity.setStatus(1);
         userStatusRepository.save(usersStatusEntity);
         updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
-       // userStatusRepository.flush();
+        userStatusRepository.flush();
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
         return usersStatusEntity;
     }
