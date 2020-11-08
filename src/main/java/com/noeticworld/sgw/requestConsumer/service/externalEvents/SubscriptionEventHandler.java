@@ -200,7 +200,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
                 }
             }finally {
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+                createResponse1(fiegnResponse.getMsg(), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
