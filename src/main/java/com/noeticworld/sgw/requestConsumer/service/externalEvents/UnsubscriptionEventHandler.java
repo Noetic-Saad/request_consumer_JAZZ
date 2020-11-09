@@ -71,14 +71,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" STATUS ENTITY NOT FOUND");
             return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
         } else if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
-            log.info("***SUBSCRIBED Matched***"+users.getId());
-            UsersStatusEntity entity1 = new UsersStatusEntity();
-            entity1.setUserId(users.getId());
-            entity1.setStatusId(statusId);
+            log.info("***SUBSCRIBED Matched***");
+            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
-            entity1.setSubCycleId(subCycleId);
             entity1.setAttempts(0);
             long userStatusId = userStatusRepository.save(entity1).getId();
             users.setUserStatusId((int) userStatusId);
@@ -87,13 +84,10 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if (entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("***RENEWALUNSUB Matched***"+users.getId());
-            UsersStatusEntity entity1 = new UsersStatusEntity();
-            entity1.setUserId(users.getId());
-            entity1.setStatusId(statusId);
+            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
-            entity1.setSubCycleId(subCycleId);
             entity1.setAttempts(0);
             long userStatusId = userStatusRepository.save(entity1).getId();
             users.setUserStatusId((int) userStatusId);
