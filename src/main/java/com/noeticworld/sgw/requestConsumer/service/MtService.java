@@ -77,9 +77,11 @@ public class MtService {
 
             UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
             if(us!=null){
+                log.info("*************User Still in free Trial ************");
                 msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
             }
             else {
+                log.info("*********Free Trial Expired***********");
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
             }
         } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
