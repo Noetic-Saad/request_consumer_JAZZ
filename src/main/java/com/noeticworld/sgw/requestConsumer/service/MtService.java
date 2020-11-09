@@ -74,7 +74,7 @@ public class MtService {
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
             Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-
+            log.info("userstatusid"+userstatusid);
             UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
             if(us!=null){
                 log.info("*************User Still in free Trial ************");
