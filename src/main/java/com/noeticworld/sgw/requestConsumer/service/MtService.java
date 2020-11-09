@@ -26,7 +26,7 @@ public class MtService {
     private SubscriptionMessageRepository subscriptionMessageRepository;
     @Autowired private UsersRepository usersRepository;
     @Autowired private UserStatusRepository userStatusRepository;
-
+    Logger log = LoggerFactory.getLogger(MtService.class.getName());
     private String msg = "";
 
     public void sendSubMt(long msisdn, VendorPlansEntity vendorPlansEntity) {
@@ -34,12 +34,14 @@ public class MtService {
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
             Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-
+            log.info("userstatusid "+userstatusid);
             UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
             if(us!=null){
+                log.info("User Still in free Trial ")
                 msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
             }
             else {
+                log.info("Free Trial Expired ");
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
             }
 
