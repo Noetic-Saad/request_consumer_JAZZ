@@ -71,6 +71,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" STATUS ENTITY NOT FOUND");
             return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
         } else if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
+            log.info("***SUBSCRIBED Matched***");
             UsersStatusEntity entity1 = new UsersStatusEntity();
             entity1.setUserId(users.getId());
             entity1.setStatusId(statusId);
@@ -85,6 +86,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if (entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
+            log.info("***RENEWALUNSUB Matched***");
             UsersStatusEntity entity1 = new UsersStatusEntity();
             entity1.setUserId(users.getId());
             entity1.setStatusId(statusId);
