@@ -73,8 +73,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
         } else if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
 
-            log.info("***SUBSCRIBED Matched : ***"+entity.getStatusId());
-            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
+            log.info("***SUBSCRIBED Matched : ***"+entity.getId());
+            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
@@ -85,8 +85,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if (entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
-            log.info("***RENEWALUNSUB Matched : ***"+entity.getStatusId());
-            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
+            log.info("***RENEWALUNSUB Matched : ***"+entity.getId());
+            UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
             entity1.setExpiryDatetime(new Timestamp(new Date().getTime()));
@@ -131,6 +131,6 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         }
 
         requestRepository.save(entity);
-        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED "+entity.toString());
+        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED : "+entity.getDescription()+" Correlation Id : "+entity.getCorrelationid()+" Result Status : "+entity.getResultStatus());
     }
 }
