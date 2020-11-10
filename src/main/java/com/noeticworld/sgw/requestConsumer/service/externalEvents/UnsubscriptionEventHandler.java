@@ -45,6 +45,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             }
         }else {
             vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
+            if(vendorPlans.getMtResponse() == 1) {
+
+
+                mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
+            }
             String resultCode = "";
             try {
                 if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)) {
@@ -57,11 +62,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREAT RESPONSE");
                 createResponse(resultCode, requestProperties.getCorrelationId());
             }
-            if(vendorPlans.getMtResponse() == 1) {
 
-
-                mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
-            }
         }
     }
     private String changeUserStatus(UsersEntity users,Integer subCycleId,Integer statusId){
@@ -71,7 +72,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" STATUS ENTITY NOT FOUND");
             return ResponseTypeConstants.SUBSCRIBER_NOT_FOUND;
         } else if(entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)){
-            log.info("***SUBSCRIBED Matched***");
+
+            log.info("***SUBSCRIBED Matched : ***"+entity.getStatusId());
             UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
@@ -83,7 +85,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             usersRepository.save(users);
             return ResponseTypeConstants.UNSUSBCRIBED_SUCCESSFULL;
         }else if (entity.getStatusId()==dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
-            log.info("***RENEWALUNSUB Matched***"+users.getId());
+            log.info("***RENEWALUNSUB Matched : ***"+entity.getStatusId());
             UsersStatusEntity entity1 =userStatusRepository.findTopById(entity.getStatusId());
             entity1.setVendorPlanId(users.getVendorPlanId());
             entity1.setCdate(new Timestamp(new Date().getTime()));
@@ -127,7 +129,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity.setResultStatus(ResponseTypeConstants.OTHER_ERROR);
             entity.setDescription(ResponseTypeConstants.OTHER_ERROR_MSG);
         }
+
         requestRepository.save(entity);
-        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED");
+        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED "+entity.toString());
     }
 }
