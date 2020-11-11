@@ -74,11 +74,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (_user == null) {
             exisingUser = false;
 
-                if( billingService.checkpostpaidprepaid(requestProperties)==true){
-                    log.info("******User Is Postpaid **********");
 
-                }
-                else {
                     log.info("******User Is Not Postpaid **********");
                     entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
                     log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
@@ -103,14 +99,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                             }
                             else {
-                                vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                                createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                            vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+                             createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
                             }
                             }else {
                             createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
                         }
                     }
-                }
+
 
 
 
