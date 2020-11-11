@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class SubscriptionEventHandler implements RequestEventHandler {
@@ -35,7 +37,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired private LogInRecordRepository logInRecordRepository;
     @Autowired private VendorPostBackService vendorPostBackService;
     @Autowired private VendorRequestService vendorRequestService;
-
+    @Autowired
+    private LoginRepository loginRepository;
 
 
     @Override
@@ -70,20 +73,46 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
-            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
-            _user = registerNewUser(requestProperties,entity);
-            if (entity.getOperatorId() == dataService.getJazz() || entity.getOperatorId()==dataService.getWarid()) {
-                UsersStatusEntity usersStatusEntity = createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
-                Timestamp Expiredate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
-                log.info("Crreated UserStatusEntity For Jazz Only : " + usersStatusEntity.getId()+"Get Mt Response : "+entity.getMtResponse() );
-                createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
 
-                if (entity.getMtResponse() == 1) {
-                    mtService.sendSubMt(requestProperties.getMsisdn(), entity);
+                if( billingService.checkpostpaidprepaid(requestProperties)==true){
+                    log.info("******User Is Postpaid **********");
+
                 }
-            }
+                else {
+                    log.info("******User Is Not Postpaid **********");
+                    entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+                    log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
+                    _user = registerNewUser(requestProperties,entity);
+                    if (entity.getOperatorId() == dataService.getJazz() || entity.getOperatorId()==dataService.getWarid()) {
+                        UsersStatusEntity usersStatusEntity = createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                        //updateUserStatus(_user, _user.getId(),requestProperties.getVendorPlanId());
+                        Timestamp Expiredate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23, 59));
+                        log.info("Crreated UserStatusEntity For Jazz Only : " + usersStatusEntity.getId()+"Get Mt Response : "+entity.getMtResponse() );
+
+                        createResponse1(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
+
+                        if (entity.getMtResponse() == 1) {
+                            mtService.sendSubMt(requestProperties.getMsisdn(), entity);
+                        }
+                        saveLogInRecord(requestProperties, entity.getId());
+                        List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
+
+                        if(vendorReportEntity.isEmpty()) {
+                            log.info("CALLING VENDOR POSTBACK");
+                            if(entity.getId()==2){
+
+                            }
+                            else {
+                                vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+                                createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                            }
+                            }else {
+                            createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
+                        }
+                    }
+                }
+
+
 
 
 

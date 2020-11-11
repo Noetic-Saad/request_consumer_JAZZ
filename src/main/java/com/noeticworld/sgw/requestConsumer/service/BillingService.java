@@ -74,7 +74,29 @@ public class BillingService {
         }
 
     }
+    public Boolean checkpostpaidprepaid(RequestProperties requestProperties) {
+        FiegnResponse fiegnResponse = new FiegnResponse();
+        VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
+        ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
+        chargeRequestProperties.setOperatorId(vendorPlansEntity.getOperatorId());
+        chargeRequestProperties.setCorrelationId(requestProperties.getCorrelationId());
+        chargeRequestProperties.setMsisdn(requestProperties.getMsisdn());
+        chargeRequestProperties.setOriginDateTime(requestProperties.getOriginDateTime());
+        chargeRequestProperties.setVendorPlanId((int) requestProperties.getVendorPlanId());
+        chargeRequestProperties.setShortcode("3444");
+        chargeRequestProperties.setSubCycleId(vendorPlansEntity.getSubCycle());
+        if (dataService.isTestMsisdn(requestProperties.getMsisdn())) {
+            chargeRequestProperties.setChargingAmount(1.0f);
+        } else {
+            chargeRequestProperties.setChargingAmount(vendorPlansEntity.getPricePoint());
+            chargeRequestProperties.setTaxAmount(vendorPlansEntity.getTaxAmount());
+        }
+        chargeRequestProperties.setIsRenewal(0);
+        Boolean pp=billingClient.checkprepaidpostpaid(chargeRequestProperties);
+        return pp;
+
+    }
     private boolean isAlreadyChargedFor7Days(long msisdn) {
         LocalDateTime toDate = LocalDateTime.now();
         LocalDateTime fromDate = toDate.minusDays(7);

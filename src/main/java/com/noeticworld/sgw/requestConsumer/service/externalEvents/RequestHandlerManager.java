@@ -43,6 +43,8 @@ public class RequestHandlerManager {
              LoginEntity loginEntity = new LoginEntity();
              loginEntity.setMsisdn(requestProperties.getMsisdn());
              loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
+             loginEntity.setTrackingId(requestProperties.getTrackerId());
+             loginEntity.setCode((int) requestProperties.getOtpNumber());
              loginRepository.save(loginEntity);
          }
         if(eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||

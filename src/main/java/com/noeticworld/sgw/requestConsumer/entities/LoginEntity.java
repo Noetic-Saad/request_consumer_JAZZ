@@ -9,6 +9,27 @@ import java.util.Objects;
 public class LoginEntity {
     private Integer id;
     private Long msisdn;
+    private String trackingId;
+    private int code;
+    @Basic
+    @Column(name = "tracking_id")
+    public String getTrackingId() {
+        return trackingId;
+    }
+
+    public void setTrackingId(String trackingId) {
+        this.trackingId = trackingId;
+    }
+    @Basic
+    @Column(name = "code")
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
     @Basic
     @Column(name = "updateddate")
     public Timestamp getUpdateddate() {

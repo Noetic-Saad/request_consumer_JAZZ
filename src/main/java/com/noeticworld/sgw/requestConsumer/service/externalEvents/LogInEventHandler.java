@@ -39,7 +39,6 @@ public class LogInEventHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties)  {
 
-
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {

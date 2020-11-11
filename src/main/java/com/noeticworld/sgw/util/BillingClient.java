@@ -9,4 +9,7 @@ public interface BillingClient {
 
     @PostMapping("/charge")
     FiegnResponse charge(@RequestBody ChargeRequestProperties properties);
+
+    @PostMapping("/checkprepaidpostpaid")
+    Boolean checkprepaidpostpaid(@RequestBody ChargeRequestProperties properties);
 }
