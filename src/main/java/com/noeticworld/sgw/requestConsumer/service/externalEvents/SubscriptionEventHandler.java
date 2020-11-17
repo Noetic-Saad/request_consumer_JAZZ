@@ -242,10 +242,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
         boolean isNull = true;
+        int i=0;
         if(entity==null){
             while (isNull){
+                i++;
                 entity  = requestRepository.findByCorrelationid(correlationId);
-                System.out.println("ENTITY IS NULL TAKING TIME");
+                System.out.println("ENTITY IS NULL TAKING TIME "+i);
+                if(i==10){
+                    isNull = false;
+                }
                 if(entity!=null){
                     isNull = false;
                 }

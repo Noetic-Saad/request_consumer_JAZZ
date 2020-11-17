@@ -53,7 +53,7 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
-        log.info("Entering Function ProcessLoginRequest"+requestProperties.getMsisdn());
+        log.info("Entering Function ProcessLoginRequest ****"+requestProperties.getMsisdn());
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null || usersEntity.getUserStatusId() == null){
             log.info("****usersEntity==null");
