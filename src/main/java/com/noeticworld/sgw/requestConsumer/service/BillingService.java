@@ -126,18 +126,21 @@ public class BillingService {
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().plusDays(2).atTime(23,59));
         Long userstatusid=usersRepository.returnUserStatusId(msisdn);
         log.info("User Status Id"+userstatusid);
-        UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
+        if(userstatusid!=null) {
+            UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatusid, fromDate);
 
 
-        if(us==null){
+            if (us == null) {
 
-            log.info("User Trial Expired");
-            return false;
-        }else {
-            log.info("Current Free Trial Expiry Time"+us.getFreeTrialExpiry());
-            log.info("User Trial Still In Process");
-            return true;
+                log.info("User Trial Expired");
+                return false;
+            } else {
+                log.info("Current Free Trial Expiry Time" + us.getFreeTrialExpiry());
+                log.info("User Trial Still In Process");
+                return true;
+            }
         }
+        return false;
     }
 
 }
