@@ -18,14 +18,14 @@ public class VendorPostBackService {
 
 
     public void sendVendorPostBack(Long vendorPlanId,String trackerId){
-        System.out.println(trackerId);
+        log.info(trackerId);
         String url = configurationDataManagerService.getVendorPostBackConfig(vendorPlanId).replaceAll("=none","="+trackerId);
         System.out.println("url = " + url);
 
         HttpResponse<String> response = Unirest.get(url)
                 .asString();
         log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT ON URL | " + url);
-        System.out.println("response status " + response.getStatus());
+        log.info("response status " + response.getStatus());
         if(response.getStatus()==200) {
             log.info("CONSUMER SERVICE | VendorPostBackService CLASS | POSTBACK SENT FOR TRACKER-ID | " + trackerId);
         }
