@@ -1,6 +1,5 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
-import com.noeticworld.sgw.requestConsumer.entities.SubscriptionSettingEntity;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.RequestHandlerManager;
 import com.noeticworld.sgw.util.CustomMessage;
 import com.noeticworld.sgw.util.RequestProperties;

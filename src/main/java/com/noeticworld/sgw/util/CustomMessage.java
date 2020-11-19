@@ -1,7 +1,6 @@
 package com.noeticworld.sgw.util;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 public final class CustomMessage implements Serializable {
 

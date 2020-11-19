@@ -6,13 +6,15 @@ import com.noeticworld.sgw.requestConsumer.service.BillingService;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
-import com.noeticworld.sgw.util.*;
+import com.noeticworld.sgw.util.FiegnResponse;
+import com.noeticworld.sgw.util.RequestProperties;
+import com.noeticworld.sgw.util.ResponseTypeConstants;
+import com.noeticworld.sgw.util.UserStatusTypeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,10 +44,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties) {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        if(_user!=null){
-            handleSubRequest(requestProperties);
-        }
-        if (requestProperties.isOtp()) {
+
+         if (requestProperties.isOtp()) {
             if(requestProperties.getOtpNumber()==0){
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
@@ -73,22 +73,32 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (_user == null) {
             exisingUser = false;
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
+            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER "+requestProperties.getVendorPlanId());
             _user = registerNewUser(requestProperties,entity);
+            if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
+                try {
+                    createUserStatusEntityFreeTrial(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    saveLogInRecord(requestProperties, entity.getId());
+                    List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
 
-            try {
-                createUserStatusEntityFreeTrial(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                saveLogInRecord(requestProperties, entity.getId());
-                List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
-                if(vendorReportEntity.isEmpty()) {
-                    log.info("CALLING VENDOR POSTBACK");
-                    vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                    createVendorReport(requestProperties,1,_user.getOperatorId().intValue());
-                }else {
-                    createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
+                    if (vendorReportEntity.isEmpty()) {
+                        if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 4 || requestProperties.getVendorPlanId() == 5) {
+                            createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                        } else {
+                            log.info("CALLING VENDOR POSTBACK");
+                            vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+                            createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                        }
+                    } else {
+                        createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
+                    }
+                } finally {
+                    createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
                 }
-            }finally {
-                createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            }
+            else{
+                processUserRequest(requestProperties,_user);
+
             }
 
         }

@@ -1,15 +1,13 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.noeticworld.sgw.requestConsumer.entities.*;
-import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
+import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.noeticworld.sgw.util.RequestProperties;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

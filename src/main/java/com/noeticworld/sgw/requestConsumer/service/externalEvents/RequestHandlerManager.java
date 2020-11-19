@@ -2,10 +2,8 @@ package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.EventTypesEntity;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
-import com.noeticworld.sgw.util.CustomMessage;
 import com.noeticworld.sgw.util.RequestActionCodeConstants;
 import com.noeticworld.sgw.util.RequestProperties;
-import com.noeticworld.sgw.util.ResponseTypeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

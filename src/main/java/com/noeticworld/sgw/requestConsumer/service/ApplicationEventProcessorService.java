@@ -1,6 +1,5 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
-import com.noeticworld.sgw.requestConsumer.config.RequestConsumer;
 import com.noeticworld.sgw.util.CustomMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

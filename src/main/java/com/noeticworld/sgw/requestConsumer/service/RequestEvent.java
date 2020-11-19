@@ -2,7 +2,6 @@ package com.noeticworld.sgw.requestConsumer.service;
 
 import com.noeticworld.sgw.util.CustomMessage;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.stereotype.Service;
 
 public class RequestEvent extends ApplicationEvent {
 
