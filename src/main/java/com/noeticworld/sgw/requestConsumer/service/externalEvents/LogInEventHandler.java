@@ -32,7 +32,7 @@ public class LogInEventHandler implements RequestEventHandler {
     @Autowired
     LogInRecordRepository logInRecordRepository;
     @Autowired SubscriptionEventHandler subscriptionEventHandler;
-
+    @Autowired LoginRepository loginRepository;
     @Override
     public void handle(RequestProperties requestProperties)  {
         log.info("************requestProperties.getCorrelationId()**********"+requestProperties.getCorrelationId());
@@ -133,5 +133,6 @@ public class LogInEventHandler implements RequestEventHandler {
         loginRecordsEntity.setMsisdn(requestProperties.getMsisdn());
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
         logInRecordRepository.save(loginRecordsEntity);
+        loginRepository.updateLoginTable(requestProperties.getMsisdn());
     }
 }
