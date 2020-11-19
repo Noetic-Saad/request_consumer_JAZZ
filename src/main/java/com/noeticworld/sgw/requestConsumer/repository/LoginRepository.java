@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface LoginRepository extends JpaRepository<LoginEntity,Integer> {
 
     @Modifying
-    @Query("update login l set l.code = '0' where id = (select id from login where msisdn=:msisdn order by id desc limit 1)")
+    @Query(value = "update login l set l.code = '0' where id = (select id from login where msisdn=:msisdn order by id desc limit 1)",nativeQuery = true)
     void updateLoginTable(@Param("msisdn") long msisdn);
     LoginEntity findTopByMsisdn(long Msisdn);
 }
