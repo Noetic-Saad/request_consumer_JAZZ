@@ -35,16 +35,26 @@ public class LogInEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties)  {
-
+        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
+
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
-        } else {
-            processLogInRequest(requestProperties);
+        }
+        else {
+            if(_user!=null){
+                processLogInRequest(requestProperties);
+            }
+            else{
+                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.NOTREGISTERED), ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
+
+
+            }
+
         }
 
     }
@@ -84,10 +94,16 @@ public class LogInEventHandler implements RequestEventHandler {
         VendorRequestsStateEntity entity = null;
         entity  = requestRepository.findByCorrelationid(correlationId);
         boolean isNull = true;
+        int i=0;
         if(entity==null){
             while (isNull){
                 entity  = requestRepository.findByCorrelationid(correlationId);
+                i++;
+
                 if(entity!=null){
+                    isNull = false;
+                }
+                if(i==10){
                     isNull = false;
                 }
             }

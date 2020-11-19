@@ -22,6 +22,7 @@ public class ResponseTypeConstants {
     public static final String VALID = "118";
     public static final String INVALID = "119";
     public static final String INVALID_OTP = "120";
+    public static final String NOTREGISTERED = "305";
     public static final String LOGGED_OUT = "121";
     public static final String ALREAD_SUBSCRIBED_MSG = "ALREADY SUBSCRIBER";
     public static final String UNSUBSCRIBEDFULL_MSG = "UNSUBSCRIBED SUCCESSFULLY";
