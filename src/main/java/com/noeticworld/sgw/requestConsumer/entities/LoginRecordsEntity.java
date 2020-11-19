@@ -16,6 +16,17 @@ public class LoginRecordsEntity {
     private String localServerIp;
     private Boolean isAcitve;
     private Long sessionTime;
+    private Long code;
+
+    @Basic
+    @Column(name = "code")
+    public Long getCode() {
+        return code;
+    }
+
+    public void setCode(Long code) {
+        this.code = code;
+    }
 
     @Id
     @Column(name = "id")

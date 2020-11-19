@@ -1,8 +1,10 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
 import com.noeticworld.sgw.requestConsumer.entities.MtMessageSettingsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
+import com.noeticworld.sgw.requestConsumer.repository.LoginRepository;
 import com.noeticworld.sgw.requestConsumer.repository.OtpRecordRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.MtClient;
@@ -28,6 +30,8 @@ public class OtpVerificationHandler implements RequestEventHandler {
     OtpRecordRepository otpRecordRepository;
     @Autowired
     MtClient mtClient;
+    @Autowired
+    LoginRepository loginRepository;
 
     @Override
     public void handle(RequestProperties requestProperties) {
@@ -54,6 +58,16 @@ public class OtpVerificationHandler implements RequestEventHandler {
             logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | "+e.getCause());
         }
         saveOtpRecords(mtProperties,otpNumber,vendorPlansEntity.getId());
+
+        if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
+            System.out.println("Saving Jazz Msisdn In Login Table : ");
+            LoginEntity loginEntity = new LoginEntity();
+            loginEntity.setMsisdn(requestProperties.getMsisdn());
+            loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
+            loginEntity.setTrackingId(requestProperties.getTrackerId());
+            loginEntity.setCode(otpNumber);
+            loginRepository.save(loginEntity);
+        }
 
     }
     public void saveOtpRecords(MtProperties mtProperties,Integer otpNumber,long vendorPlanId){

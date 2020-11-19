@@ -39,13 +39,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired private OtpRecordRepository otpRecordRepository;
     @Autowired private LogInRecordRepository logInRecordRepository;
     @Autowired private VendorPostBackService vendorPostBackService;
-
+    @Autowired private LoginRepository loginRepository;
+    private long otpnumber=0;
 
     @Override
     public void handle(RequestProperties requestProperties) {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
          if (requestProperties.isOtp()) {
+
             if(requestProperties.getOtpNumber()==0){
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
@@ -53,6 +55,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+                otpnumber=requestProperties.getOtpNumber();
                 handleSubRequest(requestProperties);
             } else {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
@@ -277,13 +280,20 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
         LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
         loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
+
         loginRecordsEntity.setSessionId(requestProperties.getSessionId());
         loginRecordsEntity.setAcitve(false);
         loginRecordsEntity.setRemoteServerIp(requestProperties.getRemoteServerIp());
         loginRecordsEntity.setLocalServerIp(requestProperties.getLocalServerIp());
         loginRecordsEntity.setMsisdn(requestProperties.getMsisdn());
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
+        loginRecordsEntity.setCode(otpnumber);
         logInRecordRepository.save(loginRecordsEntity);
+        LoginEntity lg= loginRepository.findTopByMsisdn(requestProperties.getMsisdn());
+        if(lg!=null){
+            lg.setCode(0);
+        }
+
     }
 
 }
