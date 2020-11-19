@@ -99,9 +99,11 @@ public class LogInEventHandler implements RequestEventHandler {
         int i=0;
         if(entity==null){
             while (isNull){
-                entity  = requestRepository.findByCorrelationid(correlationId);
-                i++;
 
+                entity  = requestRepository.findByCorrelationid(correlationId);
+
+                i++;
+                log.error("entity is null trying to create response"+i);
                 if(entity!=null){
                     isNull = false;
                 }
@@ -114,7 +116,8 @@ public class LogInEventHandler implements RequestEventHandler {
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
-        requestRepository.save(entity);}
+        requestRepository.save(entity);
+        }
         catch (Exception ex){
             log.error("Error In Creating Response"+ex);
         }
