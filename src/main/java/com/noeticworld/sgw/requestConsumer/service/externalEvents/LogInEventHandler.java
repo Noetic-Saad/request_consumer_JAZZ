@@ -92,6 +92,7 @@ public class LogInEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         System.out.println("CORREALATIONID || "+correlationId);
+        try{
         VendorRequestsStateEntity entity = null;
         entity  = requestRepository.findByCorrelationid(correlationId);
         boolean isNull = true;
@@ -113,7 +114,10 @@ public class LogInEventHandler implements RequestEventHandler {
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
-        requestRepository.save(entity);
+        requestRepository.save(entity);}
+        catch (Exception ex){
+            log.error("Error In Creating Response"+ex);
+        }
     }
 
     private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
