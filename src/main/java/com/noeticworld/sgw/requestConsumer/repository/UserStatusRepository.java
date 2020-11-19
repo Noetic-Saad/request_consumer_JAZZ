@@ -17,6 +17,6 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
     UsersStatusEntity findTopById(long id);
 
     @Query(value = "SELECT * from user_status where expiryDate<:cdate" ,nativeQuery = true)
-    public UsersStatusEntity GetFreeTrial(@Param("cdate")Timestamp cdate);
+    UsersStatusEntity GetFreeTrial(@Param("cdate") Timestamp cdate);
 
 }

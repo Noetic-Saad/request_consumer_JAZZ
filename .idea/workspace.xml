@@ -3,7 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/UserStatusRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/UserStatusRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/VendorPlansEntityRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/VendorPlansEntityRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/AutLogInHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/AutLogInHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/UnsubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/UnsubscriptionEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/MtClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/MtClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/ZongBalanceCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/ZongBalanceCheck.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,9 +145,10 @@
       <screen x="1600" y="132" width="1366" height="768" />
     </state>
     <state x="2016" y="244" width="524" height="499" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605022697117" />
-    <state x="2030" y="343" width="496" height="302" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1605799982060">
-      <screen x="1600" y="132" width="1366" height="768" />
+    <state x="504" y="236" width="496" height="302" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1605803014997">
+      <screen x="0" y="0" width="1600" height="860" />
     </state>
+    <state x="504" y="236" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1605803014997" />
     <state x="2030" y="343" width="496" height="302" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605799982060" />
     <state x="483" y="82" width="476" height="563" key="DetectedRootsChooserDialog" timestamp="1605800928015">
       <screen x="0" y="0" width="1600" height="860" />

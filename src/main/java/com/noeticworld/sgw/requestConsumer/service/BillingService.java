@@ -66,11 +66,7 @@ public class BillingService {
         LocalDateTime toDate = LocalDateTime.now();
         LocalDateTime fromDate = toDate.minusDays(7);
         List<GamesBillingRecordEntity> entity = gamesBillingRecordsRepository.isAlreadyChargedFor7Days(msisdn, Timestamp.valueOf(fromDate), Timestamp.valueOf(toDate));
-        if (!entity.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return !entity.isEmpty();
     }
 
     private boolean isAlreadyChargedToday(long msisdn) {
@@ -78,21 +74,13 @@ public class BillingService {
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
-        if(gamesBillingRecordEntity.isEmpty()){
-            return false;
-        }else {
-            return true;
-        }
+        return !gamesBillingRecordEntity.isEmpty();
     }
     private boolean isFreeTrial(long msisdn) {
         log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
-        if(gamesBillingRecordEntity.isEmpty()){
-            return false;
-        }else {
-            return true;
-        }
+        return !gamesBillingRecordEntity.isEmpty();
     }
 }

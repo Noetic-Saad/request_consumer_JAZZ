@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MtClient {
 
     @PostMapping("/mt")
-    public void sendMt(@RequestBody MtProperties mtProperties);
+    void sendMt(@RequestBody MtProperties mtProperties);
 
 }

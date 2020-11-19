@@ -10,5 +10,5 @@ public
 interface VendorPlansEntityRepository extends JpaRepository<VendorPlansEntity,Integer> {
 
     @Query(value = "SELECT vp.validity_days FROM public.vendor_plans vp LEFT JOIN public.vendor_plan_accounts vpa ON vp.id = vpa.plan_id where vpa.id = :vpAccountId" ,nativeQuery = true)
-    public Integer getValidityDays(Integer vpAccountId);
+    Integer getValidityDays(Integer vpAccountId);
 }

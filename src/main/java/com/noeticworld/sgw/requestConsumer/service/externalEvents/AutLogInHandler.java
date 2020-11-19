@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.noeticworld.sgw.requestConsumer.entities.*;
+import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;

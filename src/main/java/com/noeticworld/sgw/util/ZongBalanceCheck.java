@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 
 public class ZongBalanceCheck {
 
@@ -26,7 +27,7 @@ public class ZongBalanceCheck {
             //  	log.debug("IN CONNECT...");
             OutputStream stream;
             //String message = "`SC`005A1.00JS123456PPSPPS  00000000DLGLGN    00000001TXBEG     LOGIN:USER=Noetic,PSWD=Noetic@123;AEBA9EF6";
-            byte[] data = message.getBytes("US-ASCII");
+            byte[] data = message.getBytes(StandardCharsets.US_ASCII);
             stream = client.getStream();
             stream.write(data, 0, data.length);
             output = "Sent: " + message;
@@ -37,8 +38,8 @@ public class ZongBalanceCheck {
 
             InputStream stream_in = client.Read();
             int bytes = stream_in.read(data, 0, data.length);
-            log.info("RAW RESPONSE || " + String.valueOf(bytes));
-            responseData = new String(data, "US-ASCII");
+            log.info("RAW RESPONSE || " + bytes);
+            responseData = new String(data, StandardCharsets.US_ASCII);
             output = "Received:  " + responseData;
 
             log.info("Received : " + output);
@@ -75,7 +76,7 @@ public class ZongBalanceCheck {
     public String chksum(String cmd) {
         try {
 
-            byte[] data = cmd.getBytes("US-ASCII");
+            byte[] data = cmd.getBytes(StandardCharsets.US_ASCII);
             byte[] checksum = new byte[8];
             for (int i = 16; i <= data.length - 5; i += 4) {
                 checksum[0] = (byte) (checksum[0] ^ data[i]);
@@ -86,7 +87,7 @@ public class ZongBalanceCheck {
             // log.debug("CHECKSUM BYTE CRATED");
             int check = 0;
             for (int i = 0; i <= 3; i++) {
-                int r = (int) checksum[i];
+                int r = checksum[i];
                 int c = (-(r + (1))) & (0xff);
                 c <<= (24 - (i * 8));
                 check = (check | c);
