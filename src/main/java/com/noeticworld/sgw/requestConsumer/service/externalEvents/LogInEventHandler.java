@@ -51,7 +51,7 @@ public class LogInEventHandler implements RequestEventHandler {
                 processLogInRequest(requestProperties);
             }
             else{
-                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.NOTREGISTERED), ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
+                createResponse("OTP Required",ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
 
             }
