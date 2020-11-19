@@ -289,10 +289,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
         loginRecordsEntity.setCode(otpnumber);
         logInRecordRepository.save(loginRecordsEntity);
-        LoginEntity lg= loginRepository.findTopByMsisdn(requestProperties.getMsisdn());
+        loginRepository.updateLoginTable(requestProperties.getMsisdn());
+      /*  LoginEntity lg= loginRepository.findTopByMsisdn(requestProperties.getMsisdn());
         if(lg!=null){
             lg.setCode(0);
-        }
+        }*/
 
     }
 
