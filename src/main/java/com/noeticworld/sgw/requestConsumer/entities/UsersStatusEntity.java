@@ -15,17 +15,6 @@ public class UsersStatusEntity {
     private Long userId;
     private Long vendorPlanId;
     private Integer subCycleId;
-    private Timestamp freeTrialExpiry;
-    private Integer status;
-    @Basic
-    @Column(name = "status")
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     @Id
     @Column(name = "id")
@@ -38,15 +27,6 @@ public class UsersStatusEntity {
     public void setId(long id) {
         this.id = id;
     }
-    @Basic
-    @Column(name = "free_trial_expiry")
-    public Timestamp getFreeTrialExpiry() {
-        return freeTrialExpiry;
-    }
-
-    public void setFreeTrialExpiry(Timestamp freeTrialExpiry) {
-        this.freeTrialExpiry = freeTrialExpiry;
-    }
 
     @Basic
     @Column(name = "status_id")
@@ -57,8 +37,6 @@ public class UsersStatusEntity {
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
     }
-
-
 
     @Basic
     @Column(name = "cdate")
@@ -98,14 +76,13 @@ public class UsersStatusEntity {
         return id == entity.id &&
                 Objects.equals(statusId, entity.statusId) &&
                 Objects.equals(cdate, entity.cdate) &&
-                Objects.equals(freeTrialExpiry, entity.freeTrialExpiry) &&
                 Objects.equals(expiryDatetime, entity.expiryDatetime) &&
                 Objects.equals(attempts, entity.attempts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, statusId, cdate, expiryDatetime,freeTrialExpiry, attempts);
+        return Objects.hash(id, statusId, cdate, expiryDatetime, attempts);
     }
 
     @Basic
@@ -133,8 +110,6 @@ public class UsersStatusEntity {
     public Integer getSubCycleId() {
         return subCycleId;
     }
-
-
 
     public void setSubCycleId(Integer subCycleId) {
         this.subCycleId = subCycleId;

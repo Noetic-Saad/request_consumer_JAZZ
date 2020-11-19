@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="1judLHU9MUXNtyb9W9dBqYFUwRH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.noeticworld.sgw.requestConsumer.service" />
+      <recent name="com.noeticworld.sgw.util" />
+      <recent name="com.noeticworld.sgw.requestConsumer.repository" />
+      <recent name="com.noeticworld.sgw.requestConsumer.entities" />
+      <recent name="com.noeticworld.sgw.requestConsumer.controllers" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="" />
+      <created>1604657853994</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1604657853994</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2091" y="182" width="374" height="624" key="#com.intellij.ide.util.MemberChooser" timestamp="1605019680274">
+      <screen x="1600" y="132" width="1366" height="768" />
+    </state>
+    <state x="491" y="47" width="374" height="624" key="#com.intellij.ide.util.MemberChooser/0.0.1366.728@0.0.1366.728" timestamp="1604756862109" />
+    <state x="2091" y="182" width="374" height="624" key="#com.intellij.ide.util.MemberChooser/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605019680274" />
+    <state x="624" y="286" width="290" height="214" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1604903126333">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="624" y="286" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1604903126333" />
+    <state x="2133" y="387" width="290" height="214" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1604658045019" />
+    <state x="2016" y="244" width="524" height="499" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1605022697117">
+      <screen x="1600" y="132" width="1366" height="768" />
+    </state>
+    <state x="2016" y="244" width="524" height="499" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605022697117" />
+    <state x="440" y="213" key="com.intellij.ide.util.TipDialog" timestamp="1605683606201">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="376" y="180" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1605631617270" />
+    <state x="440" y="213" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1605683606201" />
+    <state x="1976" y="322" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1604658009330" />
+    <state x="369" y="105" width="660" height="504" key="find.popup" timestamp="1605631628333">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="369" y="105" width="660" height="504" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1605631628333" />
+    <state x="1969" y="243" width="660" height="504" key="find.popup/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605020172051" />
+  </component>
+</project>

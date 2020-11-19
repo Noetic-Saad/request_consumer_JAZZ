@@ -1,26 +1,17 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.EventTypesEntity;
-import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
-import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
-import com.noeticworld.sgw.requestConsumer.repository.LoginRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.CustomMessage;
 import com.noeticworld.sgw.util.RequestActionCodeConstants;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-
 @Component
 public class RequestHandlerManager {
-    Logger log = LoggerFactory.getLogger(RequestHandlerManager.class.getName());
+
     @Autowired private ConfigurationDataManagerService configurationDataManagerService;
     @Autowired private SubscriptionEventHandler subscriptionEventHandler;
     @Autowired private UnsubscriptionEventHandler unsubscriptionEventHandler;
@@ -30,23 +21,11 @@ public class RequestHandlerManager {
     @Autowired private LogInEventHandler logInEventHandler;
     @Autowired private LogOutEventHandler logOutEventHandler;
     @Autowired private AutLogInHandler autLogInHandler;
-    @Autowired
-    private LoginRepository loginRepository;
-    @Autowired private ConfigurationDataManagerService dataService;
+
 
     public void manage(RequestProperties requestProperties) {
         EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
-        VendorPlansEntity entity = null;
-        entity=dataService.getVendorPlans(requestProperties.getVendorPlanId());
-         if(entity.getOperatorId() == dataService.getJazz() || entity.getOperatorId()==dataService.getWarid()) {
-             log.info("Saving Jazz Msisdn In Login Table : "+entity.getOperatorId());
-             LoginEntity loginEntity = new LoginEntity();
-             loginEntity.setMsisdn(requestProperties.getMsisdn());
-             loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
-             loginEntity.setTrackingId(requestProperties.getTrackerId());
-             loginEntity.setCode((int) requestProperties.getOtpNumber());
-             loginRepository.save(loginEntity);
-         }
+
         if(eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||
                 eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED) ||
                 eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_VENDOR_INITIATED)) {

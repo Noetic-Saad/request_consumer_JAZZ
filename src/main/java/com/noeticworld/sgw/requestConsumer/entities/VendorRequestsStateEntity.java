@@ -1,13 +1,12 @@
 package com.noeticworld.sgw.requestConsumer.entities;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "vendor_requests_state", schema = "public", catalog = "sgw")
-public class VendorRequestsStateEntity implements Serializable {
+public class VendorRequestsStateEntity {
     private long id;
     private String correlationid;
     private String resultStatus;
