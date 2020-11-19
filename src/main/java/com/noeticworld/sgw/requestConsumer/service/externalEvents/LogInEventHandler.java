@@ -35,6 +35,7 @@ public class LogInEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties)  {
+        log.info("************requestProperties.getCorrelationId()**********"+requestProperties.getCorrelationId());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
