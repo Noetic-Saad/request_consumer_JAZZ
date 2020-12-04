@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/LoginRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/LoginRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/AppResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/RequestPropertiesCheckBalance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/GamesBillingRecordRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/GamesBillingRecordRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,6 +17,13 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -20,6 +32,13 @@
       <set>
         <option value="$PROJECT_DIR$/.idea" />
       </set>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
     </option>
   </component>
   <component name="ProjectId" id="1judLHU9MUXNtyb9W9dBqYFUwRH" />
@@ -124,10 +143,10 @@
     </state>
     <state x="165" y="24" key="#com.intellij.execution.impl.EditConfigurationsDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1605800889639" />
     <state x="1741" y="153" key="#com.intellij.execution.impl.EditConfigurationsDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605800412216" />
-    <state x="575" y="56" width="374" height="624" key="#com.intellij.ide.util.MemberChooser" timestamp="1605812994112">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="491" y="47" width="511" height="624" key="#com.intellij.ide.util.MemberChooser" timestamp="1607074891546">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="491" y="47" width="374" height="624" key="#com.intellij.ide.util.MemberChooser/0.0.1366.728@0.0.1366.728" timestamp="1604756862109" />
+    <state x="491" y="47" width="511" height="624" key="#com.intellij.ide.util.MemberChooser/0.0.1366.728@0.0.1366.728" timestamp="1607074891546" />
     <state x="575" y="56" key="#com.intellij.ide.util.MemberChooser/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1605812994112" />
     <state x="2091" y="182" width="374" height="624" key="#com.intellij.ide.util.MemberChooser/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605019680274" />
     <state x="535" y="130" width="520" height="636" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1605800658154">
@@ -157,9 +176,10 @@
     </state>
     <state x="540" y="133" width="610" height="540" key="FileChooserDialogImpl/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1605800925599" />
     <state x="2061" y="251" width="424" height="482" key="FileChooserDialogImpl/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605799874962" />
-    <state x="1816" y="153" width="924" height="682" key="Maven.ArtifactSearchDialog" timestamp="1605800335257">
-      <screen x="1600" y="132" width="1366" height="768" />
+    <state x="216" y="20" width="924" height="682" key="Maven.ArtifactSearchDialog" timestamp="1607073668404">
+      <screen x="0" y="0" width="1366" height="728" />
     </state>
+    <state x="216" y="20" key="Maven.ArtifactSearchDialog/0.0.1366.728@0.0.1366.728" timestamp="1607073668404" />
     <state x="1816" y="153" width="924" height="682" key="Maven.ArtifactSearchDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605800335257" />
     <state x="440" y="213" key="com.intellij.ide.util.TipDialog" timestamp="1605801249768">
       <screen x="0" y="0" width="1600" height="860" />

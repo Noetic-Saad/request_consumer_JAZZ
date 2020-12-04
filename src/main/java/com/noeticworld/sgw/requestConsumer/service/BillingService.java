@@ -72,8 +72,9 @@ public class BillingService {
     private boolean isAlreadyChargedToday(long msisdn) {
         log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
+        Timestamp currenttime=Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
-        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
+        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForTodayNew(msisdn,currenttime);
         return !gamesBillingRecordEntity.isEmpty();
     }
     private boolean isFreeTrial(long msisdn) {

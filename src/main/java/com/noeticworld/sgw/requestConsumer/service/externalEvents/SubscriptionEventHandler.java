@@ -6,20 +6,20 @@ import com.noeticworld.sgw.requestConsumer.service.BillingService;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
-import com.noeticworld.sgw.util.FiegnResponse;
-import com.noeticworld.sgw.util.RequestProperties;
-import com.noeticworld.sgw.util.ResponseTypeConstants;
-import com.noeticworld.sgw.util.UserStatusTypeConstants;
+import com.noeticworld.sgw.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +75,31 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
+
+
+            RestTemplate template = new RestTemplate();
+            RequestPropertiesCheckBalance rq=new RequestPropertiesCheckBalance();
+            rq.setMsisdn(requestProperties.getMsisdn());
+            rq.setOperatorId(10);
+            rq.setTransactionId(requestProperties.getCorrelationId());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<RequestProperties> requestEntity =
+                    new HttpEntity<>(requestProperties, headers);
+            HttpEntity<AppResponse>  response =
+                    template.exchange("http://192.168.127.57:9071/checkbalance", HttpMethod.POST, requestEntity,
+                            AppResponse.class);
+         if(response==null){
+             log.info("Null Response From Api "+response.getBody().getCode() +response.getBody().getMsg());
+                }
+            else  if(response!=null && response.getBody().getCode()==1000){
+                log.info("Jazz Customer from checkbalancedate api"+ response.getBody().getCode() +response.getBody().getMsg());
+            }
+            else{
+                log.info("Other Response"+ response.getBody().getCode() +response.getBody().getMsg());
+            }
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER "+requestProperties.getVendorPlanId());
             _user = registerNewUser(requestProperties,entity);
