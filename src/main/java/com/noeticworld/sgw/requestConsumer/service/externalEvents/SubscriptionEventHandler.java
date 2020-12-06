@@ -81,7 +81,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             RequestPropertiesCheckBalance rq=new RequestPropertiesCheckBalance();
             rq.setMsisdn(requestProperties.getMsisdn());
             rq.setOperatorId(10);
-            rq.setTransactionId(requestProperties.getCorrelationId());
+            rq.setTransactionId("111");
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);

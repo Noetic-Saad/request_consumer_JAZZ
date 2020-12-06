@@ -3,7 +3,7 @@ package com.noeticworld.sgw.util;
 public class RequestPropertiesCheckBalance {
     public long msisdn;
     public int operatorId;
-
+    public String transactionId;
     public RequestPropertiesCheckBalance() {
     }
 
@@ -39,7 +39,4 @@ public class RequestPropertiesCheckBalance {
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
-
-    public String transactionId;
-
 }
