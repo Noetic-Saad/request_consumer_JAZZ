@@ -96,38 +96,41 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
             else  if(response!=null && response.getBody().getCode()==1000){
                 log.info("Jazz Customer from checkbalancedate api"+ response.getBody().getCode() +response.getBody().getMsg());
+             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER "+requestProperties.getVendorPlanId());
+             _user = registerNewUser(requestProperties,entity);
+             if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
+
+                 try {
+                     createUserStatusEntityFreeTrial(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                     saveLogInRecord(requestProperties, entity.getId());
+                     List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
+
+                     if (vendorReportEntity.isEmpty()) {
+                         if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 4 || requestProperties.getVendorPlanId() == 5) {
+                             createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                         } else {
+                             log.info("CALLING VENDOR POSTBACK");
+                             vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
+                             createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                         }
+                     } else {
+                         createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
+                     }
+                 } finally {
+                     createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+                 }
+             }
+             else{
+                 processUserRequest(requestProperties,_user);
+
+             }
+
             }
             else{
                 log.info("Other Response"+ response.getBody().getCode() +response.getBody().getMsg());
             }
-            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER "+requestProperties.getVendorPlanId());
-            _user = registerNewUser(requestProperties,entity);
-            if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
-                try {
-                    createUserStatusEntityFreeTrial(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                    saveLogInRecord(requestProperties, entity.getId());
-                    List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
 
-                    if (vendorReportEntity.isEmpty()) {
-                        if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 4 || requestProperties.getVendorPlanId() == 5) {
-                            createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
-                        } else {
-                            log.info("CALLING VENDOR POSTBACK");
-                            vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                            createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
-                        }
-                    } else {
-                        createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
-                    }
-                } finally {
-                    createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
-                }
-            }
-            else{
-                processUserRequest(requestProperties,_user);
-
-            }
 
         }
 
@@ -265,12 +268,18 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
         boolean isNull = true;
+        int i=0;
         if(entity==null){
             while (isNull){
                 entity  = requestRepository.findByCorrelationid(correlationId);
                 System.out.println("ENTITY IS NULL TAKING TIME");
+
                 if(entity!=null){
                     isNull = false;
+                }
+                i++;
+                if(i>10){
+                    isNull=false;
                 }
             }
         }
