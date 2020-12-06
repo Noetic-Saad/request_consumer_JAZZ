@@ -86,8 +86,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<RequestProperties> requestEntity =
-                    new HttpEntity<>(requestProperties, headers);
+            HttpEntity<RequestPropertiesCheckBalance> requestEntity =
+                    new HttpEntity<>(rq, headers);
             HttpEntity<AppResponse>  response =
                     template.exchange("http://192.168.127.57:9071/checkbalance", HttpMethod.POST, requestEntity,
                             AppResponse.class);
