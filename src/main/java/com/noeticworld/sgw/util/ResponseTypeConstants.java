@@ -28,6 +28,9 @@ public class ResponseTypeConstants {
     public static final String UNSUBSCRIBEDFULL_MSG = "UNSUBSCRIBED SUCCESSFULLY";
     public static final String SUBSCRIBER_NOT_FOUND_MSG = "SUBSCRIBER NOT FOUND";
     public static final String OTHER_ERROR_MSG = "OTHER ERROR";
+    public static final int NoeticPlan=3;
+    public static final int NoeticPlan1=4;
+    public static final int NoeticPlan2=5;
 
 
 }
