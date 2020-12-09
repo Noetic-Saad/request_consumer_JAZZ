@@ -266,7 +266,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
             MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
             log.info("Vendor Plan Name"+vendorPlansEntity.getPlanName() );
-            String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_insuficientBalance").getMsgText();
+            String message ="Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
+                    "http://bit.ly/2s7au8P";
             log.info("Forwarded Message"+ message);
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
