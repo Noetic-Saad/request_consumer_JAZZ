@@ -40,6 +40,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired private LogInRecordRepository logInRecordRepository;
     @Autowired private VendorPostBackService vendorPostBackService;
     @Autowired private LoginRepository loginRepository;
+
+    @Autowired
+    ConfigurationDataManagerService dataManagerService;
+    @Autowired
+    MtClient mtClient;
     private long otpnumber=0;
 
     @Override
@@ -234,6 +239,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if(fiegnResponse==null){
             return;
         }
+
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
@@ -254,7 +260,24 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
-            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
+            //added by habib to send mt message if user doesn't have balance
+            MtProperties mtProperties = new MtProperties();
+            VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
+            MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+            String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_insuficientBalance").getMsgText();
+            log.info("Forwarded Message"+ message);
+            mtProperties.setData(message);
+            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+            mtProperties.setShortCode("3444");
+            mtProperties.setPassword("g@m3now");
+            mtProperties.setUsername("gamenow@noetic");
+            mtProperties.setServiceId("1061");
+            try {
+                mtClient.sendMt(mtProperties);
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
+            }
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
