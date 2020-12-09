@@ -59,6 +59,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 return;
             }
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
+            log.info("OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 otpnumber=requestProperties.getOtpNumber();
                 handleSubRequest(requestProperties);

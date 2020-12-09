@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OtpRecordRepository extends JpaRepository<OtpRecordsEntity,Integer> {
 
-    OtpRecordsEntity findTopByMsisdnAndOtpNumber(long msisd,Integer OtpNumber);
+    OtpRecordsEntity findTopByMsisdnAndOtpNumber(long msisdn,Integer OtpNumber);
 
 }
