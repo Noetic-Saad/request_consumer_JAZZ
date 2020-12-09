@@ -261,9 +261,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             //added by habib to send mt message if user doesn't have balance
+
             MtProperties mtProperties = new MtProperties();
             VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
             MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+            log.info("Vendor Plan Name"+vendorPlansEntity.getPlanName() );
             String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_insuficientBalance").getMsgText();
             log.info("Forwarded Message"+ message);
             mtProperties.setData(message);
