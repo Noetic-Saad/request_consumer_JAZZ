@@ -58,8 +58,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
                 return;
             }
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
-            log.info("OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 otpnumber=requestProperties.getOtpNumber();
                 handleSubRequest(requestProperties);

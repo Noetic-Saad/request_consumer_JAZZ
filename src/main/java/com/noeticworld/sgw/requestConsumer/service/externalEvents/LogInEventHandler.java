@@ -38,7 +38,8 @@ public class LogInEventHandler implements RequestEventHandler {
         log.info("************requestProperties.getCorrelationId()**********"+requestProperties.getCorrelationId());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if (requestProperties.isOtp()) {
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findTopByMsisdnAndOtpNumber(requestProperties.getMsisdn(), (int) requestProperties.getOtpNumber());
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            log.info("LOGINEVENTHANDLER CLASS||OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
