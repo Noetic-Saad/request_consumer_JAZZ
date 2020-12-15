@@ -15,9 +15,11 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
     UsersStatusEntity findTopByUserIdAndVendorPlanIdAndStatusIdOrderByIdDesc(long userId, long vendorPlanId, int userStatusId);
     UsersStatusEntity findTopByUserIdAndVendorPlanIdOrderByIdDesc(long userId, long vendorPlanId);
     UsersStatusEntity findTopById(long id);
-    @Query(value = "SELECT * FROM public.users_status WHERE id=:id and expiry_datetime>:fromDate",nativeQuery = true)
+    @Query(value = "SELECT * FROM public.users_status WHERE user_id=:id and free_trial>:fromDate",nativeQuery = true)
     UsersStatusEntity returnUserExpiredOrnOt(@Param("id") Long id, @Param("fromDate") Timestamp fromDate);
     @Query(value = "SELECT * from user_status where expiryDate<:cdate" ,nativeQuery = true)
     UsersStatusEntity GetFreeTrial(@Param("cdate") Timestamp cdate);
+    @Query(value = "SELECT status_id from user_status where id:id order by id desc" ,nativeQuery = true)
+    int UnsubStatus(@Param("id") long id);
 
 }

@@ -15,6 +15,8 @@ public class UsersStatusEntity {
     private Long userId;
     private Long vendorPlanId;
     private Integer subCycleId;
+    private Timestamp free_trial;
+
 
     @Id
     @Column(name = "id")
@@ -27,7 +29,15 @@ public class UsersStatusEntity {
     public void setId(long id) {
         this.id = id;
     }
+    @Basic
+    @Column(name = "free_trial")
+    public Timestamp getFree_trial() {
+        return free_trial;
+    }
 
+    public void setFree_trial(Timestamp free_trial) {
+        this.free_trial = free_trial;
+    }
     @Basic
     @Column(name = "status_id")
     public Integer getStatusId() {

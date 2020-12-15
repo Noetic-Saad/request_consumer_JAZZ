@@ -38,12 +38,14 @@ public class AutLogInHandler implements RequestEventHandler {
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
             log.info("AUTOLOGINHANDLER CLASS| OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
-            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+            if (otpRecordsEntity != null &&
+                    otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
-        } else {
+        }
+        else {
             processLogInRequest(requestProperties);
         }
     }

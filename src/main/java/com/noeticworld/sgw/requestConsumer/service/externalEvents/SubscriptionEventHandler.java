@@ -223,6 +223,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setSubCycleId(entity.getSubCycle());
         if(entity.getSubCycle()==1){
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+            usersStatusEntity.setFree_trial(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+
         }else {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
         }
@@ -265,7 +267,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             MtProperties mtProperties = new MtProperties();
             VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
-            MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+            //MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
             log.info("Vendor Plan Name"+vendorPlansEntity.getPlanName() );
             String message ="Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
                     "http://bit.ly/2s7au8P";

@@ -62,7 +62,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         }
     }
     private String changeUserStatus(UsersEntity users,Integer subCycleId,Integer statusId){
-
+        log.info("Statud Id For Msisdn"+users.getMsisdn() +" status_id :"+statusId);
         UsersStatusEntity entity = userStatusRepository.findTopById(users.getUserStatusId());
         if(entity == null){
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN "+users.getMsisdn()+" STATUS ENTITY NOT FOUND");

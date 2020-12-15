@@ -1,6 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
 import com.noeticworld.sgw.requestConsumer.entities.SubscriptionMessageEntity;
+import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.SubscriptionMessageRepository;
@@ -35,12 +36,14 @@ public class MtService {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-            log.info("userstatusid "+userstatusid);
-            UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
-            if(us!=null){
-                log.info("User Still in free Trial ");
-                msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
+            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
+            if(userstatus!=null) {
+                log.info("userstatusid " + userstatus);
+                UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
+                if (us != null) {
+                    log.info("User Still in free Trial ");
+                    msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
+                }
             }
             else {
                 log.info("Free Trial Expired ");
@@ -55,11 +58,13 @@ public class MtService {
             msg = dataService.getMtMessage("zong_sub").getMsgText();
         } else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-
-            UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
-            if(us!=null){
-                msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
+            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
+            if(userstatus!=null) {
+                log.info("userstatusid " + userstatus.getUserStatusId());
+                UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
+                if (us != null) {
+                    msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
+                }
             }
             else {
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
@@ -73,12 +78,14 @@ public class MtService {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-            log.info("userstatusid"+userstatusid);
-            UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
-            if(us!=null){
-                log.info("*************User Still in free Trial ************");
-                msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
+            if(userstatus!=null) {
+                log.info("userstatusid " + userstatus.getUserStatusId());
+                UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
+                if (us != null) {
+                    log.info("*************User Still in free Trial ************");
+                    msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+                }
             }
             else {
                 log.info("*********Free Trial Expired***********");
@@ -93,11 +100,13 @@ public class MtService {
             msg = dataService.getMtMessage("zong_unsub").getMsgText();
         } else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            Long userstatusid=usersRepository.returnUserStatusId(msisdn);
-
-            UsersStatusEntity us=userStatusRepository.returnUserExpiredOrnOt(userstatusid,fromDate);
-            if(us!=null){
-                msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
+            if(userstatus!=null) {
+                log.info("userstatusid " + userstatus.getUserStatusId());
+                UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
+                if (us != null) {
+                    msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+                }
             }
             else {
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
