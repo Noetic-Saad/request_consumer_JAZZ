@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Repository
 public
@@ -17,8 +18,8 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
     UsersStatusEntity findTopById(long id);
     @Query(value = "SELECT * FROM public.users_status WHERE user_id=:id and free_trial>:fromDate",nativeQuery = true)
     UsersStatusEntity returnUserExpiredOrnOt(@Param("id") Long id, @Param("fromDate") Timestamp fromDate);
-    @Query(value = "SELECT * from public.users_status where expiryDate<:cdate" ,nativeQuery = true)
-    UsersStatusEntity GetFreeTrial(@Param("cdate") Timestamp cdate);
+    @Query(value = "SELECT * from public.users_status where free_trial>:today and user_id=:user_id" ,nativeQuery = true)
+    List<UsersStatusEntity> IsFreeTrialUser(@Param("today") Timestamp today,@Param("user_id") long user_id);
     @Query(value = "SELECT status_id from public.users_status where id=:u_id order by id desc" ,nativeQuery = true)
     int UnsubStatus(@Param("u_id") long id);
 

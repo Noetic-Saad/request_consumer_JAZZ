@@ -1,8 +1,12 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
 import com.noeticworld.sgw.requestConsumer.entities.GamesBillingRecordEntity;
+import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
+import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.GamesBillingRecordRepository;
+import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
+import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.util.BillingClient;
 import com.noeticworld.sgw.util.ChargeRequestProperties;
 import com.noeticworld.sgw.util.FiegnResponse;
@@ -26,6 +30,8 @@ public class BillingService {
     @Autowired private BillingClient billingClient;
 
     @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
+    @Autowired private UsersRepository usersRepository;
+    @Autowired private UserStatusRepository userStatusRepository;
 
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
@@ -36,7 +42,15 @@ public class BillingService {
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
-        }else {
+        }
+        else if(isFreeTrial(requestProperties.getMsisdn())){
+            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | "+requestProperties.getMsisdn());
+            fiegnResponse.setCode(110);
+            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+            fiegnResponse.setMsg("User Still In Free Trial");
+            return fiegnResponse;
+        }
+        else {
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -78,10 +92,16 @@ public class BillingService {
         return !gamesBillingRecordEntity.isEmpty();
     }
     private boolean isFreeTrial(long msisdn) {
-        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
+        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF FreeTrial CHARGED TODAY | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
-        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
-        return !gamesBillingRecordEntity.isEmpty();
+        UsersEntity _user=usersRepository.findByMsisdn(msisdn);
+        List<UsersStatusEntity> entitylist=null;
+        if(_user!=null ){
+            log.info("User Is Not Null Checking Free Trial");
+           entitylist=userStatusRepository.IsFreeTrialUser(fromDate,_user.getId());
+
+        }
+      return !entitylist.isEmpty();
     }
 }

@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/UserStatusRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/repository/UserStatusRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/BillingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,10 +203,10 @@
     <state x="376" y="180" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1608009869433" />
     <state x="440" y="213" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1607329709409" />
     <state x="1976" y="322" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605800178069" />
-    <state x="369" y="105" width="660" height="504" key="find.popup" timestamp="1608032444464">
+    <state x="369" y="105" width="660" height="504" key="find.popup" timestamp="1608036390028">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="369" y="105" width="660" height="504" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1608032444464" />
+    <state x="369" y="105" width="660" height="504" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1608036390028" />
     <state x="432" y="124" width="774" height="596" key="find.popup/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1607438754559" />
     <state x="1969" y="243" width="660" height="504" key="find.popup/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1607347294322" />
     <state x="1654" y="132" width="1239" height="728" key="new project wizard" timestamp="1605800126609">
