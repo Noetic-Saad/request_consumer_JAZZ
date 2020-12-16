@@ -186,26 +186,35 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
+       Timestamp today=Timestamp.valueOf(LocalDateTime.now());
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
-        VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-        usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
-        usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
-        usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
-        SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
-        String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
-        int hours = Integer.parseInt(expiryTime[0]);
-        int minutes = Integer.parseInt(expiryTime[1]);
-        usersStatusEntity.setSubCycleId(entity.getSubCycle());
-        if(entity.getSubCycle()==1){
-            usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
-        }else {
-            usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
+        List<UsersStatusEntity> usr=userStatusRepository.IsFreeTrialUser(today,_user.getId());
+        if(usr.isEmpty()){
+            log.info("No Record Found Adding New User Status");
+            VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+            usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
+            usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
+            usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
+            SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
+            String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
+            int hours = Integer.parseInt(expiryTime[0]);
+            int minutes = Integer.parseInt(expiryTime[1]);
+            usersStatusEntity.setSubCycleId(entity.getSubCycle());
+            if (entity.getSubCycle() == 1) {
+                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
+            } else {
+                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
+            }
+            usersStatusEntity.setAttempts(1);
+            usersStatusEntity.setUserId(_user.getId());
+            usersStatusEntity = userStatusRepository.save(usersStatusEntity);
+            updateUserStatus(_user, usersStatusEntity.getId(), requestProperties.getVendorPlanId());
+            userStatusRepository.flush();
         }
-        usersStatusEntity.setAttempts(1);
-        usersStatusEntity.setUserId(_user.getId());
-        usersStatusEntity = userStatusRepository.save(usersStatusEntity);
-        updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
-        userStatusRepository.flush();
+        else {
+            log.info("User is in free trial No New Entry Is Required in User Status Table");
+
+        }
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
         return usersStatusEntity;
     }
