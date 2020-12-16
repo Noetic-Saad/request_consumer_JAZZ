@@ -52,8 +52,9 @@ public class LogInEventHandler implements RequestEventHandler {
             if(_user!=null){
                 int user_status_id=userStatusRepository.UnsubStatus(_user.getId());
                 if(user_status_id==2){
+
                     OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-                    log.info("LOGINEVENTHANDLER CLASS||OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
+                    log.info("Unsubscriber Users "+otpRecordsEntity.getOtpNumber());
                     if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                         processLogInRequest(requestProperties);
                     } else {
