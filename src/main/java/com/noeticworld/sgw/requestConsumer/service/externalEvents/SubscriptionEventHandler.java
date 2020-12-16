@@ -217,6 +217,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
         else {
             log.info("User is in free trial No New Entry Is Required in User Status Table");
+          /*  int status=userStatusRepository.UnsubStatus(_user.getId());
+            //if status ==2 means user unsubscribe*/
 
         }
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
