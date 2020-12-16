@@ -100,8 +100,13 @@ public class BillingService {
         if(_user!=null ){
             log.info("User Is Not Null Checking Free Trial");
            entitylist=userStatusRepository.IsFreeTrialUser(fromDate,_user.getId());
-           if(entitylist!=null){
+           if(!entitylist.isEmpty()){
+               log.info("Free Trial Users");
                return true;
+           }
+           else{
+               log.info("Not Free Trial Users");
+               return false;
            }
 
         }
