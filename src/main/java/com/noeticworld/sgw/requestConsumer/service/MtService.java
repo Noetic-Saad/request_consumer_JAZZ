@@ -41,13 +41,15 @@ public class MtService {
                 log.info("userstatusid " + userstatus);
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
-                    log.info("User Still in free Trial ");
+
                     msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
+                    log.info("User Still in free Trial "+msg);
                 }
             }
             else {
-                log.info("Free Trial Expired ");
+
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
+                log.info("Free Trial Expired "+msg);
             }
 
         } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
@@ -83,13 +85,15 @@ public class MtService {
                 log.info("userstatusid " + userstatus.getUserStatusId());
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
-                    log.info("*************User Still in free Trial ************");
+
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+                    log.info("*************User Still in free Trial ************ Sending Message"+msg);
                 }
             }
             else {
-                log.info("*********Free Trial Expired***********");
+
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
+                log.info("*********Free Trial Expired***********"+msg);
             }
         } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
             msg = dataService.getMtMessage("telenor_unsub").getMsgText();
@@ -106,10 +110,12 @@ public class MtService {
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
+                    log.info("*************User Still in free Trial ************ Sending Message : "+msg);
                 }
             }
             else {
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
+                log.info("*********Free Trial Expired jazz_unsub*********** : "+msg);
             }
         }
         processMtRequest(msisdn,msg);
