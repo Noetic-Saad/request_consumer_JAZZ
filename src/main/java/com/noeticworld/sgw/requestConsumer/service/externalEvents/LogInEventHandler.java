@@ -35,7 +35,6 @@ public class LogInEventHandler implements RequestEventHandler {
     @Autowired LoginRepository loginRepository;
     @Override
     public void handle(RequestProperties requestProperties)  {
-        log.info("************requestProperties.getCorrelationId()**********"+requestProperties.getCorrelationId());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
@@ -50,7 +49,9 @@ public class LogInEventHandler implements RequestEventHandler {
         else {
 
             if(_user!=null){
+                log.info("User Alreadu Exist");
                 int user_status_id=userStatusRepository.UnsubStatus(_user.getId());
+                log.info("***************USer Status Id : "+user_status_id);
                 if(user_status_id==2){
 
                     OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
@@ -63,6 +64,7 @@ public class LogInEventHandler implements RequestEventHandler {
                     }
                 }
                 else {
+                    log.info("Processing Request Without asking for otp");
                     processLogInRequest(requestProperties);
                 }
             }
