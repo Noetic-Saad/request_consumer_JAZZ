@@ -76,6 +76,7 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
+    
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null || usersEntity.getUserStatusId() == null){
             subscriptionEventHandler.handleSubRequest(requestProperties);
@@ -88,6 +89,7 @@ public class LogInEventHandler implements RequestEventHandler {
             return;
         }
         statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
+        log.info("********User Status Id : "+statusEntity.getId() +" User Status"+ statusEntity.getStatusId()+" Expired At"+statusEntity.getExpiryDatetime());
         if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
