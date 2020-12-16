@@ -108,10 +108,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
              if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
 
                  try {
+                     VendorPlansEntity vendorPlans = null;
                      createUserStatusEntityFreeTrial(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                      saveLogInRecord(requestProperties, entity.getId());
+                     vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
                      List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
-
+                     if(vendorPlans.getMtResponse() == 1) {
+                         mtService.sendSubMt(requestProperties.getMsisdn(), vendorPlans);
+                     }
                      if (vendorReportEntity.isEmpty()) {
                          if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 4 || requestProperties.getVendorPlanId() == 5) {
                              createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
