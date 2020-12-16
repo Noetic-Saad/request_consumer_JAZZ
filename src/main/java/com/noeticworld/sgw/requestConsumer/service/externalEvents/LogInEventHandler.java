@@ -53,15 +53,9 @@ public class LogInEventHandler implements RequestEventHandler {
                 int user_status_id=userStatusRepository.UnsubStatus(_user.getId());
                 log.info("***************USer Status Id : "+user_status_id);
                 if(user_status_id==2){
+                    log.info("*******Unsubscribed Users************* : "+user_status_id);
+                    createResponse("OTP Required",ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
-                    OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-                    log.info("Unsubscriber Users "+otpRecordsEntity.getOtpNumber());
-                    if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-                        processLogInRequest(requestProperties);
-                    } else {
-
-                        createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
-                    }
                 }
                 else {
                     log.info("Processing Request Without asking for otp");
