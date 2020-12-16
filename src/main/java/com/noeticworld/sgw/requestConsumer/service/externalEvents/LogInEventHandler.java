@@ -76,7 +76,7 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
-    
+
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if(usersEntity==null || usersEntity.getUserStatusId() == null){
             subscriptionEventHandler.handleSubRequest(requestProperties);
@@ -89,8 +89,7 @@ public class LogInEventHandler implements RequestEventHandler {
             return;
         }
         statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
-        log.info("********User Status Id : "+statusEntity.getId() +" User Status"+ statusEntity.getStatusId()+" Expired At"+statusEntity.getExpiryDatetime());
-        if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
+          if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
@@ -98,7 +97,9 @@ public class LogInEventHandler implements RequestEventHandler {
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
                 && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now())) {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
+              log.info("********User Status Id : "+statusEntity.getId() +" User Status"+ statusEntity.getStatusId()+" Expired At"+statusEntity.getExpiryDatetime());
+
+              log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
             createResponse("Valid User", ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
             saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
         } else {
