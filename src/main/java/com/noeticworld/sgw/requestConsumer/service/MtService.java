@@ -45,6 +45,12 @@ public class MtService {
                     msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
                     log.info("User Still in free Trial "+msg);
                 }
+                else {
+
+                    msg = dataService.getMtMessage("jazz_sub").getMsgText();
+                    log.info("Free Trial Expired "+msg);
+                }
+
             }
             else {
 
@@ -67,6 +73,12 @@ public class MtService {
                 if (us != null) {
                     msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
                 }
+                else {
+
+                    msg = dataService.getMtMessage("jazz_sub").getMsgText();
+                    log.info("Free Trial Expired "+msg);
+                }
+
             }
             else {
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
@@ -89,6 +101,12 @@ public class MtService {
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
                     log.info("*************User Still in free Trial ************ Sending Message"+msg);
                 }
+                else {
+
+                    msg = dataService.getMtMessage("jazz_unsub").getMsgText();
+                    log.info("Free Trial Expired "+msg);
+                }
+
             }
             else {
 
@@ -112,6 +130,12 @@ public class MtService {
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
                     log.info("*************User Still in free Trial ************ Sending Message : "+msg);
                 }
+                else {
+
+                    msg = dataService.getMtMessage("jazz_unsub").getMsgText();
+                    log.info("Free Trial Expired "+msg);
+                }
+
             }
             else {
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
