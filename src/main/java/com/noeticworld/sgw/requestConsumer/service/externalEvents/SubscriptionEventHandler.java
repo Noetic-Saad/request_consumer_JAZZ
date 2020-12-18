@@ -232,9 +232,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
         usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
-        String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
-        int hours = Integer.parseInt(expiryTime[0]);
-        int minutes = Integer.parseInt(expiryTime[1]);
+       // String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
+        //int hours = Integer.parseInt(expiryTime[0]);
+       // int minutes = Integer.parseInt(expiryTime[1]);
         usersStatusEntity.setSubCycleId(entity.getSubCycle());
         if(entity.getSubCycle()==1){
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
