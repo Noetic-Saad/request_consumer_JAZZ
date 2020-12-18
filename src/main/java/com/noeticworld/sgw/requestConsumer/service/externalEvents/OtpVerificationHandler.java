@@ -1,7 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
-import com.noeticworld.sgw.requestConsumer.entities.MtMessageSettingsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.LoginRepository;
@@ -36,14 +35,15 @@ public class OtpVerificationHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties) {
         Random random = new Random();
-
         Integer otpNumber = 1000 + random.nextInt(900);
         if(requestProperties.getMsisdn() == 923225553000l){
             otpNumber = 1214;
         }
         MtProperties mtProperties = new MtProperties();
         VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
-        MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+        System.out.println("vendorPlansEntity.getPlanName()"+vendorPlansEntity.getPlanName()+requestProperties.getVendorPlanId());
+
+        // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
         String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_otp").getMsgText();
         String finalMessage = message.replaceAll("&otp",otpNumber.toString());
         mtProperties.setData(finalMessage);
