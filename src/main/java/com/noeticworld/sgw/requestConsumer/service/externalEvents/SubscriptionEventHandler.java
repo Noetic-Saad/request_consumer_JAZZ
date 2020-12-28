@@ -72,19 +72,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     public void handleSubRequest(RequestProperties requestProperties) {
-
-        VendorPlansEntity entity = null;
+        //Free Trial Changes
+       /* VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
-            exisingUser = false;
-            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
-            _user = registerNewUser(requestProperties,entity);
 
 
-          /*  RestTemplate template = new RestTemplate();
+            RestTemplate template = new RestTemplate();
             RequestPropertiesCheckBalance rq=new RequestPropertiesCheckBalance();
             rq.setMsisdn(requestProperties.getMsisdn());
             rq.setOperatorId(10);
@@ -131,18 +127,56 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                  } finally {
                      createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
                  }
-                  }
+             }
              else{
                  processUserRequest(requestProperties,_user);
 
              }
-              else{
+
+            }
+            else{
                 log.info("Other Response"+ response.getBody().getCode() +response.getBody().getMsg());
             }
-*/
 
 
+        }
 
+        if (exisingUser) {
+            UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
+            if(_usersStatusEntity == null){
+                processUserRequest(requestProperties, _user);
+            }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
+                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
+            } else {
+                if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)) {
+
+                    if (_usersStatusEntity == null ||
+                            _usersStatusEntity.getExpiryDatetime() == null ||
+                            _usersStatusEntity.getExpiryDatetime().
+                                    before(new Timestamp(System.currentTimeMillis()))) {
+                        processUserRequest(requestProperties, _user);
+                    } else {
+                        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS ALREADY SUBSCRIBED");
+                        createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+                    }
+                }else {
+                    processUserRequest(requestProperties, _user);
+                }
+            }
+        } else {
+            processUserRequest(requestProperties, _user);
+        }*/
+
+
+        VendorPlansEntity entity = null;
+        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+        boolean exisingUser = true;
+        if (_user == null) {
+            exisingUser = false;
+            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
+            _user = registerNewUser(requestProperties,entity);
 
         }
 
@@ -241,7 +275,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if(entity.getSubCycle()==1){
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
             usersStatusEntity.setFree_trial(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
-
 
         }else {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(7)));
