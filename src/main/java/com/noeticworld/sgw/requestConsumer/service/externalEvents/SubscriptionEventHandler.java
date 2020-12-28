@@ -10,16 +10,13 @@ import com.noeticworld.sgw.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -81,9 +78,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         boolean exisingUser = true;
         if (_user == null) {
             exisingUser = false;
+            exisingUser = false;
+            entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+            log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
+            _user = registerNewUser(requestProperties,entity);
 
 
-            RestTemplate template = new RestTemplate();
+          /*  RestTemplate template = new RestTemplate();
             RequestPropertiesCheckBalance rq=new RequestPropertiesCheckBalance();
             rq.setMsisdn(requestProperties.getMsisdn());
             rq.setOperatorId(10);
@@ -130,16 +131,17 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                  } finally {
                      createResponse("Subscribe For Free Trial", ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
                  }
-             }
+                  }
              else{
                  processUserRequest(requestProperties,_user);
 
              }
-
-            }
-            else{
+              else{
                 log.info("Other Response"+ response.getBody().getCode() +response.getBody().getMsg());
             }
+*/
+
+
 
 
         }
@@ -239,6 +241,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if(entity.getSubCycle()==1){
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
             usersStatusEntity.setFree_trial(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
+
 
         }else {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(7)));
