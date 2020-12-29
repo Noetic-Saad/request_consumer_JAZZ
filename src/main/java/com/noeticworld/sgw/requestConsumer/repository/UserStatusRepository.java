@@ -22,7 +22,6 @@ interface UserStatusRepository extends JpaRepository<UsersStatusEntity,Integer> 
     List<UsersStatusEntity> IsFreeTrialUser(@Param("today") Timestamp today,@Param("user_id") long user_id);
     @Query(value = "SELECT * from public.users_status where user_id=:u_id order by id desc limit 1" ,nativeQuery = true)
     UsersStatusEntity UnsubStatus(@Param("u_id") long id);
-    @Query(value = "SELECT * from public.users_status where msisdn=:msisdn order by id desc limit 1" ,nativeQuery = true)
-    UsersStatusEntity FindByMSISDN(@Param("msisdn") long msisdn);
+
 
 }
