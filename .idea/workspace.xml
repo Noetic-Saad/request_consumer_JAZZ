@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,11 +195,11 @@
     </state>
     <state x="216" y="20" key="Maven.ArtifactSearchDialog/0.0.1366.728@0.0.1366.728" timestamp="1607073668404" />
     <state x="1816" y="153" width="924" height="682" key="Maven.ArtifactSearchDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605800335257" />
-    <state x="376" y="180" key="com.intellij.ide.util.TipDialog" timestamp="1608103086375">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state x="440" y="213" key="com.intellij.ide.util.TipDialog" timestamp="1609216903602">
+      <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="376" y="180" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1608103086375" />
-    <state x="440" y="213" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1607329709409" />
+    <state x="440" y="213" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@0.0.1600.860" timestamp="1609216903602" />
     <state x="1976" y="322" key="com.intellij.ide.util.TipDialog/1600.132.1366.768/0.0.1600.860@1600.132.1366.768" timestamp="1605800178069" />
     <state x="353" y="0" width="683" height="726" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1608120253985">
       <screen x="0" y="0" width="1366" height="728" />
