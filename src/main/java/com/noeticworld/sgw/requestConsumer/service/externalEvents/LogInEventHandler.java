@@ -49,19 +49,25 @@ public class LogInEventHandler implements RequestEventHandler {
         else {
 
             if(_user!=null){
-                log.info("User Alreadu Exist");
+                log.info("User Already Exist");
                 UsersStatusEntity user_status_id=userStatusRepository.UnsubStatus(_user.getId());
                 UsersEntity user_status=usersRepository.FindByTopMSISDN(_user.getMsisdn());
-                if(user_status.getUserStatusId()==null){
-                    log.info("*******UNCharged Users************* : " + user_status_id);
-                    createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
-                }
                 if(user_status_id!=null) {
-                    if (user_status_id.getStatusId() == 2) {
+                    if(user_status.getUserStatusId()==null){
+                        log.info("*******UNCharged Users************* : " + user_status_id);
+                        createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
+
+                    }
+
+                    else if (user_status_id.getStatusId() == 2) {
                         log.info("*******Unsubscribed Users************* : " + user_status_id);
                         createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
+                    }
+                    else{
+                        log.info("Processing Request Without asking for otp");
+                        processLogInRequest(requestProperties);
                     }
                 }
                 else {
