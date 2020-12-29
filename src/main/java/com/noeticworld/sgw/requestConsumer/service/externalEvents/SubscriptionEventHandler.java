@@ -290,6 +290,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
+        log.info("**********Sending Request For Charging*******");
         if(fiegnResponse==null){
             return;
         }
