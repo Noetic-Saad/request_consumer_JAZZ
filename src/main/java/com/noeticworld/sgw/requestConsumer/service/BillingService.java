@@ -32,8 +32,16 @@ public class BillingService {
 @Autowired MtService mtService;
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
-
-        if(isAlreadyChargedToday(requestProperties.getMsisdn(),requestProperties)){
+      /*  UsersEntity user=usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
+        UsersStatusEntity user_status=userStatusRepository.UnsubStatus(user.getId());
+        if(user!=null) {
+            if(user_status!=null) {
+                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
+                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to http://bit.ly/2s7au8P");
+                }
+            }
+        }*/
+        if(isAlreadyChargedToday(requestProperties.getMsisdn())){
             log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | "+requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
@@ -80,23 +88,12 @@ public class BillingService {
         return !entity.isEmpty();
     }
 
-    private boolean isAlreadyChargedToday(long msisdn,RequestProperties requestProperties) {
+    private boolean isAlreadyChargedToday(long msisdn) {
         log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp currenttime=Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
-        UsersEntity user=usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
-        UsersStatusEntity user_status=userStatusRepository.UnsubStatus(user.getId());
-        if(user!=null) {
-            if(user_status!=null) {
-                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
-                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to http://bit.ly/2s7au8P");
-                }
-            }
-        }
-        else{
-            
-        }
+
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
         return !gamesBillingRecordEntity.isEmpty();
     }
