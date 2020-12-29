@@ -7,10 +7,7 @@ import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.GamesBillingRecordRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
-import com.noeticworld.sgw.util.BillingClient;
-import com.noeticworld.sgw.util.ChargeRequestProperties;
-import com.noeticworld.sgw.util.FiegnResponse;
-import com.noeticworld.sgw.util.RequestProperties;
+import com.noeticworld.sgw.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +29,18 @@ public class BillingService {
     @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
     @Autowired private UsersRepository usersRepository;
     @Autowired private UserStatusRepository userStatusRepository;
-
+@Autowired MtService mtService;
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
-
+        UsersEntity user=usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
+        UsersStatusEntity user_status=userStatusRepository.UnsubStatus(user.getId());
+        if(user!=null) {
+            if(user_status!=null) {
+                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
+                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to http://bit.ly/2s7au8P");
+                }
+            }
+        }
         if(isAlreadyChargedToday(requestProperties.getMsisdn())){
             log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | "+requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
@@ -88,6 +93,7 @@ public class BillingService {
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         Timestamp currenttime=Timestamp.valueOf(LocalDateTime.now().plusDays(1));
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
+
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
         return !gamesBillingRecordEntity.isEmpty();
     }

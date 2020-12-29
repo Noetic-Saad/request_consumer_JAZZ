@@ -31,6 +31,8 @@ public class ResponseTypeConstants {
     public static final int NoeticPlan=3;
     public static final int NoeticPlan1=4;
     public static final int NoeticPlan2=5;
+    public static final int  UNSUB=2;
+
 
 
 }
