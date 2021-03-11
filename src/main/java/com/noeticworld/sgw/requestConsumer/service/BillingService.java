@@ -37,7 +37,7 @@ public class BillingService {
         if(user!=null) {
             if(user_status!=null) {
                 if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
-                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to http://bit.ly/2s7au8P");
+                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
                 }
             }
         }
