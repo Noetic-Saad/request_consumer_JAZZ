@@ -300,21 +300,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
         log.info("**********Sending Request For Charging*******");
+
         if (fiegnResponse == null) {
             return;
         }
 
-
-        System.out.println("MMoved to next line form feign response null ........" + requestProperties.getMsisdn());
-
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
-            System.out.println("Subscibed successfully or Already Subscribed " + requestProperties.getMsisdn());
-            System.out.println("fiegnResponse.getCode() .... **** " + fiegnResponse.getCode());
+
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-                System.out.println("Subscribed successfully .... " + requestProperties.getMsisdn() + " ... " +
-                        " MT needs to be sent herre ....");
-//                mtService.sendSubMt(requestProperties.getMsisdn(), entity);
                 String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
                         "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
 
@@ -329,10 +323,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 try {
                     mtClient.sendMt(mtProperties);
                 } catch (Exception e) {
-                    log.info(" Subscribe MT ERROR .... " + e.getCause());
+                    log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                 }
-
-//                mtService.processMtRequest(requestProperties.getMsisdn(), message);
+                // This MT is not working for some reason, not know yet.
+                // mtService.processMtRequest(requestProperties.getMsisdn(), message);
 
             }
             try {

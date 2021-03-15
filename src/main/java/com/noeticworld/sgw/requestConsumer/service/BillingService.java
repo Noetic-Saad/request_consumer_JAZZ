@@ -39,16 +39,12 @@ public class BillingService {
         FiegnResponse fiegnResponse = new FiegnResponse();
 
         UsersEntity user = usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
-        UsersStatusEntity user_status = userStatusRepository.UnsubStatus(user.getId());
+        UsersStatusEntity latestUserStatus = userStatusRepository.UnsubStatus(user.getId());
 
-//        if (user != null) {
-//            if (user_status != null) {
-//                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
-//                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
-//                }
-//            }
-//        }
-        if (isAlreadyChargedToday(requestProperties.getMsisdn()) && user_status.getStatusId() != 2) {
+        // Latest status != 2 is appended to make sure that if the user is charged for that day and then
+        // unsub and login to the system (Charging request) again, we want to send charging request to SGW
+        // Billing and from there the setCode() will be set to 101(SUCCESSFULLY_CHARGED).
+        if (isAlreadyChargedToday(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
             log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | " + requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
