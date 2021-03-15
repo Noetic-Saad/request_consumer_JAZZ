@@ -48,7 +48,7 @@ public class BillingService {
 //                }
 //            }
 //        }
-        if (isAlreadyChargedToday(requestProperties.getMsisdn())) {
+        if (isAlreadyChargedToday(requestProperties.getMsisdn()) && user_status.getStatusId() != 2) {
             log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | " + requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());

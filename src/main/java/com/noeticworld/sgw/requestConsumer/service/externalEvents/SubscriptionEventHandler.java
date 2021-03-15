@@ -329,10 +329,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 try {
                     mtClient.sendMt(mtProperties);
                 } catch (Exception e) {
-                    log.info(" Subscribe MT .... " + e.getCause());
+                    log.info(" Subscribe MT ERROR .... " + e.getCause());
                 }
 
-                mtService.processMtRequest(requestProperties.getMsisdn(), message);
+//                mtService.processMtRequest(requestProperties.getMsisdn(), message);
 
             }
             try {
