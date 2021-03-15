@@ -310,6 +310,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             System.out.println("Subscibed successfully or Already Subscribed " + requestProperties.getMsisdn());
+            System.out.println("fiegnResponse.getCode() .... **** " + fiegnResponse.getCode());
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
                 System.out.println("Subscribed successfully .... " + requestProperties.getMsisdn() + " ... " +
                         " MT needs to be sent herre ....");
