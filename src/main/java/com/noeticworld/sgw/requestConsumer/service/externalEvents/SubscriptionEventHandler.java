@@ -314,7 +314,24 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 System.out.println("Subscribed successfully .... " + requestProperties.getMsisdn() + " ... " +
                         " MT needs to be sent herre ....");
 //                mtService.sendSubMt(requestProperties.getMsisdn(), entity);
-                mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
+                String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
+                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
+
+                MtProperties mtProperties = new MtProperties();
+                mtProperties.setData(message);
+                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+                mtProperties.setShortCode("3444");
+                mtProperties.setPassword("g@m3now");
+                mtProperties.setUsername("gamenow@noetic");
+                mtProperties.setServiceId("1061");
+
+                try {
+                    mtClient.sendMt(mtProperties);
+                } catch (Exception e) {
+                    log.info(" Subscribe MT .... " + e.getCause());
+                }
+
+                mtService.processMtRequest(requestProperties.getMsisdn(), message);
 
             }
             try {

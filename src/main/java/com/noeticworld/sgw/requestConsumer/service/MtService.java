@@ -143,13 +143,17 @@ public class MtService {
     public void processMtRequest(long msisdn, String msg) {
 
         MtProperties mtProperties = new MtProperties();
+        System.out.println("Inside processMtRequest after mt object" + msisdn);
         mtProperties.setUsername("gamenow@noetic");
         mtProperties.setPassword("g@m3now");
         mtProperties.setServiceId("1061");
         mtProperties.setData(msg);
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
+        System.out.println("Inside processMtRequest .. " + mtProperties.toString());
+
         mtClient.sendMt(mtProperties);
+
         saveMessageRecord(msisdn, msg);
     }
 
