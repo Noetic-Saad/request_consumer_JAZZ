@@ -304,9 +304,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             return;
         }
 
+
+        System.out.println("MMoved to next line form feign response null ........" + requestProperties.getMsisdn());
+
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+            System.out.println("Subscibed successfully or Already Subscribed " + requestProperties.getMsisdn());
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
+                System.out.println("Subscribed successfully .... " + requestProperties.getMsisdn() + " ... " +
+                        " MT needs to be sent herre ....");
 //                mtService.sendSubMt(requestProperties.getMsisdn(), entity);
                 mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
 
