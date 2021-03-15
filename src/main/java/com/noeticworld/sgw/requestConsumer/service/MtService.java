@@ -23,39 +23,39 @@ public class MtService {
 
     @Autowired
     MtClient mtClient;
+    Logger log = LoggerFactory.getLogger(MtService.class.getName());
     @Autowired
     private ConfigurationDataManagerService dataService;
     @Autowired
     private SubscriptionMessageRepository subscriptionMessageRepository;
-    @Autowired private UsersRepository usersRepository;
-    @Autowired private UserStatusRepository userStatusRepository;
-
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    private UserStatusRepository userStatusRepository;
     private String msg = "";
-    Logger log = LoggerFactory.getLogger(MtService.class.getName());
+
     public void sendSubMt(long msisdn, VendorPlansEntity vendorPlansEntity) {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
-            if(userstatus!=null) {
+            UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
+            if (userstatus != null) {
                 log.info("userstatusid " + userstatus);
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
 
                     msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
-                    log.info("User Still in free Trial "+msg);
-                }
-                else {
+                    log.info("User Still in free Trial " + msg);
+                } else {
 
                     msg = dataService.getMtMessage("jazz_sub").getMsgText();
-                    log.info("Free Trial Expired "+msg);
+                    log.info("Free Trial Expired " + msg);
                 }
 
-            }
-            else {
+            } else {
 
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
-                log.info("Free Trial Expired "+msg);
+                log.info("Free Trial Expired " + msg);
             }
 
         } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
@@ -66,25 +66,23 @@ public class MtService {
             msg = dataService.getMtMessage("zong_sub").getMsgText();
         } else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
-            if(userstatus!=null) {
+            UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
+            if (userstatus != null) {
                 log.info("userstatusid " + userstatus.getUserStatusId());
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
                     msg = dataService.getMtMessage("jazz_sub_freetrial").getMsgText();
-                }
-                else {
+                } else {
 
                     msg = dataService.getMtMessage("jazz_sub").getMsgText();
-                    log.info("Free Trial Expired "+msg);
+                    log.info("Free Trial Expired " + msg);
                 }
 
-            }
-            else {
+            } else {
                 msg = dataService.getMtMessage("jazz_sub").getMsgText();
             }
         }
-        processMtRequest(msisdn,msg);
+        processMtRequest(msisdn, msg);
 
     }
 
@@ -92,26 +90,24 @@ public class MtService {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
-            if(userstatus!=null) {
+            UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
+            if (userstatus != null) {
                 log.info("userstatusid " + userstatus.getUserStatusId());
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
 
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
-                    log.info("*************User Still in free Trial ************ Sending Message"+msg);
-                }
-                else {
+                    log.info("*************User Still in free Trial ************ Sending Message" + msg);
+                } else {
 
                     msg = dataService.getMtMessage("jazz_unsub").getMsgText();
-                    log.info("Free Trial Expired "+msg);
+                    log.info("Free Trial Expired " + msg);
                 }
 
-            }
-            else {
+            } else {
 
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
-                log.info("*********Free Trial Expired***********"+msg);
+                log.info("*********Free Trial Expired***********" + msg);
             }
         } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
             msg = dataService.getMtMessage("telenor_unsub").getMsgText();
@@ -122,27 +118,25 @@ public class MtService {
             msg = dataService.getMtMessage("zong_unsub").getMsgText();
         } else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-            UsersEntity userstatus=usersRepository.returnUserStatusId(msisdn);
-            if(userstatus!=null) {
+            UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
+            if (userstatus != null) {
                 log.info("userstatusid " + userstatus.getUserStatusId());
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
-                    log.info("*************User Still in free Trial ************ Sending Message : "+msg);
-                }
-                else {
+                    log.info("*************User Still in free Trial ************ Sending Message : " + msg);
+                } else {
 
                     msg = dataService.getMtMessage("jazz_unsub").getMsgText();
-                    log.info("Free Trial Expired "+msg);
+                    log.info("Free Trial Expired " + msg);
                 }
 
-            }
-            else {
+            } else {
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
-                log.info("*********Free Trial Expired jazz_unsub*********** : "+msg);
+                log.info("*********Free Trial Expired jazz_unsub*********** : " + msg);
             }
         }
-        processMtRequest(msisdn,msg);
+        processMtRequest(msisdn, msg);
 
     }
 
@@ -156,10 +150,10 @@ public class MtService {
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
         mtClient.sendMt(mtProperties);
-        saveMessageRecord(msisdn,msg);
+        saveMessageRecord(msisdn, msg);
     }
 
-    public void saveMessageRecord(Long msisnd,String msg){
+    public void saveMessageRecord(Long msisnd, String msg) {
         SubscriptionMessageEntity subscriptionMessageEntity = new SubscriptionMessageEntity();
         subscriptionMessageEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         subscriptionMessageEntity.setMessageType("mt");

@@ -24,47 +24,57 @@ import java.util.List;
 public class SubscriptionEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
-
-    @Autowired private UsersRepository usersRepository;
-    @Autowired private MtService mtService;
-    @Autowired private VendorRequestRepository requestRepository;
-    @Autowired private UserStatusRepository userStatusRepository;
-    @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
-    @Autowired private BillingService billingService;
-    @Autowired private ConfigurationDataManagerService dataService;
-    @Autowired private VendorReportRepository vendorReportRepository;
-    @Autowired private OtpRecordRepository otpRecordRepository;
-    @Autowired private LogInRecordRepository logInRecordRepository;
-    @Autowired private VendorPostBackService vendorPostBackService;
-    @Autowired private LoginRepository loginRepository;
-
     @Autowired
     ConfigurationDataManagerService dataManagerService;
     @Autowired
     MtClient mtClient;
-    private long otpnumber=0;
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    private MtService mtService;
+    @Autowired
+    private VendorRequestRepository requestRepository;
+    @Autowired
+    private UserStatusRepository userStatusRepository;
+    @Autowired
+    private SubscriptionSettingRepository subscriptionSettingRepository;
+    @Autowired
+    private BillingService billingService;
+    @Autowired
+    private ConfigurationDataManagerService dataService;
+    @Autowired
+    private VendorReportRepository vendorReportRepository;
+    @Autowired
+    private OtpRecordRepository otpRecordRepository;
+    @Autowired
+    private LogInRecordRepository logInRecordRepository;
+    @Autowired
+    private VendorPostBackService vendorPostBackService;
+    @Autowired
+    private LoginRepository loginRepository;
+    private long otpnumber = 0;
 
     @Override
     public void handle(RequestProperties requestProperties) {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
-         if (requestProperties.isOtp()) {
+        if (requestProperties.isOtp()) {
 
-            if(requestProperties.getOtpNumber()==0){
+            if (requestProperties.getOtpNumber() == 0) {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
-                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
                 return;
             }
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
+            log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-                otpnumber=requestProperties.getOtpNumber();
+                otpnumber = requestProperties.getOtpNumber();
                 handleSubRequest(requestProperties);
             } else {
-                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | "+requestProperties.getMsisdn());
+                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
-        }else {
+        } else {
             handleSubRequest(requestProperties);
         }
 
@@ -176,15 +186,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             exisingUser = false;
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | REGISTRING NEW USER");
-            _user = registerNewUser(requestProperties,entity);
+            _user = registerNewUser(requestProperties, entity);
 
         }
 
         if (exisingUser) {
             UsersStatusEntity _usersStatusEntity = userStatusRepository.findTopById(_user.getId());
-            if(_usersStatusEntity == null){
+            if (_usersStatusEntity == null) {
                 processUserRequest(requestProperties, _user);
-            }else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
+            } else if (_usersStatusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCKED OR BLACKLISTED");
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.USER_IS_BLOCKED), ResponseTypeConstants.USER_IS_BLOCKED, requestProperties.getCorrelationId());
             } else {
@@ -199,7 +209,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS ALREADY SUBSCRIBED");
                         createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.ALREADY_SUBSCRIBED), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
                     }
-                }else {
+                } else {
                     processUserRequest(requestProperties, _user);
                 }
             }
@@ -209,16 +219,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
 
-    private UsersEntity registerNewUser(RequestProperties requestProperties,VendorPlansEntity entity) {
+    private UsersEntity registerNewUser(RequestProperties requestProperties, VendorPlansEntity entity) {
         UsersEntity usersEntity = new UsersEntity();
         usersEntity.setMsisdn(requestProperties.getMsisdn());
         usersEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         usersEntity.setCdate(new Date());
         usersEntity.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
         usersEntity.setOperatorId(Long.valueOf(entity.getOperatorId()));
-        if(requestProperties.isOtp()){
+        if (requestProperties.isOtp()) {
             usersEntity.setIsOtpVerifired(1);
-        }else {
+        } else {
             usersEntity.setIsOtpVerifired(0);
         }
         usersEntity.setTrackerId(requestProperties.getTrackerId());
@@ -226,10 +236,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
-       Timestamp today=Timestamp.valueOf(LocalDateTime.now());
+        Timestamp today = Timestamp.valueOf(LocalDateTime.now());
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
-        List<UsersStatusEntity> usr=userStatusRepository.IsFreeTrialUser(today,_user.getId());
-        if(usr.isEmpty()){
+        List<UsersStatusEntity> usr = userStatusRepository.IsFreeTrialUser(today, _user.getId());
+        if (usr.isEmpty()) {
             log.info("No Record Found Adding New User Status");
             VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
             usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
@@ -250,8 +260,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             usersStatusEntity = userStatusRepository.save(usersStatusEntity);
             updateUserStatus(_user, usersStatusEntity.getId(), requestProperties.getVendorPlanId());
             userStatusRepository.flush();
-        }
-        else {
+        } else {
             log.info("User is in free trial No New Entry Is Required in User Status Table");
           /*  int status=userStatusRepository.UnsubStatus(_user.getId());
             //if status ==2 means user unsubscribe*/
@@ -268,21 +277,21 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
         usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
         SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
-       // String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
+        // String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
         //int hours = Integer.parseInt(expiryTime[0]);
-       // int minutes = Integer.parseInt(expiryTime[1]);
+        // int minutes = Integer.parseInt(expiryTime[1]);
         usersStatusEntity.setSubCycleId(entity.getSubCycle());
-        if(entity.getSubCycle()==1){
+        if (entity.getSubCycle() == 1) {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
             usersStatusEntity.setFree_trial(Timestamp.valueOf(LocalDateTime.now().plusDays(3)));
 
-        }else {
+        } else {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.now().plusDays(7)));
         }
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
         usersStatusEntity = userStatusRepository.save(usersStatusEntity);
-        updateUserStatus(_user, usersStatusEntity.getId(),requestProperties.getVendorPlanId());
+        updateUserStatus(_user, usersStatusEntity.getId(), requestProperties.getVendorPlanId());
         userStatusRepository.flush();
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
         return usersStatusEntity;
@@ -291,27 +300,29 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
         log.info("**********Sending Request For Charging*******");
-        if(fiegnResponse==null){
+        if (fiegnResponse == null) {
             return;
         }
 
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) || fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-                mtService.sendSubMt(requestProperties.getMsisdn(), entity);
+//                mtService.sendSubMt(requestProperties.getMsisdn(), entity);
+                mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
+
             }
             try {
                 createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
                 saveLogInRecord(requestProperties, entity.getId());
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
-                if(vendorReportEntity.isEmpty()) {
+                if (vendorReportEntity.isEmpty()) {
                     log.info("CALLING VENDOR POSTBACK");
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                    createVendorReport(requestProperties,1,_user.getOperatorId().intValue());
-                }else {
-                    createVendorReport(requestProperties,0,_user.getOperatorId().intValue());
+                    createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
+                } else {
+                    createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
                 }
-            }finally {
+            } finally {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
@@ -320,10 +331,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             MtProperties mtProperties = new MtProperties();
             VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
             //MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
-            log.info("Vendor Plan Name"+vendorPlansEntity.getPlanName() );
-            String message ="Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
+            log.info("Vendor Plan Name" + vendorPlansEntity.getPlanName());
+            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
                     "http://bit.ly/2s7au8P";
-            log.info("Forwarded Message"+ message);
+            log.info("Forwarded Message" + message);
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
             mtProperties.setShortCode("3444");
@@ -335,7 +346,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
+            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
@@ -349,18 +360,18 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
         boolean isNull = true;
-        int i=0;
-        if(entity==null){
-            while (isNull){
-                entity  = requestRepository.findByCorrelationid(correlationId);
+        int i = 0;
+        if (entity == null) {
+            while (isNull) {
+                entity = requestRepository.findByCorrelationid(correlationId);
                 System.out.println("ENTITY IS NULL TAKING TIME");
 
-                if(entity!=null){
+                if (entity != null) {
                     isNull = false;
                 }
                 i++;
-                if(i>10){
-                    isNull=false;
+                if (i > 10) {
+                    isNull = false;
                 }
             }
         }
@@ -372,16 +383,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
 
-    private void updateUserStatus(UsersEntity user, long userStatusId,long vendorPLanId) {
+    private void updateUserStatus(UsersEntity user, long userStatusId, long vendorPLanId) {
         user.setUserStatusId((int) userStatusId);
         user.setModifyDate(Timestamp.valueOf(LocalDateTime.now()));
-        if(user.getVendorPlanId()!=vendorPLanId){
+        if (user.getVendorPlanId() != vendorPLanId) {
             user.setVendorPlanId(vendorPLanId);
         }
         usersRepository.save(user);
     }
 
-    private void createVendorReport(RequestProperties requestProperties,int postBackSent,Integer operatorId) {
+    private void createVendorReport(RequestProperties requestProperties, int postBackSent, Integer operatorId) {
         VendorReportEntity vendorReportEntity = new VendorReportEntity();
         vendorReportEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         vendorReportEntity.setMsisdn(requestProperties.getMsisdn());
@@ -392,7 +403,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         vendorReportRepository.save(vendorReportEntity);
     }
 
-    private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
+    private void saveLogInRecord(RequestProperties requestProperties, long vendorPlanId) {
         LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
         loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
 

@@ -36,8 +36,9 @@ public class OtpVerificationHandler implements RequestEventHandler {
     public void handle(RequestProperties requestProperties) {
         Random random = new Random();
         Integer otpNumber = 1000 + random.nextInt(900);
-        if(requestProperties.getMsisdn() == 923225553000l){
-            otpNumber = 1214;
+
+        if(requestProperties.getMsisdn() == 923222200051l){
+            otpNumber = 1234;
         }
         MtProperties mtProperties = new MtProperties();
         VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());

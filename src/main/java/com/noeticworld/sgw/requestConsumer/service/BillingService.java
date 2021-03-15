@@ -22,40 +22,45 @@ import java.util.List;
 public class BillingService {
 
     Logger log = LoggerFactory.getLogger(BillingService.class.getName());
+    @Autowired
+    MtService mtService;
+    @Autowired
+    private ConfigurationDataManagerService dataService;
+    @Autowired
+    private BillingClient billingClient;
+    @Autowired
+    private GamesBillingRecordRepository gamesBillingRecordsRepository;
+    @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
+    private UserStatusRepository userStatusRepository;
 
-    @Autowired private ConfigurationDataManagerService dataService;
-    @Autowired private BillingClient billingClient;
-
-    @Autowired private GamesBillingRecordRepository gamesBillingRecordsRepository;
-    @Autowired private UsersRepository usersRepository;
-    @Autowired private UserStatusRepository userStatusRepository;
-@Autowired MtService mtService;
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
-        UsersEntity user=usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
-        UsersStatusEntity user_status=userStatusRepository.UnsubStatus(user.getId());
-        if(user!=null) {
-            if(user_status!=null) {
-                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
-                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
-                }
-            }
-        }
-        if(isAlreadyChargedToday(requestProperties.getMsisdn())){
-            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | "+requestProperties.getMsisdn());
+
+        UsersEntity user = usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
+        UsersStatusEntity user_status = userStatusRepository.UnsubStatus(user.getId());
+
+//        if (user != null) {
+//            if (user_status != null) {
+//                if (user_status.getStatusId() == ResponseTypeConstants.UNSUB) {
+//                    mtService.processMtRequest(requestProperties.getMsisdn(), "Dear Customer, you are successfully subscribed to Gamenow Casual Games @Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL");
+//                }
+//            }
+//        }
+        if (isAlreadyChargedToday(requestProperties.getMsisdn())) {
+            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | " + requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
-        }
-        else if(isFreeTrial(requestProperties.getMsisdn())){
-            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Still In Progress | "+requestProperties.getMsisdn());
+        } else if (isFreeTrial(requestProperties.getMsisdn())) {
+            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Still In Progress | " + requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("User Still In Free Trial");
             return fiegnResponse;
-        }
-        else {
+        } else {
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -89,31 +94,31 @@ public class BillingService {
     }
 
     private boolean isAlreadyChargedToday(long msisdn) {
-        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | "+msisdn);
+        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | " + msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-        Timestamp currenttime=Timestamp.valueOf(LocalDateTime.now().plusDays(1));
-        Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
+        Timestamp currenttime = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
+        Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23, 59));
 
-        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn,fromDate,toDate);
+        List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn, fromDate, toDate);
         return !gamesBillingRecordEntity.isEmpty();
     }
+
     private boolean isFreeTrial(long msisdn) {
-        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF FreeTrial CHARGED TODAY | "+msisdn);
+        log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF FreeTrial CHARGED TODAY | " + msisdn);
         Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
-        Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23,59));
-        UsersEntity _user=usersRepository.findByMsisdn(msisdn);
-        List<UsersStatusEntity> entitylist=null;
-        if(_user!=null ){
+        Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23, 59));
+        UsersEntity _user = usersRepository.findByMsisdn(msisdn);
+        List<UsersStatusEntity> entitylist = null;
+        if (_user != null) {
             log.info("User Is Not Null Checking Free Trial");
-           entitylist=userStatusRepository.IsFreeTrialUser(fromDate,_user.getId());
-           if(!entitylist.isEmpty()){
-               log.info("Free Trial Users");
-               return true;
-           }
-           else{
-               log.info("Not Free Trial Users");
-               return false;
-           }
+            entitylist = userStatusRepository.IsFreeTrialUser(fromDate, _user.getId());
+            if (!entitylist.isEmpty()) {
+                log.info("Free Trial Users");
+                return true;
+            } else {
+                log.info("Not Free Trial Users");
+                return false;
+            }
 
         }
         return false;
