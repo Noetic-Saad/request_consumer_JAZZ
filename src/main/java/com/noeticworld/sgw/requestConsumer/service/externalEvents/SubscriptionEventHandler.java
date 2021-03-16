@@ -305,16 +305,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             return;
         }
 
-        System.out.println("Feign response. getcode () ***** " + requestProperties.getMsisdn() + " ... " + fiegnResponse.getCode());
+        System.out.println("Feign response | get code  ***** " + requestProperties.getMsisdn() + " | " + fiegnResponse.getCode());
 
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) ||
                 fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
 
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-
-                System.out.println("Feign response. getcode () ***** in the MT Block .... " + requestProperties.getMsisdn() + " ... " + fiegnResponse.getCode());
-
                 String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
                         "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
 
@@ -328,11 +325,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 try {
                     mtClient.sendMt(mtProperties);
+                    mtService.saveMessageRecord(requestProperties.getMsisdn(),message);
                 } catch (Exception e) {
                     log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                 }
                 // This MT is not working for some reason, not know yet.
-                // mtService.processMtRequest(requestProperties.getMsisdn(), message);
+//                 mtService.processMtRequest(requestProperties.getMsisdn(), message);
 
             }
             try {
@@ -367,6 +365,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             mtProperties.setServiceId("1061");
             try {
                 mtClient.sendMt(mtProperties);
+                mtService.saveMessageRecord(requestProperties.getMsisdn(),message);
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
