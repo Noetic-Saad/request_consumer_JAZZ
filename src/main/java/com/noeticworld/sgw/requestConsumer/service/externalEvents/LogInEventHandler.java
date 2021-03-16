@@ -31,57 +31,48 @@ public class LogInEventHandler implements RequestEventHandler {
     OtpRecordRepository otpRecordRepository;
     @Autowired
     LogInRecordRepository logInRecordRepository;
-    @Autowired SubscriptionEventHandler subscriptionEventHandler;
-    @Autowired LoginRepository loginRepository;
+    @Autowired
+    SubscriptionEventHandler subscriptionEventHandler;
+    @Autowired
+    LoginRepository loginRepository;
+
     @Override
-    public void handle(RequestProperties requestProperties)  {
+    public void handle(RequestProperties requestProperties) {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            log.info("LOGINEVENTHANDLER CLASS||OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
+            log.info("LOGINEVENTHANDLER CLASS||OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
-
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
-        }
-        else {
+        } else {
 
-            if(_user!=null){
+            if (_user != null) {
                 log.info("User Already Exist");
-                UsersStatusEntity user_status_id=userStatusRepository.UnsubStatus(_user.getId());
-                UsersEntity user_status=usersRepository.FindByTopMSISDN(_user.getMsisdn());
+                UsersStatusEntity user_status_id = userStatusRepository.UnsubStatus(_user.getId());
+                UsersEntity user_status = usersRepository.FindByTopMSISDN(_user.getMsisdn());
 
-                if(user_status_id!=null) {
-                    if(user_status.getUserStatusId()==null){
+                if (user_status_id != null) {
+                    if (user_status.getUserStatusId() == null) {
                         log.info("*******UNCharged Users************* : " + user_status_id);
                         createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
-                    }
-
-                    else if (user_status_id.getStatusId() == 2) {
+                    } else if (user_status_id.getStatusId() == 2) {
                         log.info("*******Unsubscribed Users************* : " + user_status_id);
                         createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
-                    }
-                    else{
+                    } else {
                         log.info("Processing Request Without asking for otp");
                         processLogInRequest(requestProperties);
                     }
-                }
-                else {
+                } else {
                     log.info("Processing Request Without asking for otp");
                     processLogInRequest(requestProperties);
                 }
-            }
-
-
-
-            else{
-                createResponse("OTP Required",ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
-
-
+            } else {
+                createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
             }
 
         }
@@ -91,70 +82,69 @@ public class LogInEventHandler implements RequestEventHandler {
     private void processLogInRequest(RequestProperties requestProperties) {
 
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        if(usersEntity==null || usersEntity.getUserStatusId() == null){
+        if (usersEntity == null || usersEntity.getUserStatusId() == null) {
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
         UsersStatusEntity statusEntity = null;
-        if(usersEntity.getUserStatusId()==null){
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+        if (usersEntity.getUserStatusId() == null) {
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
         statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
-          if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+        if (statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)) {
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS BLOCOKED");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCOKED");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
                 && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now())) {
-              log.info("********User Status Id : "+statusEntity.getId() +" User Status"+ statusEntity.getStatusId()+" Expired At"+statusEntity.getExpiryDatetime());
+            log.info("********User Status Id : " + statusEntity.getId() + " User Status" + statusEntity.getStatusId() + " Expired At" + statusEntity.getExpiryDatetime());
 
-              log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS VALID USER");
             createResponse("Valid User", ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
-            saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
+            saveLogInRecord(requestProperties, usersEntity.getVendorPlanId());
         } else {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             subscriptionEventHandler.handleSubRequest(requestProperties);
         }
     }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
-        System.out.println("CORREALATIONID || "+correlationId);
-        try{
-        VendorRequestsStateEntity entity = null;
-        entity  = requestRepository.findByCorrelationid(correlationId);
-        boolean isNull = true;
-        int i=0;
-        if(entity==null){
-            while (isNull){
+        System.out.println("CORREALATIONID || " + correlationId);
+        try {
+            VendorRequestsStateEntity entity = null;
+            entity = requestRepository.findByCorrelationid(correlationId);
+            boolean isNull = true;
+            int i = 0;
+            if (entity == null) {
+                while (isNull) {
 
-                entity  = requestRepository.findByCorrelationid(correlationId);
+                    entity = requestRepository.findByCorrelationid(correlationId);
 
-                i++;
-                log.error("entity is null trying to create response"+i);
-                if(entity!=null){
-                    isNull = false;
-                }
-                if(i==10){
-                    isNull = false;
+                    i++;
+                    log.error("entity is null trying to create response" + i);
+                    if (entity != null) {
+                        isNull = false;
+                    }
+                    if (i == 10) {
+                        isNull = false;
+                    }
                 }
             }
-        }
-        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
-        entity.setFetched(false);
-        entity.setResultStatus(resultStatus);
-        entity.setDescription(desc);
-        requestRepository.save(entity);
-        }
-        catch (Exception ex){
-            log.error("Error In Creating Response"+ex);
+            entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
+            entity.setFetched(false);
+            entity.setResultStatus(resultStatus);
+            entity.setDescription(desc);
+            requestRepository.save(entity);
+        } catch (Exception ex) {
+            log.error("Error In Creating Response" + ex);
         }
     }
 
-    private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
+    private void saveLogInRecord(RequestProperties requestProperties, long vendorPlanId) {
         LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
         loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
         loginRecordsEntity.setSessionId(requestProperties.getSessionId());

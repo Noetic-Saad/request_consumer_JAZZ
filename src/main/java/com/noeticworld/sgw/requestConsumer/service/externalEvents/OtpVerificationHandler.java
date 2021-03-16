@@ -37,16 +37,16 @@ public class OtpVerificationHandler implements RequestEventHandler {
         Random random = new Random();
         Integer otpNumber = 1000 + random.nextInt(900);
 
-        if(requestProperties.getMsisdn() == 923222200051l){
+        if (requestProperties.getMsisdn() == 923222200051l) {
             otpNumber = 1234;
         }
         MtProperties mtProperties = new MtProperties();
         VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
-        System.out.println("vendorPlansEntity.getPlanName()"+vendorPlansEntity.getPlanName()+requestProperties.getVendorPlanId());
+        System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId());
 
         // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
         String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_otp").getMsgText();
-        String finalMessage = message.replaceAll("&otp",otpNumber.toString());
+        String finalMessage = message.replaceAll("&otp", otpNumber.toString());
         mtProperties.setData(finalMessage);
         mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
         mtProperties.setShortCode("3444");
@@ -56,11 +56,11 @@ public class OtpVerificationHandler implements RequestEventHandler {
         try {
             mtClient.sendMt(mtProperties);
         } catch (Exception e) {
-            logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | "+e.getCause());
+            logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
         }
-        saveOtpRecords(mtProperties,otpNumber,vendorPlansEntity.getId());
+        saveOtpRecords(mtProperties, otpNumber, vendorPlansEntity.getId());
 
-        if(requestProperties.getVendorPlanId()==3 ||requestProperties.getVendorPlanId()==12 ||requestProperties.getVendorPlanId()==16) {
+        if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 12 || requestProperties.getVendorPlanId() == 16) {
             System.out.println("Saving Jazz Msisdn In Login Table : ");
             LoginEntity loginEntity = new LoginEntity();
             loginEntity.setMsisdn(requestProperties.getMsisdn());
@@ -71,7 +71,8 @@ public class OtpVerificationHandler implements RequestEventHandler {
         }
 
     }
-    public void saveOtpRecords(MtProperties mtProperties,Integer otpNumber,long vendorPlanId){
+
+    public void saveOtpRecords(MtProperties mtProperties, Integer otpNumber, long vendorPlanId) {
         OtpRecordsEntity otpRecordsEntity = new OtpRecordsEntity();
         otpRecordsEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         otpRecordsEntity.setMsisdn(Long.parseLong(mtProperties.getMsisdn()));
