@@ -60,8 +60,9 @@ public class OtpVerificationHandler implements RequestEventHandler {
         }
         saveOtpRecords(mtProperties, otpNumber, vendorPlansEntity.getId());
 
-        if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 12 || requestProperties.getVendorPlanId() == 16) {
-            System.out.println("Saving Jazz Msisdn In Login Table : ");
+        if (requestProperties.getVendorPlanId() == 3 || requestProperties.getVendorPlanId() == 12 ||
+                requestProperties.getVendorPlanId() == 16 || requestProperties.getVendorPlanId() == 17) {
+            System.out.println("Saving Jazz Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
             LoginEntity loginEntity = new LoginEntity();
             loginEntity.setMsisdn(requestProperties.getMsisdn());
             loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));

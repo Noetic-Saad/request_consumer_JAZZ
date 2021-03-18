@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/MtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/MtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/OtpVerificationHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/OtpVerificationHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +25,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
@@ -49,6 +56,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44367817" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
