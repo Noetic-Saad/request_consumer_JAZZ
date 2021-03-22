@@ -311,8 +311,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
 
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-                String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
-                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
+//                String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
+//                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
+                String message = "Dear Customer, you are successfully subscribed to GN Casual Games @Rs.5" +
+                        ".98 per " +
+                        "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
 
                 MtProperties mtProperties = new MtProperties();
                 mtProperties.setData(message);
@@ -350,8 +353,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             // USE CASE: In case of insufficient balance, We need to give 1 day free trial to the user.
 
             // 1. Send Free trial MT.
-            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
-                    "http://bit.ly/2s7au8P";
+//            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
+//                    "http://bit.ly/2s7au8P";
+            String message = "You are successfully subscribed to GN Casual Games. bit.ly/3c9ab1J\n" +
+                    "After 1 day free trial, you will be charged Rs.5.98/day.\n" + "To unsubscribe, go to " +
+                    "bit.ly/3v8GQvL";
 
             MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
