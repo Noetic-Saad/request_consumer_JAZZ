@@ -25,25 +25,36 @@ public class ConfigurationDataManagerService {
     private Map<Integer, UserStatusTypeEntity> userStatuseTypeMap = new HashMap<>();
     private Map<String, Integer> userStatusTypeIdsMap = new HashMap<>();
     private Map<Long, TestMsisdnsEntity> testMsisdnsMap = new HashMap<>();
-    private Map<Long,VendorPlansEntity> vendorPlansEntityMap = new HashMap<>();
-    private Map<String,MtMessagesEntity> mtMessagesEntityMap = new HashMap<>();
-    private Map<Long,MtMessageSettingsEntity> mtMessageSettingsEntityMap = new HashMap<>();
+    private Map<Long, VendorPlansEntity> vendorPlansEntityMap = new HashMap<>();
+    private Map<String, MtMessagesEntity> mtMessagesEntityMap = new HashMap<>();
+    private Map<Long, MtMessageSettingsEntity> mtMessageSettingsEntityMap = new HashMap<>();
     private Map<String, SubscriptionCyclesEntity> subCycleMap = new HashMap<>();
     private Map<Integer, SubscriptionCyclesEntity> subCycleDaysMap = new HashMap<>();
-    private Map<Long,VendorPostbackConfigEntity> vendorPostbackConfigEntityMap = new HashMap<>();
-    private Map<Long,String> vendorPostBackParamMap = new HashMap<>();
+    private Map<Long, VendorPostbackConfigEntity> vendorPostbackConfigEntityMap = new HashMap<>();
+    private Map<Long, String> vendorPostBackParamMap = new HashMap<>();
 
-    @Autowired private ResponseTypeRepository responseTypeRepository;
-    @Autowired private SubscriptionSettingRepository subscriptionSettingRepository;
-    @Autowired private RequestEventsRepository requestEventsRepository;
-    @Autowired private UserStatusesLookupRepository userStatusTypeRepository;
-    @Autowired private TestMsisdnsRepository testMsisdnsRepository;
-    @Autowired private VendorPlanRepository vendorPlanRepository;
-    @Autowired private MtMessageRepository mtMessageRepository;
-    @Autowired private OperatorRepository operatorRepository;
-    @Autowired private MtMessageSettingsRepository mtMessageSettingsRepository;
-    @Autowired private SubscriptionCycleRepository cycleRepository;
-    @Autowired private VendorPostBackConfigRepository vendorPostBackConfigRepository;
+    @Autowired
+    private ResponseTypeRepository responseTypeRepository;
+    @Autowired
+    private SubscriptionSettingRepository subscriptionSettingRepository;
+    @Autowired
+    private RequestEventsRepository requestEventsRepository;
+    @Autowired
+    private UserStatusesLookupRepository userStatusTypeRepository;
+    @Autowired
+    private TestMsisdnsRepository testMsisdnsRepository;
+    @Autowired
+    private VendorPlanRepository vendorPlanRepository;
+    @Autowired
+    private MtMessageRepository mtMessageRepository;
+    @Autowired
+    private OperatorRepository operatorRepository;
+    @Autowired
+    private MtMessageSettingsRepository mtMessageSettingsRepository;
+    @Autowired
+    private SubscriptionCycleRepository cycleRepository;
+    @Autowired
+    private VendorPostBackConfigRepository vendorPostBackConfigRepository;
 
     private int jazz = 0;
     private int warid = 0;
@@ -116,10 +127,10 @@ public class ConfigurationDataManagerService {
         responseTypeEntityMap = map;
     }
 
-    private void loadSubscriptionCycle(){
+    private void loadSubscriptionCycle() {
         List<SubscriptionCyclesEntity> list = cycleRepository.findAll();
-        list.forEach(subscriptionCyclesEntity -> subCycleMap.put(subscriptionCyclesEntity.getLabel(),subscriptionCyclesEntity));
-        list.forEach(subscriptionCyclesEntity -> subCycleDaysMap.put(subscriptionCyclesEntity.getId(),subscriptionCyclesEntity));
+        list.forEach(subscriptionCyclesEntity -> subCycleMap.put(subscriptionCyclesEntity.getLabel(), subscriptionCyclesEntity));
+        list.forEach(subscriptionCyclesEntity -> subCycleDaysMap.put(subscriptionCyclesEntity.getId(), subscriptionCyclesEntity));
     }
 
     private void loadSubscriptionSettings() {
@@ -136,46 +147,48 @@ public class ConfigurationDataManagerService {
         testMsisdnsMap = map;
     }
 
-    private void loadVendorPlans(){
+    private void loadVendorPlans() {
         List<VendorPlansEntity> list = vendorPlanRepository.findAll();
-        list.forEach(vendorPlansEntity -> vendorPlansEntityMap.put(vendorPlansEntity.getId(),vendorPlansEntity));
+        list.forEach(vendorPlansEntity -> vendorPlansEntityMap.put(vendorPlansEntity.getId(), vendorPlansEntity));
     }
 
-    private void loadMtMessage(){
+    private void loadMtMessage() {
         List<MtMessagesEntity> list = mtMessageRepository.findAll();
-        list.forEach(mtMessagesEntity -> mtMessagesEntityMap.put(mtMessagesEntity.getLabel(),mtMessagesEntity));
+        list.forEach(mtMessagesEntity -> mtMessagesEntityMap.put(mtMessagesEntity.getLabel(), mtMessagesEntity));
     }
 
-    private void loadMtMessageSettings(){
+    private void loadMtMessageSettings() {
         List<MtMessageSettingsEntity> list = mtMessageSettingsRepository.findAll();
-        list.forEach(mtMessageSettingsEntity -> mtMessageSettingsEntityMap.put(Long.valueOf(mtMessageSettingsEntity.getVendorPlanId()),mtMessageSettingsEntity));
+        list.forEach(mtMessageSettingsEntity -> mtMessageSettingsEntityMap.put(Long.valueOf(mtMessageSettingsEntity.getVendorPlanId()), mtMessageSettingsEntity));
     }
-    private void loadVendorPostBackConfig(){
+
+    private void loadVendorPostBackConfig() {
         List<VendorPostbackConfigEntity> list = vendorPostBackConfigRepository.findAll();
         list.forEach(vendorPostbackConfigEntity -> loadPostBackParams(vendorPostbackConfigEntity));
     }
 
-    public void loadOperator(){
+    public void loadOperator() {
         List<OperatorEntity> list = operatorRepository.findAll();
-        for (int i = 0; i < list.size() ; i++) {
-            if(list.get(i).getName().equalsIgnoreCase("jazz")){
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getName().equalsIgnoreCase("jazz")) {
                 jazz = list.get(i).getId();
-            }else if(list.get(i).getName().equalsIgnoreCase("warid")){
+            } else if (list.get(i).getName().equalsIgnoreCase("warid")) {
                 warid = list.get(i).getId();
-            } else if(list.get(i).getName().equalsIgnoreCase("ufone")){
+            } else if (list.get(i).getName().equalsIgnoreCase("ufone")) {
                 ufone = list.get(i).getId();
-            }else if(list.get(i).getName().equalsIgnoreCase("zong")){
+            } else if (list.get(i).getName().equalsIgnoreCase("zong")) {
                 zong = list.get(i).getId();
-            }else {
+            } else {
                 telenor = list.get(i).getId();
             }
         }
     }
 
-    public SubscriptionCyclesEntity getSubCycleId(String label){
+    public SubscriptionCyclesEntity getSubCycleId(String label) {
         return subCycleMap.get(label);
     }
-    public SubscriptionCyclesEntity getSubCycleDays(Integer id){
+
+    public SubscriptionCyclesEntity getSubCycleDays(Integer id) {
         return subCycleDaysMap.get(id);
     }
 
@@ -184,39 +197,56 @@ public class ConfigurationDataManagerService {
         return testMsisdnsMap.get(msisdn) != null;
     }
 
-    public VendorPlansEntity getVendorPlans(Long vendorPlanId){
+    public VendorPlansEntity getVendorPlans(Long vendorPlanId) {
         return vendorPlansEntityMap.get(vendorPlanId);
     }
-    public SubscriptionSettingEntity getSubscriptionSetting(long vendorPlanId){
+
+    public SubscriptionSettingEntity getSubscriptionSetting(long vendorPlanId) {
         return subscriptionSettingEntityMap.get(vendorPlanId);
     }
 
-    public MtMessagesEntity getMtMessage(String label){
+    public MtMessagesEntity getMtMessage(String label) {
         return mtMessagesEntityMap.get(label);
     }
 
-    public MtMessageSettingsEntity getMtMessageSetting(Long vendorPlanId){
+    public MtMessageSettingsEntity getMtMessageSetting(Long vendorPlanId) {
         return mtMessageSettingsEntityMap.get(vendorPlanId);
     }
 
-    public String getVendorPostBackConfig(Long vendorPlanId){
-        System.out.println("PostBack Entity Map---> "+vendorPostBackParamMap.size());
-        System.out.println("PostBack Vendor Plan Id--->"+vendorPlanId);
+    public String getVendorPostBackConfig(Long vendorPlanId) {
+        System.out.println("PostBack Entity Map---> " + vendorPostBackParamMap.size());
+        System.out.println("PostBack Vendor Plan Id--->" + vendorPlanId);
         System.out.println(vendorPostBackParamMap.get(vendorPlanId));
         return vendorPostBackParamMap.get(vendorPlanId);
     }
 
-    public void loadPostBackParams(VendorPostbackConfigEntity vendorPostbackConfigEntity){
-        String url = vendorPostbackConfigEntity.getUrl()+"?";
-        if(!vendorPostbackConfigEntity.getParam1Name().equalsIgnoreCase("none")){url=url+vendorPostbackConfigEntity.getParam1Name()+"="+vendorPostbackConfigEntity.getParam1Value();}
-        if(!vendorPostbackConfigEntity.getParam2Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam2Name()+"="+vendorPostbackConfigEntity.getParam2Value();}
-        if(!vendorPostbackConfigEntity.getParam3Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam3Name()+"="+vendorPostbackConfigEntity.getParam3Value();}
-        if(!vendorPostbackConfigEntity.getParam4Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam4Name()+"="+vendorPostbackConfigEntity.getParam4Value();}
-        if(!vendorPostbackConfigEntity.getParam5Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam5Name()+"="+vendorPostbackConfigEntity.getParam5Value();}
-        if(!vendorPostbackConfigEntity.getParam6Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam6Name()+"="+vendorPostbackConfigEntity.getParam6Value();}
-        if(!vendorPostbackConfigEntity.getParam7Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam7Name()+"="+vendorPostbackConfigEntity.getParam7Value();}
-        if(!vendorPostbackConfigEntity.getParam8Name().equalsIgnoreCase("none")){url=url+"&"+vendorPostbackConfigEntity.getParam8Name()+"="+vendorPostbackConfigEntity.getParam8Value();}
-        vendorPostBackParamMap.put(Long.valueOf(vendorPostbackConfigEntity.getVendorPlanId()),url);
+    public void loadPostBackParams(VendorPostbackConfigEntity vendorPostbackConfigEntity) {
+        String url = vendorPostbackConfigEntity.getUrl() + "?";
+        if (!vendorPostbackConfigEntity.getParam1Name().equalsIgnoreCase("none")) {
+            url = url + vendorPostbackConfigEntity.getParam1Name() + "=" + vendorPostbackConfigEntity.getParam1Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam2Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam2Name() + "=" + vendorPostbackConfigEntity.getParam2Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam3Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam3Name() + "=" + vendorPostbackConfigEntity.getParam3Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam4Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam4Name() + "=" + vendorPostbackConfigEntity.getParam4Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam5Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam5Name() + "=" + vendorPostbackConfigEntity.getParam5Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam6Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam6Name() + "=" + vendorPostbackConfigEntity.getParam6Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam7Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam7Name() + "=" + vendorPostbackConfigEntity.getParam7Value();
+        }
+        if (!vendorPostbackConfigEntity.getParam8Name().equalsIgnoreCase("none")) {
+            url = url + "&" + vendorPostbackConfigEntity.getParam8Name() + "=" + vendorPostbackConfigEntity.getParam8Value();
+        }
+        vendorPostBackParamMap.put(Long.valueOf(vendorPostbackConfigEntity.getVendorPlanId()), url);
     }
 
     public int getJazz() {

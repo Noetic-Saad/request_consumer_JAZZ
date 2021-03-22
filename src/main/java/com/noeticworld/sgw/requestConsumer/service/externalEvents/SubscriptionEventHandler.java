@@ -59,7 +59,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         if (requestProperties.isOtp()) {
-
             if (requestProperties.getOtpNumber() == 0) {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
@@ -325,12 +324,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 try {
                     mtClient.sendMt(mtProperties);
-                    mtService.saveMessageRecord(requestProperties.getMsisdn(),message);
+                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
                 } catch (Exception e) {
                     log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                 }
                 // This MT is not working for some reason, not know yet.
-//                 mtService.processMtRequest(requestProperties.getMsisdn(), message);
+                // mtService.processMtRequest(requestProperties.getMsisdn(), message);
 
             }
             try {
@@ -348,15 +347,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
-            //added by habib to send mt message if user doesn't have balance
+            // USE CASE: In case of insufficient balance, We need to give 1 day free trial to the user.
 
-            MtProperties mtProperties = new MtProperties();
-            VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
-            //MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
-            log.info("Vendor Plan Name" + vendorPlansEntity.getPlanName());
+            // 1. Send Free trial MT.
             String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
                     "http://bit.ly/2s7au8P";
-            log.info("Forwarded Message" + message);
+
+            MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
             mtProperties.setShortCode("3444");
@@ -365,11 +362,40 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             mtProperties.setServiceId("1061");
             try {
                 mtClient.sendMt(mtProperties);
-                mtService.saveMessageRecord(requestProperties.getMsisdn(),message);
+                mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
-            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());
+
+            try {
+                // 2. Create user status
+                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+
+                // 3. save login record.
+                saveLogInRecord(requestProperties, entity.getId());
+            } finally {
+                // 4. Create vendor_request_state entity.
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            }
+
+            // Commenting this out because the requirement is to provide 1 day free trial to the user.
+            /*String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
+                    "http://bit.ly/2s7au8P";
+
+            MtProperties mtProperties = new MtProperties();
+            mtProperties.setData(message);
+            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+            mtProperties.setShortCode("3444");
+            mtProperties.setPassword("g@m3now");
+            mtProperties.setUsername("gamenow@noetic");
+            mtProperties.setServiceId("1061");
+            try {
+                mtClient.sendMt(mtProperties);
+                mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
+            }
+            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());*/
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
