@@ -38,17 +38,18 @@ public class LogInEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
-        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
             log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
+
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
         } else {
+            UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+
             if (_user != null) {
                 log.info("User Already Exist");
                 UsersStatusEntity user_status_id = userStatusRepository.UnsubStatus(_user.getId());
@@ -80,8 +81,8 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
     private void processLogInRequest(RequestProperties requestProperties) {
-
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+
         if (usersEntity == null || usersEntity.getUserStatusId() == null) {
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;

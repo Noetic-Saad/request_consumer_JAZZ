@@ -181,6 +181,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         VendorPlansEntity entity = null;
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
         boolean exisingUser = true;
+
         if (_user == null) {
             exisingUser = false;
             entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
@@ -235,37 +236,35 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
     private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
-        Timestamp today = Timestamp.valueOf(LocalDateTime.now());
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
-        List<UsersStatusEntity> usr = userStatusRepository.IsFreeTrialUser(today, _user.getId());
-        if (usr.isEmpty()) {
-            log.info("No Record Found Adding New User Status");
-            VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-            usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
-            usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
-            usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
-            SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
-            String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
-            int hours = Integer.parseInt(expiryTime[0]);
-            int minutes = Integer.parseInt(expiryTime[1]);
-            usersStatusEntity.setSubCycleId(entity.getSubCycle());
-            if (entity.getSubCycle() == 1) {
-                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
-            } else {
-                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
-            }
-            usersStatusEntity.setAttempts(1);
-            usersStatusEntity.setUserId(_user.getId());
-            usersStatusEntity = userStatusRepository.save(usersStatusEntity);
-            updateUserStatus(_user, usersStatusEntity.getId(), requestProperties.getVendorPlanId());
-            userStatusRepository.flush();
-        } else {
-            log.info("User is in free trial No New Entry Is Required in User Status Table");
-          /*  int status=userStatusRepository.UnsubStatus(_user.getId());
-            //if status ==2 means user unsubscribe*/
 
+        VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
+
+        usersStatusEntity.setCdate(Timestamp.from(Instant.now()));
+        usersStatusEntity.setStatusId(dataService.getUserStatusTypeId(userStatusType));
+        usersStatusEntity.setVendorPlanId(requestProperties.getVendorPlanId());
+
+        SubscriptionSettingEntity subscriptionSettingEntity = dataService.getSubscriptionSetting(entity.getId());
+        String[] expiryTime = subscriptionSettingEntity.getExpiryTime().split(":");
+        int hours = Integer.parseInt(expiryTime[0]);
+        int minutes = Integer.parseInt(expiryTime[1]);
+
+        usersStatusEntity.setSubCycleId(entity.getSubCycle());
+        if (entity.getSubCycle() == 1) {
+            usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
+        } else {
+            usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
         }
-        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | SUBSCRIBED");
+        usersStatusEntity.setAttempts(1);
+        usersStatusEntity.setUserId(_user.getId());
+        usersStatusEntity = userStatusRepository.save(usersStatusEntity);
+
+        updateUserStatus(_user, usersStatusEntity.getId(), requestProperties.getVendorPlanId());
+
+        userStatusRepository.flush();
+
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " " +
+                "| USER STATUS CREATED");
         return usersStatusEntity;
     }
 
@@ -304,15 +303,21 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             return;
         }
 
-        System.out.println("Feign response | get code  ***** " + requestProperties.getMsisdn() + " | " + fiegnResponse.getCode());
-
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) ||
                 fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
 
+            // Rather than Doing all the DB stuff and then creating response, we create the response
+            // initially, and do all the stuff later on.
+            try {
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+            }
+
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-//                String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
-//                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";
+                /*String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
+                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";*/
                 String message = "Dear Customer, you are successfully subscribed to GN Casual Games @Rs.5" +
                         ".98 per " +
                         "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
@@ -337,21 +342,34 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
             try {
                 createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+
                 saveLogInRecord(requestProperties, entity.getId());
+
                 List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
+
                 if (vendorReportEntity.isEmpty()) {
                     log.info("CALLING VENDOR POSTBACK");
+
                     vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
                     createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
                 } else {
                     createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
                 }
-            } finally {
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | Exception | User status | login | vendor PB | vendor " +
+                        "report" +
+                        " | " + e.getCause());
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
-            // USE CASE: In case of insufficient balance, We need to give 1 day free trial to the user.
+            // Rather than Doing all the DB stuff and then creating response, we create the response
+            // initially, and do all the stuff later on.
+            try {
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+            }
 
+            // USE CASE: In case of insufficient balance, We need to give 1 day free trial to the user.
             // 1. Send Free trial MT.
 //            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
 //                    "http://bit.ly/2s7au8P";
@@ -376,12 +394,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             try {
                 // 2. Create user status
                 createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-
                 // 3. save login record.
                 saveLogInRecord(requestProperties, entity.getId());
-            } finally {
-                // 4. Create vendor_request_state entity.
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
             }
 
             // Commenting this out because the requirement is to provide 1 day free trial to the user.

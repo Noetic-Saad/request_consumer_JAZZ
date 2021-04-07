@@ -37,9 +37,15 @@ public class BillingService {
 
     public FiegnResponse charge(RequestProperties requestProperties) {
         FiegnResponse fiegnResponse = new FiegnResponse();
+        UsersStatusEntity latestUserStatus = null;
 
         UsersEntity user = usersRepository.FindByTopMSISDN(requestProperties.getMsisdn());
-        UsersStatusEntity latestUserStatus = userStatusRepository.UnsubStatus(user.getId());
+
+        // If it is a new user and is just created, then it's user status id will be null.
+        // So, in this case, we do not need to send an extra request on user status table,just by pass it.
+        if(user.getUserStatusId() != null) {
+            latestUserStatus = userStatusRepository.UnsubStatus(user.getId());
+        }
 
         // Latest status != 2 is appended to make sure that if the user is charged for that day and then
         // unsub and login to the system (Charging request) again, we want to send charging request to SGW
@@ -50,14 +56,7 @@ public class BillingService {
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
-        } else if (isFreeTrial(requestProperties.getMsisdn())) {
-            log.info("BILLING SERVICE | CHARGING CLASS | Free Trial Still In Progress | " + requestProperties.getMsisdn());
-            fiegnResponse.setCode(110);
-            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
-            fiegnResponse.setMsg("User Still In Free Trial");
-            return fiegnResponse;
         } else {
-
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
             ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
