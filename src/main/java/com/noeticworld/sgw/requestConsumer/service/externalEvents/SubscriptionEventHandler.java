@@ -56,7 +56,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
-        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+//        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         if (requestProperties.isOtp()) {
             if (requestProperties.getOtpNumber() == 0) {
@@ -316,11 +316,17 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
 
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-                /*String message = "Dear Customer, you are successfully subscribed to Gamenow Casual Games " +
-                        "@Rs.5.98 per day. To unsubscribe, go to https://bit.ly/3v8GQvL";*/
-                String message = "Dear Customer, you are successfully subscribed to GN Casual Games @Rs.5" +
-                        ".98 per " +
-                        "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
+
+                String message = "";
+
+                if (entity.getOperatorId() == 1) {
+                    message = "Dear Customer, you are successfully subscribed to GN Casual Games @Rs.5" +
+                            ".98 per " +
+                            "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
+                } else if (entity.getOperatorId() == 4) {
+                    message = "Dear Customer, you are successfully subscribed to Gamez @PKR20+tax per week. To unsubscribe, go to http://bit.ly/2s7au8P";
+                }
+
 
                 MtProperties mtProperties = new MtProperties();
                 mtProperties.setData(message);
@@ -364,7 +370,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             // Rather than Doing all the DB stuff and then creating response, we create the response
             // initially, and do all the stuff later on.
             try {
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+                if (entity.getOperatorId() == 1) {
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL,
+                            requestProperties.getCorrelationId());
+                } else if (entity.getOperatorId() == 4) {
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
+                            requestProperties.getCorrelationId());
+                }
             } catch (Exception e) {
                 log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
             }
@@ -373,10 +385,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             // 1. Send Free trial MT.
 //            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
 //                    "http://bit.ly/2s7au8P";
-            String message = "You are successfully subscribed to GN Casual Games. bit.ly/3c9ab1J\n" +
-                    "After 1 day free trial, you will be charged Rs.5.98/day.\n" + "To unsubscribe, go to " +
-                    "bit.ly/3v8GQvL";
-
+            String message = "";
+            if (entity.getOperatorId() == 1) {
+                message = "You are successfully subscribed to GN Casual Games. bit.ly/3c9ab1J\n" +
+                        "After 1 day free trial, you will be charged Rs.5.98/day.\n" + "To unsubscribe, go to " +
+                        "bit.ly/3v8GQvL";
+            } else if (entity.getOperatorId() == 4) {
+                message = "Zong low balance mt";
+            }
             MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
@@ -391,14 +407,17 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
 
-            try {
-                // 2. Create user status
-                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                // 3. save login record.
-                saveLogInRecord(requestProperties, entity.getId());
-            } catch (Exception e) {
-                log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
+            if (entity.getOperatorId() == 1) {
+                try {
+                    // 2. Create user status
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    // 3. save login record.
+                    saveLogInRecord(requestProperties, entity.getId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
+                }
             }
+
 
             // Commenting this out because the requirement is to provide 1 day free trial to the user.
             /*String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
