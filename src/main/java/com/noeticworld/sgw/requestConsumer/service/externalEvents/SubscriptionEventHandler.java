@@ -324,7 +324,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                             ".98 per " +
                             "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
                 } else if (entity.getOperatorId() == 4) {
-                    message = "Dear Customer, you are successfully subscribed to Gamez @PKR20+tax per week. To unsubscribe, go to http://bit.ly/2s7au8P";
+                    message = "Dear Customer, you are successfully subscribed to Gamez @PKR20+tax per week. To unsubscribe, go to https://bit.ly/3sjbobw";
                 }
 
 
@@ -391,7 +391,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                         "After 1 day free trial, you will be charged Rs.5.98/day.\n" + "To unsubscribe, go to " +
                         "bit.ly/3v8GQvL";
             } else if (entity.getOperatorId() == 4) {
-                message = "Zong low balance mt";
+                message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
+                        "https://bit.ly/3sjbobw";
             }
             MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
