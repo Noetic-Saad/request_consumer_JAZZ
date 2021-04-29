@@ -69,8 +69,9 @@ public class LogInEventHandler implements RequestEventHandler {
                         processLogInRequest(requestProperties);
                     }
                 } else {
-                    log.info("Processing Request Without asking for otp");
-                    processLogInRequest(requestProperties);
+                    log.info("User status id was not created | process request for otp");
+                    createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
+//                    processLogInRequest(requestProperties);
                 }
             } else {
                 createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
