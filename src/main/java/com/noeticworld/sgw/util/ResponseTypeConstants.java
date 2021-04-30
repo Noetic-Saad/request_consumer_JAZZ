@@ -2,6 +2,7 @@ package com.noeticworld.sgw.util;
 
 public class ResponseTypeConstants {
 
+    public static final String FREE_TRIAL_SUBSCRIPTION = "122";
     public static final String SUSBCRIBED_SUCCESSFULL = "101";
     public static final String UNSUSBCRIBED_SUCCESSFULL = "102";
     public static final String PURGED_SUCCESSFULL = "103";

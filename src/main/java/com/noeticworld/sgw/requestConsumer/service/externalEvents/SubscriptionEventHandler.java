@@ -307,15 +307,25 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) ||
                 fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
 
-            // Rather than Doing all the DB stuff and then creating response, we create the response
-            // initially, and do all the stuff later on.
-            try {
-                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
-            } catch (Exception e) {
-                log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+
+            // U1 - User already subscribed
+            // If the user is already subscribed, we set the RC to 110 and create response with RC-110.
+            if (entity.getOperatorId() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+                try {
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+                }
             }
 
             if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
+
+                // U2 - First time subscribed successfully.
+                try {
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+                }
 
                 String message = "";
 
@@ -371,7 +381,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             // initially, and do all the stuff later on.
             try {
                 if (entity.getOperatorId() == 1) {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL,
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
                             requestProperties.getCorrelationId());
                 } else if (entity.getOperatorId() == 4) {
                     createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
