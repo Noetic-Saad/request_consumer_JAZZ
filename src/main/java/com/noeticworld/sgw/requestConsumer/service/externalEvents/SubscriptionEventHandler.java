@@ -299,6 +299,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
         log.info("**********Sending Request For Charging*******");
 
+        UsersStatusEntity previousUserStatus = null;
+        if(_user.getUserStatusId() != null) {
+            previousUserStatus = userStatusRepository.UnsubStatus(_user.getId());
+            System.out.println("Previous user status .... ******* " + previousUserStatus.getStatusId() + " " + previousUserStatus.getId());
+        }
+
         if (fiegnResponse == null) {
             return;
         }
@@ -337,7 +343,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     message = "Dear Customer, you are successfully subscribed to Gamez @PKR20+tax per week. To unsubscribe, go to https://bit.ly/3sjbobw";
                 }
 
-
                 MtProperties mtProperties = new MtProperties();
                 mtProperties.setData(message);
                 mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
@@ -347,8 +352,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 mtProperties.setServiceId("1061");
 
                 try {
-                    mtClient.sendMt(mtProperties);
-                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    // If the user is in renewal and was not charged in renewal and tries to login by himself, then do not send MT
+                    // of any kind.
+                    if (previousUserStatus != null && previousUserStatus.getStatusId() == 8) {
+                        // Do not send MT.
+                        System.out.println("Renewal user status | Do not send MT " + _user.getMsisdn() + " | " + previousUserStatus.getStatusId());
+                    } else {
+                        mtClient.sendMt(mtProperties);
+                        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    }
+
                 } catch (Exception e) {
                     log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                 }
@@ -412,8 +425,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             mtProperties.setUsername("gamenow@noetic");
             mtProperties.setServiceId("1061");
             try {
-                mtClient.sendMt(mtProperties);
-                mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                // If the user is in renewal and was not charged in renewal and tries to login by himself, then do not send MT
+                // of any kind.
+                if (previousUserStatus != null && previousUserStatus.getStatusId() == 8) {
+                    // Do not send MT.
+                    System.out.println("Renewal user status | Do not send MT " + _user.getMsisdn() + " | " + previousUserStatus.getStatusId());
+                } else {
+                    mtClient.sendMt(mtProperties);
+                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                }
+
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
