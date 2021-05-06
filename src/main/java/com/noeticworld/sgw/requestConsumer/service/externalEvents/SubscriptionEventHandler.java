@@ -391,6 +391,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                         "https://bit.ly/3sjbobw";
             }
 
+            try {
+                sendMT(requestProperties, message);
+            } catch (Exception e) {
+                log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
+            }
             sendMT(requestProperties, message);
             /*MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
