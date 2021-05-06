@@ -389,7 +389,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 // This is to check if the user tries to login by himself and msisdn was in renewal. So in this case, we don't
                 // want to send free trial MT to the user.
-                if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                /*if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
                     isMtAllowed = false;
                 } else {
                     isMtAllowed = true;
@@ -397,7 +397,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 if (isMtAllowed) {
                     sendMT(requestProperties, message);
-                }
+                }*/
+
+                sendMT(requestProperties, message);
 
                 try {
                     createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
