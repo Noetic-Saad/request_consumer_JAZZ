@@ -21,9 +21,9 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class SubscriptionEventHandler implements RequestEventHandler {
+public class SubscriptionEventHandler222 implements RequestEventHandler {
 
-    Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
+    Logger log = LoggerFactory.getLogger(SubscriptionEventHandler222.class.getName());
     @Autowired
     ConfigurationDataManagerService dataManagerService;
     @Autowired
@@ -426,33 +426,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }
     }
 
-    private void createResponse(String desc, String resultStatus, String correlationId) {
-        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
-        VendorRequestsStateEntity entity = null;
-        boolean isNull = true;
-        int i = 0;
-        if (entity == null) {
-            while (isNull) {
-                entity = requestRepository.findByCorrelationid(correlationId);
-                System.out.println("ENTITY IS NULL TAKING TIME");
-
-                if (entity != null) {
-                    isNull = false;
-                }
-                i++;
-                if (i > 10) {
-                    isNull = false;
-                }
-            }
-        }
-        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
-        entity.setFetched(false);
-        entity.setResultStatus(resultStatus);
-        entity.setDescription(desc);
-        VendorRequestsStateEntity vre = requestRepository.save(entity);
-        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
-    }
-
     private void continueUserSubscriptionProcess(RequestProperties requestProperties, UsersEntity _user, VendorPlansEntity vendorPlansEntity) {
         try {
             createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
@@ -491,6 +464,33 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         } catch (Exception e) {
             log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
         }
+    }
+
+    private void createResponse(String desc, String resultStatus, String correlationId) {
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
+        VendorRequestsStateEntity entity = null;
+        boolean isNull = true;
+        int i = 0;
+        if (entity == null) {
+            while (isNull) {
+                entity = requestRepository.findByCorrelationid(correlationId);
+                System.out.println("ENTITY IS NULL TAKING TIME");
+
+                if (entity != null) {
+                    isNull = false;
+                }
+                i++;
+                if (i > 10) {
+                    isNull = false;
+                }
+            }
+        }
+        entity.setCdatetime(Timestamp.valueOf(LocalDateTime.now()));
+        entity.setFetched(false);
+        entity.setResultStatus(resultStatus);
+        entity.setDescription(desc);
+        VendorRequestsStateEntity vre = requestRepository.save(entity);
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
 
     private void updateUserStatus(UsersEntity user, long userStatusId, long vendorPLanId) {
