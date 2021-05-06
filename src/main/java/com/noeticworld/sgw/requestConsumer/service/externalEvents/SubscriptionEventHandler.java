@@ -391,12 +391,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                         "https://bit.ly/3sjbobw";
             }
 
-            try {
-                sendMT(requestProperties, message);
-            } catch (Exception e) {
-                log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
-            }
-            /*MtProperties mtProperties = new MtProperties();
+            MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
             mtProperties.setShortCode("3444");
@@ -416,7 +411,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
-            }*/
+            }
 
             if (entity.getOperatorId() == 1) {
                 try {
