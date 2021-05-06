@@ -387,6 +387,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 // Get free trial MT message from DB | Don't send free trial MT because the user is in renewal.
                 message = dataManagerService.getMtMessage("jazz_sub_freetrial").getMsgText();
 
+                System.out.println(message);
+
                 // This is to check if the user tries to login by himself and msisdn was in renewal. So in this case, we don't
                 // want to send free trial MT to the user.
                 /*if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
