@@ -348,11 +348,19 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             if (vendorPlansEntity.getOperatorId() == 1) {
                 message = dataManagerService.getMtMessage("jazz_sub").getMsgText();
 
-                // Auto generated, need to check this.
-                isMtAllowed = lastUserStatus == null || lastUserStatus.getStatusId() != 8;
+                if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
             } else if (vendorPlansEntity.getOperatorId() == 4) {
                 message = dataManagerService.getMtMessage("zong_sub").getMsgText();
-                isMtAllowed = true;
+
+                if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
             }
 
             if (isMtAllowed) {
@@ -381,7 +389,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 // This is to check if the user tries to login by himself and msisdn was in renewal. So in this case, we don't
                 // want to send free trial MT to the user.
-                isMtAllowed = lastUserStatus == null || lastUserStatus.getStatusId() != 8;
+                if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
 
                 if (isMtAllowed) {
                     sendMT(requestProperties, message);
@@ -406,7 +418,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 message = dataManagerService.getMtMessage("zong_sub_freetrial").getMsgText();
 
                 // Auto generated, need to check this.
-                isMtAllowed = lastUserStatus == null || lastUserStatus.getStatusId() != 8;
+                if(lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
 
                 if (isMtAllowed) {
                     sendMT(requestProperties, message);
