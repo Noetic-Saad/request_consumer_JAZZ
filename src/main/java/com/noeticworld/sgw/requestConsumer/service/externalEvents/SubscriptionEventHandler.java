@@ -401,7 +401,22 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     sendMT(requestProperties, message);
                 }*/
 
-                sendMT(requestProperties, message);
+                MtProperties mtProperties = new MtProperties();
+                mtProperties.setData(message);
+                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+                mtProperties.setShortCode("3444");
+                mtProperties.setPassword("g@m3now");
+                mtProperties.setUsername("gamenow@noetic");
+                mtProperties.setServiceId("1061");
+
+                try {
+                    mtClient.sendMt(mtProperties);
+                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                } catch (Exception e) {
+                    log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
+                }
+
+//                sendMT(requestProperties, message);
 
                 try {
                     createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
