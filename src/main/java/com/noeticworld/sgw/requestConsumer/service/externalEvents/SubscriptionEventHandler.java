@@ -390,7 +390,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
                         "https://bit.ly/3sjbobw";
             }
-            MtProperties mtProperties = new MtProperties();
+
+            sendMT(requestProperties, message);
+            /*MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
             mtProperties.setShortCode("3444");
@@ -410,7 +412,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             } catch (Exception e) {
                 log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
-            }
+            }*/
 
             if (entity.getOperatorId() == 1) {
                 try {
@@ -450,6 +452,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.OTHER_ERROR, requestProperties.getCorrelationId());
         }
     }
+
+
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
