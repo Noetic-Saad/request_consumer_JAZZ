@@ -273,7 +273,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         log.info("**********Sending Request For Charging*******");
 
         UsersStatusEntity previousUserStatus = null;
-        if(_user.getUserStatusId() != null) {
+        if (_user.getUserStatusId() != null) {
             previousUserStatus = userStatusRepository.UnsubStatus(_user.getId());
             System.out.println("Previous user status .... ******* " + previousUserStatus.getStatusId() + " " + previousUserStatus.getId());
         }
@@ -396,7 +396,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } catch (Exception e) {
                 log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
             }
-            sendMT(requestProperties, message);
             /*MtProperties mtProperties = new MtProperties();
             mtProperties.setData(message);
             mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
@@ -459,7 +458,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
 
-
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
         VendorRequestsStateEntity entity = null;
@@ -519,12 +517,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         mtProperties.setUsername("gamenow@noetic");
         mtProperties.setServiceId("1061");
 
-        try {
-            mtClient.sendMt(mtProperties);
-            mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
-        } catch (Exception e) {
-            log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
-        }
+        mtClient.sendMt(mtProperties);
+        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
     }
 
     private void updateUserStatus(UsersEntity user, long userStatusId, long vendorPLanId) {
