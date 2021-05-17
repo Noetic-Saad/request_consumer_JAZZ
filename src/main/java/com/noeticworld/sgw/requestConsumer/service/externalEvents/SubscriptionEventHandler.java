@@ -340,14 +340,27 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
 
             if (isMtAllowed) {
-                try {
+               /* try {
                     sendMT(requestProperties, message);
                 } catch (Exception e) {
                     log.info("SubscriptionEventHandler | Subscription MT Exception | " + e.getCause());
+                }*/
+
+                MtProperties mtProperties = new MtProperties();
+                mtProperties.setData(message);
+                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+                mtProperties.setShortCode("3444");
+                mtProperties.setPassword("g@m3now");
+                mtProperties.setUsername("gamenow@noetic");
+                mtProperties.setServiceId("1061");
+
+                try {
+                    mtClient.sendMt(mtProperties);
+                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                } catch (Exception e) {
+                    log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                 }
-
             }
-
             // Continue subscription process after creating and sending the response to the client.
             continueUserSubscriptionProcess(requestProperties, _user, vendorPlansEntity);
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
@@ -376,12 +389,27 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     isMtAllowed = true;
                 }
 
-                try {
-                    if (isMtAllowed) {
+                if (isMtAllowed) {
+                    /*try {
                         sendMT(requestProperties, message);
+                    } catch (Exception e) {
+                        log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
+                    }*/
+
+                    MtProperties mtProperties = new MtProperties();
+                    mtProperties.setData(message);
+                    mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+                    mtProperties.setShortCode("3444");
+                    mtProperties.setPassword("g@m3now");
+                    mtProperties.setUsername("gamenow@noetic");
+                    mtProperties.setServiceId("1061");
+
+                    try {
+                        mtClient.sendMt(mtProperties);
+                        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    } catch (Exception e) {
+                        log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                     }
-                } catch (Exception e) {
-                    log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
                 }
 
                 try {
