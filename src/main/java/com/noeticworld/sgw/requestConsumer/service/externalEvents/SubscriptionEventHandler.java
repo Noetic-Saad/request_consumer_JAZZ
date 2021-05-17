@@ -366,7 +366,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
             // INSUFFICIENT BALANCE
             String message = null;
-            boolean isMtAllowed = false;
+            boolean isMtAllowed;
 
             if (vendorPlansEntity.getOperatorId() == 1) {
                 // In case of game now, create free trial response.
@@ -389,20 +389,21 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     isMtAllowed = true;
                 }
 
+
+                MtProperties mtProperties = new MtProperties();
+                mtProperties.setData(message);
+                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+                mtProperties.setShortCode("3444");
+                mtProperties.setPassword("g@m3now");
+                mtProperties.setUsername("gamenow@noetic");
+                mtProperties.setServiceId("1061");
+
                 if (isMtAllowed) {
                     /*try {
                         sendMT(requestProperties, message);
                     } catch (Exception e) {
                         log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
                     }*/
-
-                    MtProperties mtProperties = new MtProperties();
-                    mtProperties.setData(message);
-                    mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-                    mtProperties.setShortCode("3444");
-                    mtProperties.setPassword("g@m3now");
-                    mtProperties.setUsername("gamenow@noetic");
-                    mtProperties.setServiceId("1061");
 
                     try {
                         mtClient.sendMt(mtProperties);
