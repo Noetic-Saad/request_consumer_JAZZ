@@ -410,7 +410,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
 
             } catch (Exception e) {
-                log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
+                log.info("Subscriptin SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
 
             if (entity.getOperatorId() == 1) {
