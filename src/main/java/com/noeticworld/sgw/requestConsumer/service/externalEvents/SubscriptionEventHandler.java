@@ -376,12 +376,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     isMtAllowed = true;
                 }
 
-                if (isMtAllowed) {
-                    try {
+                try {
+                    if (isMtAllowed) {
                         sendMT(requestProperties, message);
-                    } catch (Exception e) {
-                        log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
                     }
+                } catch (Exception e) {
+                    log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
                 }
 
                 try {
