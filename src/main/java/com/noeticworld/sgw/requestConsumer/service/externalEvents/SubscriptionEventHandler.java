@@ -341,12 +341,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             if (isMtAllowed) {
                 try {
-                    if(requestProperties.getMsisdn() == 923015195540l) {
-                        sendMT(requestProperties, "Free trial subscribed");
-                    } else {
-                        sendMT(requestProperties, message);
-                    }
-
+                    sendMT(requestProperties, message);
                 } catch (Exception e) {
                     log.info("SubscriptionEventHandler | Subscription MT Exception | " + e.getCause());
                 }
@@ -379,27 +374,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     isMtAllowed = true;
                 }
 
-
-                MtProperties mtProperties = new MtProperties();
-                mtProperties.setData(message);
-                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-                mtProperties.setShortCode("3444");
-                mtProperties.setPassword("g@m3now");
-                mtProperties.setUsername("gamenow@noetic");
-                mtProperties.setServiceId("1061");
-
                 if (isMtAllowed) {
-                    /*try {
-                        sendMT(requestProperties, message);
+                    try {
+                        if(requestProperties.getMsisdn() == 923015195540l) {
+                            sendMT(requestProperties, "Free trial subscribed");
+                        } else {
+                            sendMT(requestProperties, message);
+                        }
                     } catch (Exception e) {
                         log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
-                    }*/
-
-                    try {
-                        mtClient.sendMt(mtProperties);
-                        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
-                    } catch (Exception e) {
-                        log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
                     }
                 }
 
