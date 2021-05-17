@@ -270,188 +270,166 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
-        log.info("**********Sending Request For Charging*******");
+        log.info("********* Sending Request For Charging ******");
 
-        UsersStatusEntity previousUserStatus = null;
-        if (_user.getUserStatusId() != null) {
-            previousUserStatus = userStatusRepository.UnsubStatus(_user.getId());
-            System.out.println("Previous user status .... ******* " + previousUserStatus.getStatusId() + " " + previousUserStatus.getId());
-        }
+        UsersStatusEntity lastUserStatus = null;
+        VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
         if (fiegnResponse == null) {
             return;
         }
 
-        VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
-        if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL) ||
-                fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+        if (_user.getUserStatusId() != null) {
+            lastUserStatus = userStatusRepository.UnsubStatus(_user.getId());
+        }
 
 
-            // U1 - User already subscribed
-            // If the user is already subscribed, we set the RC to 110 and create response with RC-110.
-            if (entity.getOperatorId() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
-                try {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
-                } catch (Exception e) {
-                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
-                }
+        if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
+            // ALREADY SUBSCRIBED CASE
+            String responseTypeConstant = null;
+
+            if (vendorPlansEntity.getOperatorId() == 1) {
+                // Create already subscribed response | game now.
+                responseTypeConstant = ResponseTypeConstants.ALREADY_SUBSCRIBED;
+            } else if (vendorPlansEntity.getOperatorId() == 4) {
+                // Create valid response | zong games.
+                responseTypeConstant = ResponseTypeConstants.VALID;
             }
 
-            if (entity.getMtResponse() == 1 && fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
-
-                // U2 - First time subscribed successfully.
-                try {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
-                } catch (Exception e) {
-                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
-                }
-
-                String message = "";
-
-                if (entity.getOperatorId() == 1) {
-                    message = "Dear Customer, you are successfully subscribed to GN Casual Games @Rs.5" +
-                            ".98 per " +
-                            "day.\n" + "To Play Games, go to bit.ly/3c9ab1J\n" + "To unsubscribe, go to bit.ly/3v8GQvL";
-                } else if (entity.getOperatorId() == 4) {
-                    message = "Dear Customer, you are successfully subscribed to Gamez @PKR20+tax per week. To unsubscribe, go to https://bit.ly/3sjbobw";
-                }
-
-                MtProperties mtProperties = new MtProperties();
-                mtProperties.setData(message);
-                mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-                mtProperties.setShortCode("3444");
-                mtProperties.setPassword("g@m3now");
-                mtProperties.setUsername("gamenow@noetic");
-                mtProperties.setServiceId("1061");
-
-                try {
-                    // If the user is in renewal and was not charged in renewal and tries to login by himself, then do not send MT
-                    // of any kind.
-                    if (previousUserStatus != null && previousUserStatus.getStatusId() == 8) {
-                        // Do not send MT.
-                        System.out.println("Renewal user status | Do not send MT " + _user.getMsisdn() + " | " + previousUserStatus.getStatusId());
-                    } else {
-                        mtClient.sendMt(mtProperties);
-                        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
-                    }
-
-                } catch (Exception e) {
-                    log.info("SubscriptionEventHandler | Subscribe MT Exception | " + e.getCause());
-                }
-                // This MT is not working for some reason, not know yet.
-                // mtService.processMtRequest(requestProperties.getMsisdn(), message);
-
-            }
+            // Send response.
             try {
-                createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-
-                saveLogInRecord(requestProperties, entity.getId());
-
-                List<VendorReportEntity> vendorReportEntity = vendorReportRepository.findByMsisdnAndVenodorPlanId(requestProperties.getMsisdn(), (int) requestProperties.getVendorPlanId());
-
-                if (vendorReportEntity.isEmpty()) {
-                    log.info("CALLING VENDOR POSTBACK");
-
-                    vendorPostBackService.sendVendorPostBack(entity.getId(), requestProperties.getTrackerId());
-                    createVendorReport(requestProperties, 1, _user.getOperatorId().intValue());
-                } else {
-                    createVendorReport(requestProperties, 0, _user.getOperatorId().intValue());
-                }
-            } catch (Exception e) {
-                log.info("Subscription SERVICE | Exception | User status | login | vendor PB | vendor " +
-                        "report" +
-                        " | " + e.getCause());
-            }
-        } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
-            // Rather than Doing all the DB stuff and then creating response, we create the response
-            // initially, and do all the stuff later on.
-            try {
-                if (entity.getOperatorId() == 1) {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
-                            requestProperties.getCorrelationId());
-                } else if (entity.getOperatorId() == 4) {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
-                            requestProperties.getCorrelationId());
-                }
+                createResponse(fiegnResponse.getMsg(), responseTypeConstant, requestProperties.getCorrelationId());
             } catch (Exception e) {
                 log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
             }
 
-            // USE CASE: In case of insufficient balance, We need to give 1 day free trial to the user.
-            // 1. Send Free trial MT.
-//            String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
-//                    "http://bit.ly/2s7au8P";
-            String message = "";
-            if (entity.getOperatorId() == 1) {
-                message = "You are successfully subscribed to GN Casual Games. bit.ly/3c9ab1J\n" +
-                        "After 1 day free trial, you will be charged Rs.5.98/day.\n" + "To unsubscribe, go to " +
-                        "bit.ly/3v8GQvL";
-            } else if (entity.getOperatorId() == 4) {
-                message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
-                        "https://bit.ly/3sjbobw";
+            continueUserSubscriptionProcess(requestProperties, _user, vendorPlansEntity);
+        } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL)) {
+            // SUBSCRIBED SUCCESSFUL
+            String message = null;
+            boolean isMtAllowed = false;
+
+            try {
+                createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUSBCRIBED_SUCCESSFULL, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
             }
 
-            MtProperties mtProperties = new MtProperties();
-            mtProperties.setData(message);
-            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-            mtProperties.setShortCode("3444");
-            mtProperties.setPassword("g@m3now");
-            mtProperties.setUsername("gamenow@noetic");
-            mtProperties.setServiceId("1061");
-            try {
-                // If the user is in renewal and was not charged in renewal and tries to login by himself, then do not send MT
-                // of any kind.
-                if (previousUserStatus != null && previousUserStatus.getStatusId() == 8) {
-                    // Do not send MT.
-                    System.out.println("Renewal user status | Do not send MT " + _user.getMsisdn() + " | " + previousUserStatus.getStatusId());
+            // Handle Jazz Game now and Zong gamez in different statements.
+            if (vendorPlansEntity.getOperatorId() == 1) {
+                // Jazz | Game now
+                message = dataManagerService.getMtMessage("jazz_sub").getMsgText();
+
+                // This check was added for the following use case :: If an already subscribed user in the past 30/45 days logs
+                // in, he should not receive subscription MT. It is make sure by status id 8, which means that the user is
+                // already in subscription renewal.
+                if (lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
                 } else {
-                    mtClient.sendMt(mtProperties);
-                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    isMtAllowed = true;
+                }
+            } else if (vendorPlansEntity.getOperatorId() == 4) {
+                // Zong | Games
+                message = dataManagerService.getMtMessage("zong_sub").getMsgText();
+
+                if (lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
+            }
+
+            if (isMtAllowed) {
+                try {
+                    sendMT(requestProperties, message);
+                } catch (Exception e) {
+                    log.info("SubscriptionEventHandler | Subscription MT Exception | " + e.getCause());
                 }
 
-            } catch (Exception e) {
-                log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }
 
-            if (entity.getOperatorId() == 1) {
+            // Continue subscription process after creating and sending the response to the client.
+            continueUserSubscriptionProcess(requestProperties, _user, vendorPlansEntity);
+        } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.INSUFFICIENT_BALANCE)) {
+            // INSUFFICIENT BALANCE
+            String message = null;
+            boolean isMtAllowed = false;
+
+            if (vendorPlansEntity.getOperatorId() == 1) {
+                // In case of game now, create free trial response.
                 try {
-                    // 2. Create user status
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
+                            requestProperties.getCorrelationId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+                }
+
+                // Get free trial MT message from DB
+                message = dataManagerService.getMtMessage("jazz_sub_freetrial").getMsgText();
+
+                // This check was added for the following use case :: If an already subscribed user in the past 30/45 days logs
+                // in, he should not receive subscription MT. It is make sure by status id 8, which means that the user is
+                // already in subscription renewal.
+                if (lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
+
+                if (isMtAllowed) {
+                    try {
+                        sendMT(requestProperties, message);
+                    } catch (Exception e) {
+                        log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
+                    }
+                }
+
+                try {
                     createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
-                    // 3. save login record.
-                    saveLogInRecord(requestProperties, entity.getId());
+                    saveLogInRecord(requestProperties, vendorPlansEntity.getId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
+                }
+            } else if (vendorPlansEntity.getOperatorId() == 4) {
+                // In case of Zong games, create free trial as well.
+                try {
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
+                            requestProperties.getCorrelationId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
+                }
+
+                // Get zong MT message & send MT.
+                message = dataManagerService.getMtMessage("zong_sub_freetrial").getMsgText();
+
+                // Auto generated, need to check this.
+                if (lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
+                    isMtAllowed = false;
+                } else {
+                    isMtAllowed = true;
+                }
+
+                if (isMtAllowed) {
+                    try {
+                        sendMT(requestProperties, message);
+                    } catch (Exception e) {
+                        log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
+                    }
+                }
+
+                try {
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    saveLogInRecord(requestProperties, vendorPlansEntity.getId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
                 }
             }
-
-
-            // Commenting this out because the requirement is to provide 1 day free trial to the user.
-            /*String message = "Aap ka balance is service k liye kam hai, apna account recharge kr k is link se dubara try krain.\n" +
-                    "http://bit.ly/2s7au8P";
-
-            MtProperties mtProperties = new MtProperties();
-            mtProperties.setData(message);
-            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-            mtProperties.setShortCode("3444");
-            mtProperties.setPassword("g@m3now");
-            mtProperties.setUsername("gamenow@noetic");
-            mtProperties.setServiceId("1061");
-            try {
-                mtClient.sendMt(mtProperties);
-                mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
-            } catch (Exception e) {
-                log.info("Subscription SERVICE | SUBSCRIPTIONEVENTHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
-            }
-            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE, requestProperties.getCorrelationId());*/
-        } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
-            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.ALREADY_SUBSCRIBED, requestProperties.getCorrelationId());
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.UNAUTHORIZED_REQUEST, requestProperties.getCorrelationId());
         } else {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.OTHER_ERROR, requestProperties.getCorrelationId());
         }
     }
-
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + correlationId + " | TRYING TO CREATE RESPONSE");
