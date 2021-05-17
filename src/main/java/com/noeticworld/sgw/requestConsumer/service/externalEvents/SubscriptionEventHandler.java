@@ -490,8 +490,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         mtProperties.setUsername("gamenow@noetic");
         mtProperties.setServiceId("1061");
 
-        mtClient.sendMt(mtProperties);
-        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+
+        try {
+            mtClient.sendMt(mtProperties);
+            mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+        } catch (Exception e) {
+            log.info("SubscriptionEventHandler | MT Exception | " + e.getCause());
+        }
     }
 
     private void updateUserStatus(UsersEntity user, long userStatusId, long vendorPLanId) {
