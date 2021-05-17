@@ -376,11 +376,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
                 if (isMtAllowed) {
                     try {
-                        if(requestProperties.getMsisdn() == 923015195540l) {
-                            sendMT(requestProperties, "Free trial subscribed");
-                        } else {
-                            sendMT(requestProperties, message);
-                        }
+                        sendMT(requestProperties, message);
                     } catch (Exception e) {
                         log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
                     }
