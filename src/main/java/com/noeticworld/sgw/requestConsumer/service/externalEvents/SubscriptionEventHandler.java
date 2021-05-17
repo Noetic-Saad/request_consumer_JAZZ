@@ -340,11 +340,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
 
             if (isMtAllowed) {
-                try {
-                    sendMT(requestProperties, message);
-                } catch (Exception e) {
-                    log.info("SubscriptionEventHandler | Subscription MT Exception | " + e.getCause());
-                }
+                sendMT(requestProperties, message);
             }
             // Continue subscription process after creating and sending the response to the client.
             continueUserSubscriptionProcess(requestProperties, _user, vendorPlansEntity);
@@ -404,11 +400,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
 
                 if (isMtAllowed) {
-                    try {
-                        sendMT(requestProperties, message);
-                    } catch (Exception e) {
-                        log.info("SubscriptionEventHandler | Free trial MT Exception | " + e.getCause());
-                    }
+                    sendMT(requestProperties, message);
                 }
 
                 try {
