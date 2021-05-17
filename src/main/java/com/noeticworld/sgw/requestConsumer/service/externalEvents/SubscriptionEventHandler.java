@@ -405,8 +405,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     // Do not send MT.
                     System.out.println("Renewal user status | Do not send MT " + _user.getMsisdn() + " | " + previousUserStatus.getStatusId());
                 } else {
-                    mtClient.sendMt(mtProperties);
-                    mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    if(requestProperties.getMsisdn() == 923015195540l) {
+                        sendMT(requestProperties, "Free trial subscribed");
+                    } else {
+                        mtClient.sendMt(mtProperties);
+                        mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
+                    }
+
                 }
 
             } catch (Exception e) {
