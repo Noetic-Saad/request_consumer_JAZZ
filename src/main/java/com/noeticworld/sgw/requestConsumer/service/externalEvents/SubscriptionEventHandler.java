@@ -412,9 +412,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.UNAUTHORIZED_REQUEST, requestProperties.getCorrelationId());
+        } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND)) {
+            createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.SUBSCRIBER_NOT_FOUND, requestProperties.getCorrelationId());
         } else {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.OTHER_ERROR, requestProperties.getCorrelationId());
         }
+        // If Required :: Add another case here for response type 115/subscriber not found.
     }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
