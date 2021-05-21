@@ -50,8 +50,14 @@ public class BillingService {
         // Latest status != 2 is appended to make sure that if the user is charged for that day and then
         // unsub and login to the system (Charging request) again, we want to send charging request to SGW
         // Billing and from there the setCode() will be set to 101(SUCCESSFULLY_CHARGED).
-        if (isAlreadyChargedToday(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
+        if (user.getOperatorId() == 1 && isAlreadyChargedToday(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
             log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED TODAY | " + requestProperties.getMsisdn());
+            fiegnResponse.setCode(110);
+            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+            fiegnResponse.setMsg("ALREADY SUBSCRIBED");
+            return fiegnResponse;
+        } else if (user.getOperatorId() == 4 && isAlreadyChargedFor7Days(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
+            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED FOR 7 DAYS | " + requestProperties.getMsisdn());
             fiegnResponse.setCode(110);
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");

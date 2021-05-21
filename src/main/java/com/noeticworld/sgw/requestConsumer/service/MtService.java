@@ -95,11 +95,9 @@ public class MtService {
                 log.info("userstatusid " + userstatus.getUserStatusId());
                 UsersStatusEntity us = userStatusRepository.returnUserExpiredOrnOt(userstatus.getId(), fromDate);
                 if (us != null) {
-
                     msg = dataService.getMtMessage("jazz_unsub_freetrial").getMsgText();
                     log.info("*************User Still in free Trial ************ Sending Message" + msg);
                 } else {
-
                     msg = dataService.getMtMessage("jazz_unsub").getMsgText();
                     log.info("Free Trial Expired " + msg);
                 }
