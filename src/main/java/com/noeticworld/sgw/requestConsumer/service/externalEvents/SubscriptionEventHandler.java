@@ -235,7 +235,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         return usersRepository.save(usersEntity);
     }
 
-    private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user, String userStatusType) {
+    private UsersStatusEntity createUserStatusEntity(RequestProperties requestProperties, UsersEntity _user,
+                                                     String userStatusType, boolean isZongFreeTrialUser) {
         UsersStatusEntity usersStatusEntity = new UsersStatusEntity();
 
         VendorPlansEntity entity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
@@ -253,7 +254,13 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (entity.getSubCycle() == 1) {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
         } else {
-            usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
+            if(isZongFreeTrialUser) {
+                // If this is a zong free trial user, give one day free trial and if gets charged, give 7 day subscription.
+                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
+            } else {
+                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
+            }
+
         }
         usersStatusEntity.setAttempts(1);
         usersStatusEntity.setUserId(_user.getId());
@@ -375,7 +382,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
 
                 try {
-                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, false);
                     saveLogInRecord(requestProperties, vendorPlansEntity.getId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
@@ -404,7 +411,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 }
 
                 try {
-                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, true);
                     saveLogInRecord(requestProperties, vendorPlansEntity.getId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
@@ -449,7 +456,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void continueUserSubscriptionProcess(RequestProperties requestProperties, UsersEntity _user, VendorPlansEntity vendorPlansEntity) {
         try {
-            createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED);
+            createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, false);
 
             saveLogInRecord(requestProperties, vendorPlansEntity.getId());
 
