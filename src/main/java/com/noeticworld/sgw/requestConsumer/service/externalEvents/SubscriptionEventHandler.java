@@ -254,7 +254,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (entity.getSubCycle() == 1) {
             usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
         } else {
-            if(isZongFreeTrialUser) {
+            if (isZongFreeTrialUser) {
                 // If this is a zong free trial user, give one day free trial and if gets charged, give 7 day subscription.
                 usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
             } else {
@@ -277,7 +277,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse = billingService.charge(requestProperties);
-        log.info("********* Sending Request For Charging ******");
+        log.info("********* Sending Request For Charging ******" + " | msisdn:" + requestProperties.getMsisdn());
 
         UsersStatusEntity lastUserStatus = null;
         VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());

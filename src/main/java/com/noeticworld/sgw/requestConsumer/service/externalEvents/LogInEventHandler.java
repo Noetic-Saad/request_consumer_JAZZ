@@ -40,7 +40,7 @@ public class LogInEventHandler implements RequestEventHandler {
     public void handle(RequestProperties requestProperties) {
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
+            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
 
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
@@ -51,27 +51,26 @@ public class LogInEventHandler implements RequestEventHandler {
             UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
             if (_user != null) {
-                log.info("User Already Exist");
+                log.info("User Already Exist" + " | msisdn:" + requestProperties.getMsisdn());
                 UsersStatusEntity user_status_id = userStatusRepository.UnsubStatus(_user.getId());
                 UsersEntity user_status = usersRepository.FindByTopMSISDN(_user.getMsisdn());
 
                 if (user_status_id != null) {
                     if (user_status.getUserStatusId() == null) {
-                        log.info("*******UNCharged Users************* : " + user_status_id);
+                        log.info("*******UNCharged Users************* : " + user_status_id + " | msisdn:" + requestProperties.getMsisdn());
                         createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
-                    } else if (user_status_id.getStatusId() == 2) {
-                        log.info("*******Unsubscribed Users************* : " + user_status_id);
+                    } else if (user_status_id.getStatusId() == 2 || user_status_id.getStatusId() == 5 || user_status_id.getStatusId() == 4) {
+                        log.info("*******Unsubscribed Users************* : " + user_status_id + " | msisdn:" + requestProperties.getMsisdn());
                         createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
 
                     } else {
-                        log.info("Processing Request Without asking for otp");
+                        log.info("Processing Request Without asking for otp" + " | msisdn:" + requestProperties.getMsisdn());
                         processLogInRequest(requestProperties);
                     }
                 } else {
-                    log.info("User status id was not created | process request for otp");
+                    log.info("User status id was not created | process request for otp" + " | msisdn:" + requestProperties.getMsisdn());
                     createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
-//                    processLogInRequest(requestProperties);
                 }
             } else {
                 createResponse("OTP Required", ResponseTypeConstants.NOTREGISTERED, requestProperties.getCorrelationId());
