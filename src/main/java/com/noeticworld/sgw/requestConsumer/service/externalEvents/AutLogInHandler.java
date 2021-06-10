@@ -37,15 +37,14 @@ public class AutLogInHandler implements RequestEventHandler {
 
         if (requestProperties.isOtp()) {
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            log.info("AUTOLOGINHANDLER CLASS| OTP RECORD FOUND IN DB IS "+otpRecordsEntity.getOtpNumber());
+            log.info("AUTOLOGINHANDLER CLASS| OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null &&
                     otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 processLogInRequest(requestProperties);
             } else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
-        }
-        else {
+        } else {
             processLogInRequest(requestProperties);
         }
     }
@@ -53,45 +52,45 @@ public class AutLogInHandler implements RequestEventHandler {
     private void processLogInRequest(RequestProperties requestProperties) {
 
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        if(usersEntity==null || usersEntity.getUserStatusId() == null){
+        if (usersEntity == null || usersEntity.getUserStatusId() == null) {
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
             return;
         }
         UsersStatusEntity statusEntity = null;
-        if(usersEntity.getUserStatusId()==null){
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+        if (usersEntity.getUserStatusId() == null) {
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             return;
         }
         statusEntity = userStatusRepository.findTopById(usersEntity.getUserStatusId());
         System.out.println(statusEntity.getStatusId());
-        if(statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)){
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+        if (statusEntity == null || statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.RENEWALUNSUB)) {
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.BLOCKED)) {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS BLOCOKED");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS BLOCOKED");
 
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         } else if (statusEntity.getStatusId() == dataService.getUserStatusTypeId(UserStatusTypeConstants.SUBSCRIBED)
                 && statusEntity.getExpiryDatetime().toLocalDateTime().isAfter(LocalDateTime.now())) {
             System.out.println(statusEntity.getStatusId());
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN "+requestProperties.getMsisdn()+" IS VALID USER");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " IS VALID USER");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.VALID), ResponseTypeConstants.VALID, requestProperties.getCorrelationId());
-            saveLogInRecord(requestProperties,usersEntity.getVendorPlanId());
+            saveLogInRecord(requestProperties, usersEntity.getVendorPlanId());
         } else {
-            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN "+requestProperties.getMsisdn()+" SENDING SUB REQUEST");
+            log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | FOR MSISDN " + requestProperties.getMsisdn() + " SENDING SUB REQUEST");
             createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID), ResponseTypeConstants.INVALID, requestProperties.getCorrelationId());
         }
     }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
-        System.out.println("CORREALATIONID || "+correlationId);
+        System.out.println("CORREALATIONID || " + correlationId);
         VendorRequestsStateEntity entity = null;
-        entity  = requestRepository.findByCorrelationid(correlationId);
+        entity = requestRepository.findByCorrelationid(correlationId);
         boolean isNull = true;
-        if(entity==null){
-            while (isNull){
-                entity  = requestRepository.findByCorrelationid(correlationId);
-                if(entity!=null){
+        if (entity == null) {
+            while (isNull) {
+                entity = requestRepository.findByCorrelationid(correlationId);
+                if (entity != null) {
                     isNull = false;
                 }
             }
@@ -103,9 +102,9 @@ public class AutLogInHandler implements RequestEventHandler {
         requestRepository.save(entity);
     }
 
-    private void saveLogInRecord(RequestProperties requestProperties,long vendorPlanId){
-        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID"+requestProperties.getSessionId());
-        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID"+requestProperties.getRemoteServerIp());
+    private void saveLogInRecord(RequestProperties requestProperties, long vendorPlanId) {
+        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID" + requestProperties.getSessionId());
+        log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | AUTO_LOGIN | SESSION ID" + requestProperties.getRemoteServerIp());
         LoginRecordsEntity loginRecordsEntity = new LoginRecordsEntity();
         loginRecordsEntity.setCtime(Timestamp.valueOf(LocalDateTime.now()));
         loginRecordsEntity.setSessionId(requestProperties.getSessionId());

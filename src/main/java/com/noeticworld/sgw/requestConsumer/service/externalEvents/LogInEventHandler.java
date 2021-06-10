@@ -43,6 +43,7 @@ public class LogInEventHandler implements RequestEventHandler {
             log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
 
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+                loginRepository.updateLoginTable(requestProperties.getMsisdn());
                 processLogInRequest(requestProperties);
             } else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
@@ -155,6 +156,6 @@ public class LogInEventHandler implements RequestEventHandler {
         loginRecordsEntity.setMsisdn(requestProperties.getMsisdn());
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
         logInRecordRepository.save(loginRecordsEntity);
-        loginRepository.updateLoginTable(requestProperties.getMsisdn());
+//        loginRepository.updateLoginTable(requestProperties.getMsisdn());
     }
 }
