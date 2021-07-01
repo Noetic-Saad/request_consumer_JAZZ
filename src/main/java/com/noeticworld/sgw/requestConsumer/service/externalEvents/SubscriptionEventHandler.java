@@ -391,32 +391,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } else if (vendorPlansEntity.getOperatorId() == 4) {
                 // In case of Zong games, create free trial as well.
                 try {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
                             requestProperties.getCorrelationId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
                 }
 
                 // Get zong MT message & send MT.
-                message = dataManagerService.getMtMessage("zong_sub_freetrial").getMsgText();
+                message = dataManagerService.getMtMessage("zong_insufficient_balance").getMsgText();
 
-                // Auto generated, need to check this.
-                if (lastUserStatus != null && lastUserStatus.getStatusId() == 8) {
-                    isMtAllowed = false;
-                } else {
-                    isMtAllowed = true;
-                }
-
-                if (isMtAllowed) {
-                    sendMT(requestProperties, message);
-                }
-
-                try {
-                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, true);
-                    saveLogInRecord(requestProperties, vendorPlansEntity.getId());
-                } catch (Exception e) {
-                    log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
-                }
+                sendMT(requestProperties, message);
             }
         } else if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.UNAUTHORIZED_REQUEST)) {
             createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.UNAUTHORIZED_REQUEST, requestProperties.getCorrelationId());
