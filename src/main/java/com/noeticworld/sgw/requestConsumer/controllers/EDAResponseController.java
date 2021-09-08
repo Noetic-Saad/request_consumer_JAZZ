@@ -21,8 +21,9 @@ public class EDAResponseController {
     SubscriptionEventHandler subscriptionEventHandler;
 
     @GetMapping("/test")
-    public void test() {
+    public String test() {
         System.out.println("Consumer test");
+        return "consumer test";
     }
 
     @PostMapping("/process-user")
