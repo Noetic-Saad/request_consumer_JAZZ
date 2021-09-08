@@ -276,9 +276,20 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         return usersStatusEntity;
     }
 
+    public void processUserForEDA (RequestProperties requestProperties, UsersEntity user) {
+        processUserRequest(requestProperties, user);
+    }
+
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
-        FiegnResponse fiegnResponse = billingService.charge(requestProperties);
-        log.info("********* Sending Request For Charging ******" + " | msisdn:" + requestProperties.getMsisdn());
+        FiegnResponse fiegnResponse;
+
+        // EDA Request will set isFromEDA: true
+        if(requestProperties.isFromEDA()) {
+           fiegnResponse = requestProperties.getFiegnResponse();
+        } else {
+            fiegnResponse = billingService.charge(requestProperties);
+            log.info("********* Sending Request For Charging ******" + " | msisdn:" + requestProperties.getMsisdn());
+        }
 
         UsersStatusEntity lastUserStatus = null;
         VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());

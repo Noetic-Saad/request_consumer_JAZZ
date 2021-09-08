@@ -15,6 +15,12 @@ public class RequestProperties {
     private String sessionId;
     private String remoteServerIp;
     private String localServerIp;
+    private boolean isFromEDA;
+    private FiegnResponse fiegnResponse;
+
+    public RequestProperties() {
+        // Default constructor
+    }
 
     public RequestProperties(CustomMessage customMessage) {
         this.vendorPlanId = Long.parseLong(customMessage.getVendorPlanId());
@@ -23,33 +29,40 @@ public class RequestProperties {
         this.correlationId = customMessage.getCorelationId();
         this.originDateTime = new Date(Long.parseLong(customMessage.getDateTime()));
         this.trackerId = customMessage.getTrackerId();
-        if(customMessage.getSessionId()!=null) this.sessionId = customMessage.getSessionId();
-        if(customMessage.getRemoteServerIp()!=null) this.remoteServerIp = customMessage.getRemoteServerIp();
-        if(customMessage.getLocalServerIp()!=null) this.localServerIp = customMessage.getLocalServerIp();
         this.otp = customMessage.isOtp();
-        if(customMessage.isOtp()) {
+        this.isFromEDA = false;
+        this.fiegnResponse = null;
+
+        if (customMessage.getSessionId() != null) this.sessionId = customMessage.getSessionId();
+        if (customMessage.getRemoteServerIp() != null) this.remoteServerIp = customMessage.getRemoteServerIp();
+        if (customMessage.getLocalServerIp() != null) this.localServerIp = customMessage.getLocalServerIp();
+        if (customMessage.isOtp()) {
             this.otpNumber = customMessage.getOtpNumber();
         }
-    }
-
-    public long getVendorPlanId() {
-        return vendorPlanId;
-    }
-
-    public long getMsisdn() {
-        return msisdn;
     }
 
     public String getRequestAction() {
         return requestAction;
     }
 
+    public void setRequestAction(String requestAction) {
+        this.requestAction = requestAction;
+    }
+
     public String getCorrelationId() {
         return correlationId;
     }
 
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
     public Date getOriginDateTime() {
         return originDateTime;
+    }
+
+    public void setOriginDateTime(Date originDateTime) {
+        this.originDateTime = originDateTime;
     }
 
     public String getTrackerId() {
@@ -59,7 +72,6 @@ public class RequestProperties {
     public void setTrackerId(String trackerId) {
         this.trackerId = trackerId;
     }
-
 
     public boolean isOtp() {
         return otp;
@@ -101,8 +113,35 @@ public class RequestProperties {
         this.localServerIp = localServerIp;
     }
 
-    public static void main(String[] args) {
-        long current = System.currentTimeMillis();
-        System.out.println(new Date(current));
+    public long getVendorPlanId() {
+        return vendorPlanId;
+    }
+
+    public void setVendorPlanId(long vendorPlanId) {
+        this.vendorPlanId = vendorPlanId;
+    }
+
+    public long getMsisdn() {
+        return msisdn;
+    }
+
+    public void setMsisdn(long msisdn) {
+        this.msisdn = msisdn;
+    }
+
+    public boolean isFromEDA() {
+        return isFromEDA;
+    }
+
+    public void setFromEDA(boolean fromEDA) {
+        isFromEDA = fromEDA;
+    }
+
+    public FiegnResponse getFiegnResponse() {
+        return fiegnResponse;
+    }
+
+    public void setFiegnResponse(FiegnResponse fiegnResponse) {
+        this.fiegnResponse = fiegnResponse;
     }
 }

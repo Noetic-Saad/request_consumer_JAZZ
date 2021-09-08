@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff7b292f-ae63-4aea-b459-e972db91a1f6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/controllers/EDAResponseController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/LogInEventHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/requestConsumer/service/externalEvents/SubscriptionEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/RequestProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/noeticworld/sgw/util/RequestProperties.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +48,22 @@
       </set>
     </option>
   </component>
+  <component name="JpbToolWindowState">
+    <option name="myId2FirstActivated">
+      <map>
+        <entry key="JPA Inspector" value="true" />
+        <entry key="JPA Palette" value="true" />
+        <entry key="JPA Structure" value="true" />
+      </map>
+    </option>
+    <option name="myId2Visible">
+      <map>
+        <entry key="JPA Inspector" value="false" />
+        <entry key="JPA Palette" value="false" />
+        <entry key="JPA Structure" value="false" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectId" id="1judLHU9MUXNtyb9W9dBqYFUwRH" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -52,6 +71,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="NEW_TOOLWINDOW_STRIPE_DEFAULTS" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />

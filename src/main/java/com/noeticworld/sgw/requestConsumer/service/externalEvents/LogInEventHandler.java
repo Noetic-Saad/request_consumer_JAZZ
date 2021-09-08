@@ -68,6 +68,9 @@ public class LogInEventHandler implements RequestEventHandler {
                     } else {
                         log.info("Processing Request Without asking for otp" + " | msisdn:" + requestProperties.getMsisdn());
                         processLogInRequest(requestProperties);
+                        // Yahan pr request ati agr user already renewal ma para hua
+                        // Tw ab yahan pr 2 conditions bach jati, either user is 1/charged or 8/renewal unsub.
+                        // now agr user already subscribed hy or subscription remaining hy tw valid 118 response ana.
                     }
                 } else {
                     log.info("User status id was not created | process request for otp" + " | msisdn:" + requestProperties.getMsisdn());
