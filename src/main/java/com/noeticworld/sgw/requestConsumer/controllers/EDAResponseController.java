@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.controllers;
 
+import com.google.gson.Gson;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.SubscriptionEventHandler;
@@ -28,7 +29,7 @@ public class EDAResponseController {
 
     @PostMapping("/process-user")
     public void userAcquisitionProcessForEdaRequest(@RequestBody Map<String, ?> requestMap) {
-        FiegnResponse fiegnResponse = (FiegnResponse) requestMap.get("chargingResponse");
+        FiegnResponse fiegnResponse = new Gson().fromJson(requestMap.get("chargingResponse").toString(), FiegnResponse.class);
         long msisdn = (long) requestMap.get("msisdn");
 
         UsersEntity user = usersRepository.findByMsisdn(msisdn);
