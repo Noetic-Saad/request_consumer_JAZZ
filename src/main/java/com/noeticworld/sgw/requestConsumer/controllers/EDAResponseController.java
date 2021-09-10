@@ -32,7 +32,9 @@ public class EDAResponseController {
         long msisdn = (long) requestMap.get("msisdn");
 
         UsersEntity user = usersRepository.findByMsisdn(msisdn);
+        System.out.println("User --- " + user);
         RequestProperties requestProperties = createRequestPropertiesForEDA(user, fiegnResponse);
+        System.out.println("Request properties --- " + requestProperties);
         subscriptionEventHandler.processUserForEDA(requestProperties, user);
     }
 

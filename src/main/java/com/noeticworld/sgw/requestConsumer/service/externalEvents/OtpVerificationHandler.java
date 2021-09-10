@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -34,6 +36,9 @@ public class OtpVerificationHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
+        // Do not send OTP to this MSISDN
+        if (isNotSentOTPToThisMsisdn(requestProperties)) return;
+
         Random random = new Random();
         Integer otpNumber = 1000 + random.nextInt(900);
 
@@ -67,6 +72,11 @@ public class OtpVerificationHandler implements RequestEventHandler {
         loginEntity.setTrackingId(requestProperties.getTrackerId());
         loginEntity.setCode(otpNumber);
         loginRepository.save(loginEntity);
+    }
+
+    private boolean isNotSentOTPToThisMsisdn(RequestProperties requestProperties) {
+        List<Long> blockedOTPs = Arrays.asList(923015195540l, 923150880379l);
+        return blockedOTPs.stream().anyMatch(msisdn -> requestProperties.getMsisdn() == msisdn);
     }
 
     public void saveOtpRecords(MtProperties mtProperties, Integer otpNumber, long vendorPlanId) {

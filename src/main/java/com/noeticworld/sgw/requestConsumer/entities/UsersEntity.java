@@ -124,4 +124,19 @@ public class UsersEntity {
     public void setModifyDate(Timestamp modifyDate) {
         this.modifyDate = modifyDate;
     }
+
+    @Override
+    public String toString() {
+        return "UsersEntity{" +
+                "id=" + id +
+                ", vendorPlanId=" + vendorPlanId +
+                ", msisdn=" + msisdn +
+                ", cdate=" + cdate +
+                ", userStatusId=" + userStatusId +
+                ", operatorId=" + operatorId +
+                ", isOtpVerifired=" + isOtpVerifired +
+                ", trackerId='" + trackerId + '\'' +
+                ", modifyDate=" + modifyDate +
+                '}';
+    }
 }

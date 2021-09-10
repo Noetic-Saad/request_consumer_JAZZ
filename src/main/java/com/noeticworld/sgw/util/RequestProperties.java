@@ -144,4 +144,23 @@ public class RequestProperties {
     public void setFiegnResponse(FiegnResponse fiegnResponse) {
         this.fiegnResponse = fiegnResponse;
     }
+
+    @Override
+    public String toString() {
+        return "RequestProperties{" +
+                "vendorPlanId=" + vendorPlanId +
+                ", msisdn=" + msisdn +
+                ", requestAction='" + requestAction + '\'' +
+                ", correlationId='" + correlationId + '\'' +
+                ", trackerId='" + trackerId + '\'' +
+                ", originDateTime=" + originDateTime +
+                ", otp=" + otp +
+                ", otpNumber=" + otpNumber +
+                ", sessionId='" + sessionId + '\'' +
+                ", remoteServerIp='" + remoteServerIp + '\'' +
+                ", localServerIp='" + localServerIp + '\'' +
+                ", isFromEDA=" + isFromEDA +
+                ", fiegnResponse=" + fiegnResponse +
+                '}';
+    }
 }
