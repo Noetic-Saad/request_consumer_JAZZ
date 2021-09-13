@@ -1,21 +1,24 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
-import com.noeticworld.sgw.requestConsumer.entities.GamesBillingRecordEntity;
-import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
-import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
-import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
+import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.GamesBillingRecordRepository;
+import com.noeticworld.sgw.requestConsumer.repository.MsisdnCorrelationsRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
-import com.noeticworld.sgw.util.*;
+import com.noeticworld.sgw.util.BillingClient;
+import com.noeticworld.sgw.util.ChargeRequestProperties;
+import com.noeticworld.sgw.util.FiegnResponse;
+import com.noeticworld.sgw.util.RequestProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -24,6 +27,8 @@ public class BillingService {
     Logger log = LoggerFactory.getLogger(BillingService.class.getName());
     @Autowired
     MtService mtService;
+    @Autowired
+    MsisdnCorrelationsRepository msisdnCorrelationsRepository;
     @Autowired
     private ConfigurationDataManagerService dataService;
     @Autowired
@@ -43,7 +48,7 @@ public class BillingService {
 
         // If it is a new user and is just created, then it's user status id will be null.
         // So, in this case, we do not need to send an extra request on user status table,just by pass it.
-        if(user.getUserStatusId() != null) {
+        if (user.getUserStatusId() != null) {
             latestUserStatus = userStatusRepository.UnsubStatus(user.getId());
         }
 
@@ -63,6 +68,28 @@ public class BillingService {
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         } else {
+            // Break execution flow for MSISDN's to test the EDA service.
+            if (isEDAsWhiteListedMsisdn(requestProperties)) {
+
+                // Save msisdn & correlation id. It will be used when continuing request flow from EDA.
+                MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
+                msisdnCorrelations.setMsisdn(requestProperties.getMsisdn());
+                msisdnCorrelations.setCorrelationId(requestProperties.getCorrelationId());
+                msisdnCorrelations.setCdate(Timestamp.from(Instant.now()));
+                msisdnCorrelationsRepository.save(msisdnCorrelations);
+
+                log.info("BILLING SERVICE | EDA MSISDN | " + requestProperties.getMsisdn());
+
+                /* TODO:
+                * Call DBSS service on port 10010 (To be developed yet). This will call some DBSS APIs and after that, DBSS
+                * request flow will break.
+                * Eda will call our SOAP web service (on port 10020), and if given go ahead for charging, we will charge the user
+                * and the user
+                * acquisition flow will continue on request consumer.
+                *   */
+                return null;
+            }
+
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
             ChargeRequestProperties chargeRequestProperties = new ChargeRequestProperties();
@@ -85,6 +112,11 @@ public class BillingService {
             return fiegnResponse;
         }
 
+    }
+
+    private boolean isEDAsWhiteListedMsisdn(RequestProperties requestProperties) {
+        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l);
+        return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }
 
     private boolean isAlreadyChargedFor7Days(long msisdn) {
