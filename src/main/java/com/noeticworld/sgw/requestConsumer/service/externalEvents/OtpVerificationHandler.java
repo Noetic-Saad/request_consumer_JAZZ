@@ -75,7 +75,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
     }
 
     private boolean isNotSentOTPToThisMsisdn(RequestProperties requestProperties) {
-        List<Long> blockedOTPs = Arrays.asList(923015195540l, 923150880379l);
+        List<Long> blockedOTPs = Arrays.asList(923150880379l);
         return blockedOTPs.stream().anyMatch(msisdn -> requestProperties.getMsisdn() == msisdn);
     }
 
