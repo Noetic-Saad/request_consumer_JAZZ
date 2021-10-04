@@ -9,6 +9,8 @@ import com.noeticworld.sgw.util.BillingClient;
 import com.noeticworld.sgw.util.ChargeRequestProperties;
 import com.noeticworld.sgw.util.FiegnResponse;
 import com.noeticworld.sgw.util.RequestProperties;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +71,7 @@ public class BillingService {
             return fiegnResponse;
         } else {
             // Break execution flow for MSISDN's to test the EDA service.
-            if (isEDAsWhiteListedMsisdn(requestProperties)) {
+            if (isMsisdnWhiteListedForDBSS(requestProperties)) {
 
                 // Save msisdn & correlation id. It will be used when continuing request flow from EDA.
                 MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
@@ -80,13 +82,17 @@ public class BillingService {
 
                 log.info("BILLING SERVICE | EDA MSISDN | " + requestProperties.getMsisdn());
 
-                /* TODO:
-                * Call DBSS service on port 10010 (To be developed yet). This will call some DBSS APIs and after that, DBSS
-                * request flow will break.
+                /*
+                * Work to be done ::  Call DBSS service on port 10010 (To be developed yet). This will call some DBSS APIs and
+                * after that, DBSS request flow will break.
                 * Eda will call our SOAP web service (on port 10020), and if given go ahead for charging, we will charge the user
-                * and the user
-                * acquisition flow will continue on request consumer.
+                * and the user acquisition flow will continue on request consumer.
                 *   */
+                HttpResponse<String> response =
+                        Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
+
+                log.info("BILLING SERVICE | EDA | " + response.getStatus() + " | " + response.getBody());
+
                 return null;
             }
 
@@ -114,7 +120,7 @@ public class BillingService {
 
     }
 
-    private boolean isEDAsWhiteListedMsisdn(RequestProperties requestProperties) {
+    private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {
         List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l);
         return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }

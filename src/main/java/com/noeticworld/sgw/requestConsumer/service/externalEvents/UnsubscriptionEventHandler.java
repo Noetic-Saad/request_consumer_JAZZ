@@ -1,6 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.noeticworld.sgw.requestConsumer.entities.*;
+import com.noeticworld.sgw.requestConsumer.repository.MsisdnCorrelationsRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
@@ -16,22 +17,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(UnsubscriptionEventHandler.class.getName());
 
+    @Autowired
+    MsisdnCorrelationsRepository msisdnCorrelationsRepository;
     @Autowired private UsersRepository usersRepository;
     @Autowired private UserStatusRepository userStatusRepository;
     @Autowired private VendorRequestRepository requestRepository;
     @Autowired private ConfigurationDataManagerService dataService;
     @Autowired MtService mtService;
 
+    private boolean isEDAsWhiteListedMsisdn(RequestProperties requestProperties) {
+        List<Long> whiteListedEDAsMSISDN = Arrays.asList(); // 923015195540l
+        return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
+    }
+
     @Override
     public void handle(RequestProperties requestProperties) {
+        if(isEDAsWhiteListedMsisdn(requestProperties) && !requestProperties.isFromEDA()) {
+            // Save correlation id against Msisdn ...
+            MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
+            msisdnCorrelations.setMsisdn(requestProperties.getMsisdn());
+            msisdnCorrelations.setCorrelationId(requestProperties.getCorrelationId());
+            msisdnCorrelations.setCdate(Timestamp.from(Instant.now()));
+            msisdnCorrelationsRepository.save(msisdnCorrelations);
+            // Call DBSS service
+            return;
+        }
 
         EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());

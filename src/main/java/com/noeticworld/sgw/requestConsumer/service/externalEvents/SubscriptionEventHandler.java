@@ -472,7 +472,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     " | " + e.getCause());
         }
     }
-
     private void sendMT(RequestProperties requestProperties, String message) {
         MtProperties mtProperties = new MtProperties();
         mtProperties.setData(message);

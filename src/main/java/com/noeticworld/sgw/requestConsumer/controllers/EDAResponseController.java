@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.SubscriptionEventHandler;
+import com.noeticworld.sgw.requestConsumer.service.externalEvents.UnsubscriptionEventHandler;
 import com.noeticworld.sgw.util.FiegnResponse;
 import com.noeticworld.sgw.util.RequestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class EDAResponseController {
     UsersRepository usersRepository;
     @Autowired
     SubscriptionEventHandler subscriptionEventHandler;
+    @Autowired
+    UnsubscriptionEventHandler unsubscriptionEventHandler;
 
     @GetMapping("/test")
     public String test() {
@@ -39,6 +42,19 @@ public class EDAResponseController {
         subscriptionEventHandler.processUserForEDA(requestProperties, user);
     }
 
+    @PostMapping("/unsub-user")
+    public void unsubUserForEdaRequest(@RequestBody Map<String, ?> requestMap) {
+        String correlationId = (String) requestMap.get("correlationId");
+        long msisdn = (long) requestMap.get("msisdn");
+
+        RequestProperties requestProperties = new RequestProperties();
+        requestProperties.setMsisdn(msisdn);
+        requestProperties.setCorrelationId(correlationId);
+        requestProperties.setFromEDA(true);
+        requestProperties.setRequestAction("Unsb01");
+        unsubscriptionEventHandler.handle(requestProperties);
+    }
+
     private RequestProperties createRequestPropertiesForEDA(UsersEntity user, FiegnResponse fiegnResponse) {
         RequestProperties requestProperties = new RequestProperties();
         requestProperties.setVendorPlanId(user.getVendorPlanId());
@@ -54,3 +70,5 @@ public class EDAResponseController {
         return requestProperties;
     }
 }
+
+
