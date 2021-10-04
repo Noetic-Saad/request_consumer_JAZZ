@@ -91,7 +91,7 @@ public class BillingService {
                 HttpResponse<String> response =
                         Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
 
-                log.info("BILLING SERVICE | EDA | " + response.getStatus() + " | " + response.getBody());
+                log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn() + " | " + response.getStatus() + " | " + response.getBody());
 
                 return null;
             }
