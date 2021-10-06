@@ -70,8 +70,9 @@ public class BillingService {
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         } else {
-            // Break execution flow for MSISDN's to test the EDA service.
+            // Break execution for DBSS flow
             if (isMsisdnWhiteListedForDBSS(requestProperties)) {
+                log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn());
 
                 // Save msisdn & correlation id. It will be used when continuing request flow from EDA.
                 MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
@@ -80,14 +81,6 @@ public class BillingService {
                 msisdnCorrelations.setCdate(Timestamp.from(Instant.now()));
                 msisdnCorrelationsRepository.save(msisdnCorrelations);
 
-                log.info("BILLING SERVICE | EDA MSISDN | " + requestProperties.getMsisdn());
-
-                /*
-                * Work to be done ::  Call DBSS service on port 10010 (To be developed yet). This will call some DBSS APIs and
-                * after that, DBSS request flow will break.
-                * Eda will call our SOAP web service (on port 10020), and if given go ahead for charging, we will charge the user
-                * and the user acquisition flow will continue on request consumer.
-                *   */
                 HttpResponse<String> response =
                         Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
 
@@ -121,7 +114,7 @@ public class BillingService {
     }
 
     private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {
-        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l);
+        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923045693278l);
         return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }
 

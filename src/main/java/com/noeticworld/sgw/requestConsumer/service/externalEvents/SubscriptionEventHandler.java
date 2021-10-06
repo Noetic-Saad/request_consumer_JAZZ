@@ -283,7 +283,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse;
 
-        // EDA Request will set isFromEDA: true
+        // EDA Request will set property isFromEDA to true
         if(requestProperties.isFromEDA()) {
            fiegnResponse = requestProperties.getFiegnResponse();
         } else {

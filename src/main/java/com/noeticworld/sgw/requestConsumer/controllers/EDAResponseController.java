@@ -7,6 +7,8 @@ import com.noeticworld.sgw.requestConsumer.service.externalEvents.SubscriptionEv
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.UnsubscriptionEventHandler;
 import com.noeticworld.sgw.util.FiegnResponse;
 import com.noeticworld.sgw.util.RequestProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/consumer")
 public class EDAResponseController {
+    Logger log = LoggerFactory.getLogger(EDAResponseController.class.getName());
 
     @Autowired
     UsersRepository usersRepository;
@@ -24,21 +27,17 @@ public class EDAResponseController {
     @Autowired
     UnsubscriptionEventHandler unsubscriptionEventHandler;
 
-    @GetMapping("/test")
-    public String test() {
-        System.out.println("Consumer test");
-        return "consumer test";
-    }
-
     @PostMapping("/process-user")
     public void userAcquisitionProcessForEdaRequest(@RequestBody Map<String, ?> requestMap) {
         FiegnResponse fiegnResponse = new Gson().fromJson(requestMap.get("chargingResponse").toString(), FiegnResponse.class);
         long msisdn = (long) requestMap.get("msisdn");
 
         UsersEntity user = usersRepository.findByMsisdn(msisdn);
-        System.out.println("User --- " + user);
+        log.info("EDAResponseController | " + msisdn + " | " + user.getId());
+
         RequestProperties requestProperties = createRequestPropertiesForEDA(user, fiegnResponse);
-        System.out.println("Request properties --- " + requestProperties);
+        log.info("EDAResponseController | " + msisdn + " | " + requestProperties.getCorrelationId());
+
         subscriptionEventHandler.processUserForEDA(requestProperties, user);
     }
 
