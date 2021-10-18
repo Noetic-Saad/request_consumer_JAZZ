@@ -44,7 +44,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     private ConfigurationDataManagerService dataService;
 
     private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {
-        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923045693278l);
+        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923045790278l, 923045864178l);
         return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }
 
