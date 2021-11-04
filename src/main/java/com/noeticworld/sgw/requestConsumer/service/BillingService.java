@@ -114,7 +114,7 @@ public class BillingService {
     }
 
     private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {
-        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923080144278l);
+        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923080144278l, 923015430026l);
         return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }
 
