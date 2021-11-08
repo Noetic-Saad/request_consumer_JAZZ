@@ -70,12 +70,13 @@ public class BillingService {
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         } else {
-            // ----- DBSS Call for Jazz/GameNow -----
+            // ----- DBSS Call for Jazz GameNow -----
             if (user.getOperatorId() == 1) {
                 if (user.getUserStatusId() == null || latestUserStatus.getStatusId() == 2 || latestUserStatus.getStatusId() == 4
                         || latestUserStatus.getStatusId() == 5) {
                     // send request to DBSS to activate the product.
-                    log.info("BILLING SERVICE | DBSS REQUEST | " + latestUserStatus.getStatusId());
+                    log.info("BILLING SERVICE | DBSS REQUEST | " + requestProperties.getMsisdn() + " | " +
+                            (user.getUserStatusId() == null ? "First time user" : "Status Id: " + latestUserStatus.getStatusId()));
 
                     createMsisdnCorrelation(requestProperties);
 
@@ -86,24 +87,8 @@ public class BillingService {
                     log.info("BILLING SERVICE | DBSS RESPONSE | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                             " | " + response.getBody());
                     return null;
-                } /*else if (latestUserStatus.getStatusId() == 8) {
-                    // Send request directly to UCIP billing as the MSISDN is already in renewal cycle.
-                }*/
+                }
             }
-
-            // Break execution for DBSS flow (Old flow | when MSISDN's were whitelisted | creating new flow now)
-           /* if (isMsisdnWhiteListedForDBSS(requestProperties)) {
-                log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn());
-
-                createMsisdnCorrelation(requestProperties);
-
-                HttpResponse<String> response =
-                        Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
-
-                log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn() + " | " + response.getStatus() + " | " + response.getBody());
-
-                return null;
-            }*/
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -122,7 +107,7 @@ public class BillingService {
                 chargeRequestProperties.setTaxAmount(vendorPlansEntity.getTaxAmount());
             }
             chargeRequestProperties.setIsRenewal(0);
-            // TODO Comment By Rizwan, Added a new Class FiegnResponse
+
             fiegnResponse = billingClient.charge(chargeRequestProperties);
             return fiegnResponse;
         }
