@@ -75,8 +75,7 @@ public class BillingService {
                 if (user.getUserStatusId() == null || latestUserStatus.getStatusId() == 2 || latestUserStatus.getStatusId() == 4
                         || latestUserStatus.getStatusId() == 5) {
                     // send request to DBSS to activate the product.
-                    log.info("BILLING SERVICE | DBSS REQUEST | " +
-                            (latestUserStatus == null ? user.getUserStatusId() : latestUserStatus.getStatusId()));
+                    log.info("BILLING SERVICE | DBSS REQUEST | " + latestUserStatus.getStatusId());
 
                     createMsisdnCorrelation(requestProperties);
 
