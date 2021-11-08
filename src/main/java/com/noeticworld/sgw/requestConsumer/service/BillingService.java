@@ -85,6 +85,7 @@ public class BillingService {
 
                     log.info("BILLING SERVICE | DBSS RESPONSE | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                             " | " + response.getBody());
+                    return null;
                 } /*else if (latestUserStatus.getStatusId() == 8) {
                     // Send request directly to UCIP billing as the MSISDN is already in renewal cycle.
                 }*/
