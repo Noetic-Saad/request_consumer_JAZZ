@@ -83,6 +83,7 @@ public class BillingService {
                     HttpResponse<String> response =
                             Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
 
+                    // What to do if msisdn is already activated?
                     log.info("BILLING SERVICE | DBSS RESPONSE | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                             " | " + response.getBody());
                     return null;
