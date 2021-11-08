@@ -70,16 +70,31 @@ public class BillingService {
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
         } else {
-            // Break execution for DBSS flow
-            if (isMsisdnWhiteListedForDBSS(requestProperties)) {
+            // ----- DBSS Call for Jazz/GameNow -----
+            if (user.getOperatorId() == 1) {
+                if (user.getUserStatusId() == null || latestUserStatus.getStatusId() == 2 || latestUserStatus.getStatusId() == 4
+                        || latestUserStatus.getStatusId() == 5) {
+                    // send request to DBSS to activate the product.
+                    log.info("BILLING SERVICE | DBSS REQUEST | " +
+                            (latestUserStatus == null ? user.getUserStatusId() : latestUserStatus.getStatusId()));
+
+                    createMsisdnCorrelation(requestProperties);
+
+                    HttpResponse<String> response =
+                            Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
+
+                    log.info("BILLING SERVICE | DBSS RESPONSE | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
+                            " | " + response.getBody());
+                } /*else if (latestUserStatus.getStatusId() == 8) {
+                    // Send request directly to UCIP billing as the MSISDN is already in renewal cycle.
+                }*/
+            }
+
+            // Break execution for DBSS flow (Old flow | when MSISDN's were whitelisted | creating new flow now)
+           /* if (isMsisdnWhiteListedForDBSS(requestProperties)) {
                 log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn());
 
-                // Save msisdn & correlation id. It will be used when continuing request flow from EDA.
-                MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
-                msisdnCorrelations.setMsisdn(requestProperties.getMsisdn());
-                msisdnCorrelations.setCorrelationId(requestProperties.getCorrelationId());
-                msisdnCorrelations.setCdate(Timestamp.from(Instant.now()));
-                msisdnCorrelationsRepository.save(msisdnCorrelations);
+                createMsisdnCorrelation(requestProperties);
 
                 HttpResponse<String> response =
                         Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()).asString();
@@ -87,7 +102,7 @@ public class BillingService {
                 log.info("BILLING SERVICE | EDA | " + requestProperties.getMsisdn() + " | " + response.getStatus() + " | " + response.getBody());
 
                 return null;
-            }
+            }*/
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -111,6 +126,14 @@ public class BillingService {
             return fiegnResponse;
         }
 
+    }
+
+    private void createMsisdnCorrelation(RequestProperties requestProperties) {
+        MsisdnCorrelations msisdnCorrelations = new MsisdnCorrelations();
+        msisdnCorrelations.setMsisdn(requestProperties.getMsisdn());
+        msisdnCorrelations.setCorrelationId(requestProperties.getCorrelationId());
+        msisdnCorrelations.setCdate(Timestamp.from(Instant.now()));
+        msisdnCorrelationsRepository.save(msisdnCorrelations);
     }
 
     private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {

@@ -276,16 +276,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         return usersStatusEntity;
     }
 
-    public void processUserForEDA (RequestProperties requestProperties, UsersEntity user) {
+    public void processUserForEDA(RequestProperties requestProperties, UsersEntity user) {
         processUserRequest(requestProperties, user);
     }
 
     private void processUserRequest(RequestProperties requestProperties, UsersEntity _user) {
         FiegnResponse fiegnResponse;
 
-        // EDA Request will set property isFromEDA to true
-        if(requestProperties.isFromEDA()) {
-           fiegnResponse = requestProperties.getFiegnResponse();
+        // EDA Request sets => isFromEDA: true
+        if (requestProperties.isFromEDA()) {
+            fiegnResponse = requestProperties.getFiegnResponse();
         } else {
             fiegnResponse = billingService.charge(requestProperties);
             log.info("********* Sending Request For Charging ******" + " | msisdn:" + requestProperties.getMsisdn());
@@ -301,7 +301,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         if (_user.getUserStatusId() != null) {
             lastUserStatus = userStatusRepository.UnsubStatus(_user.getId());
         }
-
 
         if (fiegnResponse.getCode() == Integer.parseInt(ResponseTypeConstants.ALREADY_SUBSCRIBED)) {
             // ALREADY SUBSCRIBED CASE
@@ -472,6 +471,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                     " | " + e.getCause());
         }
     }
+
     private void sendMT(RequestProperties requestProperties, String message) {
         MtProperties mtProperties = new MtProperties();
         mtProperties.setData(message);
