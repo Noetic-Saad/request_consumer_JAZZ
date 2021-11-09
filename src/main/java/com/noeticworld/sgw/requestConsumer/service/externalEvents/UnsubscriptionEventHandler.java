@@ -51,10 +51,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     @Override
     public void handle(RequestProperties requestProperties) {
         // Msisdn should be white listed and request should not be from EDA
-        if (isMsisdnWhiteListedForDBSS(requestProperties) && !requestProperties.isFromEDA()) {
+        if (!requestProperties.isFromEDA()) {
             createMsisdnCorrelation(requestProperties);
 
-            // ***** Create deactivation route in DBSS service and call BSS API and get request from EDA
             HttpResponse<String> response =
                     Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
 

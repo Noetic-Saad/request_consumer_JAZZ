@@ -72,9 +72,14 @@ public class BillingService {
         } else {
             // ----- DBSS Call for Jazz GameNow -----
             if (user.getOperatorId() == 1) {
+                /*
+                 * 2 - unsub
+                 * 4 - telco unsub
+                 * 5 - renewal unsub
+                 * */
                 if (user.getUserStatusId() == null || latestUserStatus.getStatusId() == 2 || latestUserStatus.getStatusId() == 4
                         || latestUserStatus.getStatusId() == 5) {
-                    // send request to DBSS to activate the product.
+
                     log.info("BILLING SERVICE | DBSS REQUEST | " + requestProperties.getMsisdn() + " | " +
                             (user.getUserStatusId() == null ? "First time user" : "Status Id: " + latestUserStatus.getStatusId()));
 
