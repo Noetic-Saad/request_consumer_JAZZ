@@ -54,17 +54,17 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         // Msisdn should be white listed and request should not be from EDA
-        if (_user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
+
+        /*if (_user != null && _user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
             createMsisdnCorrelation(requestProperties);
 
             HttpResponse<String> response =
                     Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
 
-            log.info("UnSubscriptionEventHandler | EDA | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
+            log.info("UnSubscriptionEventHandler | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                     " | " + response.getBody());
             return;
-        }
-
+        }*/
 
 
         VendorPlansEntity vendorPlans = null;
@@ -75,6 +75,12 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             } finally {
                 createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND, requestProperties.getCorrelationId());
             }
+        } else if (_user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
+            createMsisdnCorrelation(requestProperties);
+            HttpResponse<String> response =
+                    Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
+            log.info("UnSubscriptionEventHandler | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
+                    " | " + response.getBody());
         } else {
             vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
