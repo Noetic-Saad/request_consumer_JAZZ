@@ -50,8 +50,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
+        EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
+        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+
         // Msisdn should be white listed and request should not be from EDA
-        if (!requestProperties.isFromEDA()) {
+        if (_user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
             createMsisdnCorrelation(requestProperties);
 
             HttpResponse<String> response =
@@ -62,8 +65,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             return;
         }
 
-        EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
-        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+
 
         VendorPlansEntity vendorPlans = null;
 
