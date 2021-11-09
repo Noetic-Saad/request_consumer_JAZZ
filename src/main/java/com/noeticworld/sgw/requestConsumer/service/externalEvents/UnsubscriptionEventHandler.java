@@ -50,8 +50,11 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     @Override
     public void handle(RequestProperties requestProperties) {
+        log.info("UNSUBSCRIBE EVENT HANDLER CLASS | REQUEST RECEIVED FOR MSISDN " + requestProperties.getMsisdn());
+
         EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
+        VendorPlansEntity vendorPlans = null;
 
         // Msisdn should be white listed and request should not be from EDA
 
@@ -67,11 +70,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         }*/
 
 
-        VendorPlansEntity vendorPlans = null;
-
         if (_user == null) {
             try {
-                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " NOT FOUND");
+                log.info("UNSUBSCRIBE EVENT HANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " NOT FOUND");
             } finally {
                 createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND, requestProperties.getCorrelationId());
             }
@@ -79,8 +80,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             createMsisdnCorrelation(requestProperties);
             HttpResponse<String> response =
                     Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
-            log.info("UnSubscriptionEventHandler | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
+            log.info("UNSUBSCRIBE EVENT HANDLER CLASS | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                     " | " + response.getBody());
+            return;
         } else {
             vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
@@ -90,9 +92,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 } else {
                     resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
                 }
-                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
+                log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
             } finally {
-                log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREAT RESPONSE");
+                log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREATE RESPONSE");
                 createResponse(resultCode, requestProperties.getCorrelationId());
             }
             if (vendorPlans.getMtResponse() == 1) {
