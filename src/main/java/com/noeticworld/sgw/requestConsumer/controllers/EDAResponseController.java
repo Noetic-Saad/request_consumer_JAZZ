@@ -10,7 +10,10 @@ import com.noeticworld.sgw.util.RequestProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.Map;
@@ -46,7 +49,10 @@ public class EDAResponseController {
         String correlationId = (String) requestMap.get("correlationId");
         long msisdn = (long) requestMap.get("msisdn");
 
-        System.out.println("*********** " + correlationId + " | " + correlationId == "OP_UNSUB");
+        System.out.println("*********** " + correlationId);
+        System.out.println(correlationId == "OP_UNSUB");
+        System.out.println(correlationId.equals("OP_UNSUB"));
+
 
         RequestProperties requestProperties = new RequestProperties();
         requestProperties.setMsisdn(msisdn);
