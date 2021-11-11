@@ -49,11 +49,6 @@ public class EDAResponseController {
         String correlationId = (String) requestMap.get("correlationId");
         long msisdn = (long) requestMap.get("msisdn");
 
-        System.out.println("*********** " + correlationId);
-        System.out.println(correlationId == "OP_UNSUB");
-        System.out.println(correlationId.equals("OP_UNSUB"));
-
-
         RequestProperties requestProperties = new RequestProperties();
         requestProperties.setMsisdn(msisdn);
         requestProperties.setCorrelationId(correlationId);
