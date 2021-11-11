@@ -96,7 +96,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
             } finally {
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREATE RESPONSE");
-                if (requestProperties.getCorrelationId() == "OP_UNSUB")
+                System.out.println("*********** " + requestProperties.getCorrelationId() + " | " + requestProperties.getCorrelationId() == "OP_UNSUB");
+                if (requestProperties.getCorrelationId().equals("OP_UNSUB"))
                     log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
                 else
                     createResponse(resultCode, requestProperties.getCorrelationId());
