@@ -77,6 +77,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 createResponse(ResponseTypeConstants.SUBSCRIBER_NOT_FOUND, requestProperties.getCorrelationId());
             }
         } else if (_user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
+            // DBSS flow for Jazz | isFromEDA: false on first request from user.
             createMsisdnCorrelation(requestProperties);
             HttpResponse<String> response =
                     Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
@@ -95,7 +96,10 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
             } finally {
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREATE RESPONSE");
-                createResponse(resultCode, requestProperties.getCorrelationId());
+                if (requestProperties.getCorrelationId() == "OP_UNSUB")
+                    log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
+                else
+                    createResponse(resultCode, requestProperties.getCorrelationId());
             }
             if (vendorPlans.getMtResponse() == 1) {
                 mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
