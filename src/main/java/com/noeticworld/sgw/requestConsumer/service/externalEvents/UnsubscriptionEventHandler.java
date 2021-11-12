@@ -49,20 +49,6 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
         EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
-        // Msisdn should be white listed and request should not be from EDA
-
-        /*if (_user != null && _user.getOperatorId() == 1 && !requestProperties.isFromEDA()) {
-            createMsisdnCorrelation(requestProperties);
-
-            HttpResponse<String> response =
-                    Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
-
-            log.info("UnSubscriptionEventHandler | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
-                    " | " + response.getBody());
-            return;
-        }*/
-
-
         if (_user == null) {
             try {
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | MSISDN " + requestProperties.getMsisdn() + " NOT FOUND");
@@ -81,7 +67,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
             try {
-                if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)) {
+                if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.UNSUBSCRIPTION_REQUEST_TELCO_INITIATED)) {
                     log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
                     resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.TELCOUNSUB));
                 } else {
