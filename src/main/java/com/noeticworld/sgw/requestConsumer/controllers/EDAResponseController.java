@@ -47,13 +47,14 @@ public class EDAResponseController {
     @PostMapping("/unsub-user")
     public void unsubUserForEdaRequest(@RequestBody Map<String, ?> requestMap) {
         String correlationId = (String) requestMap.get("correlationId");
+        String unsubRequestAction = (String) requestMap.get("unsubRequestAction");
         long msisdn = (long) requestMap.get("msisdn");
 
         RequestProperties requestProperties = new RequestProperties();
         requestProperties.setMsisdn(msisdn);
         requestProperties.setCorrelationId(correlationId);
         requestProperties.setFromEDA(true);
-        requestProperties.setRequestAction("Unsb01");
+        requestProperties.setRequestAction(unsubRequestAction);
         unsubscriptionEventHandler.handle(requestProperties);
     }
 

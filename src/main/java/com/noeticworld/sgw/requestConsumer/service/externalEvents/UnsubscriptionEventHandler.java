@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class UnsubscriptionEventHandler implements RequestEventHandler {
@@ -43,18 +41,13 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     @Autowired
     private ConfigurationDataManagerService dataService;
 
-    private boolean isMsisdnWhiteListedForDBSS(RequestProperties requestProperties) {
-        List<Long> whiteListedEDAsMSISDN = Arrays.asList(923015195540l, 923080144278l, 923015430026l);
-        return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
-    }
-
     @Override
     public void handle(RequestProperties requestProperties) {
-        log.info("UNSUBSCRIBE EVENT HANDLER CLASS | REQUEST RECEIVED FOR MSISDN " + requestProperties.getMsisdn());
+        log.info("UNSUBSCRIBE EVENT HANDLER CLASS | REQUEST RECEIVED FOR MSISDN " + requestProperties.getMsisdn() +
+                " | ACTION  | " + requestProperties.getRequestAction());
 
         EventTypesEntity eventTypesEntity = dataService.getRequestEventsEntity(requestProperties.getRequestAction());
         UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
-        VendorPlansEntity vendorPlans = null;
 
         // Msisdn should be white listed and request should not be from EDA
 
@@ -85,21 +78,20 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
                     " | " + response.getBody());
             return;
         } else {
-            vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
+            VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
             try {
                 if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED)) {
+                    log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
                     resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.TELCOUNSUB));
                 } else {
+                    log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
                     resultCode = changeUserStatus(_user, vendorPlans.getSubCycle(), dataService.getUserStatusTypeId(UserStatusTypeConstants.UNSUBSCRIBED));
+                    createResponse(resultCode, requestProperties.getCorrelationId());
                 }
                 log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | UNSUBSCRIBED FROM SERVICE");
-            } finally {
-                log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | TRYING TO CREATE RESPONSE");
-                if (requestProperties.getCorrelationId().equals("OP_UNSUB"))
-                    log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | OPERATOR UNSUB REQUEST");
-                else
-                    createResponse(resultCode, requestProperties.getCorrelationId());
+            } catch (Exception e) {
+                log.info("UNSUBSCRIBE EVENT HANDLER CLASS | " + requestProperties.getMsisdn() + " | EXCEPTION | " + e.getMessage());
             }
             if (vendorPlans.getMtResponse() == 1) {
                 mtService.sendUnsubMt(requestProperties.getMsisdn(), vendorPlans);
