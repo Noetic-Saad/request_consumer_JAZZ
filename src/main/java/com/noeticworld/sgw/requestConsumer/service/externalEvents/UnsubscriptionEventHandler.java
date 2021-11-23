@@ -27,11 +27,11 @@ import java.util.Date;
 public class UnsubscriptionEventHandler implements RequestEventHandler {
 
     Logger log = LoggerFactory.getLogger(UnsubscriptionEventHandler.class.getName());
-
     @Autowired
     MsisdnCorrelationsRepository msisdnCorrelationsRepository;
     @Autowired
     MtService mtService;
+    private String DBSS_API = "http://192.168.127.58:10001";
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -59,7 +59,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             // DBSS flow for Jazz | isFromEDA: false on first request from user.
             createMsisdnCorrelation(requestProperties);
             HttpResponse<String> response =
-                    Unirest.get("http://192.168.127.58:10001/dbss/product-deactivation/" + requestProperties.getMsisdn()).asString();
+                    Unirest.get(DBSS_API + "/dbss/product-deactivation/" + requestProperties.getMsisdn() + "/" +
+                            requestProperties.getCorrelationId()).asString();
             log.info("UNSUBSCRIBE EVENT HANDLER CLASS | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                     " | " + response.getBody());
             return;
