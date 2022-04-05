@@ -401,7 +401,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } else if (vendorPlansEntity.getOperatorId() == 4) {
                 // In case of Zong games, create free trial as well.
                 try {
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
+                    //                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
                             requestProperties.getCorrelationId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
