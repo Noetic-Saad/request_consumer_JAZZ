@@ -407,6 +407,18 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 } catch (Exception e) {
                     log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
                 }
+//new start
+                try {
+                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, true);
+                    saveLogInRecord(requestProperties, vendorPlansEntity.getId());
+                } catch (Exception e) {
+                    log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
+                }
+
+//new End
+
+
+
 
                 // Get zong MT message & send MT.
                 message = dataManagerService.getMtMessage("zong_insufficient_balance").getMsgText();
