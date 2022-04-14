@@ -23,6 +23,7 @@ import java.util.List;
 @Service
 public class SubscriptionEventHandler implements RequestEventHandler {
 
+
     Logger log = LoggerFactory.getLogger(SubscriptionEventHandler.class.getName());
     @Autowired
     ConfigurationDataManagerService dataManagerService;
@@ -401,24 +402,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } else if (vendorPlansEntity.getOperatorId() == 4) {
                 // In case of Zong games, create free trial as well.
                 try {
-                    //                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
-                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.FREE_TRIAL_SUBSCRIPTION,
+                    createResponse(fiegnResponse.getMsg(), ResponseTypeConstants.INSUFFICIENT_BALANCE,
                             requestProperties.getCorrelationId());
                 } catch (Exception e) {
                     log.info("Subscription SERVICE | Exception | Creating response | " + e.getCause());
                 }
-//new start
-                try {
-                    createUserStatusEntity(requestProperties, _user, UserStatusTypeConstants.SUBSCRIBED, true);
-                    saveLogInRecord(requestProperties, vendorPlansEntity.getId());
-                } catch (Exception e) {
-                    log.info("Subscription SERVICE |  Exception | User status & login updates | " + e.getCause());
-                }
-
-//new End
-
-
-
 
                 // Get zong MT message & send MT.
                 message = dataManagerService.getMtMessage("zong_insufficient_balance").getMsgText();
