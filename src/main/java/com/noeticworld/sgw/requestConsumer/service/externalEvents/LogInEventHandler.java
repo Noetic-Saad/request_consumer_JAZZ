@@ -6,13 +6,21 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 public class LogInEventHandler implements RequestEventHandler {
@@ -37,8 +45,23 @@ public class LogInEventHandler implements RequestEventHandler {
     LoginRepository loginRepository;
 
     @Override
-    public void handle(RequestProperties requestProperties) {
+    public void handle(RequestProperties requestProperties) throws URISyntaxException {
         if (requestProperties.isOtp()) {
+
+            //New jazz
+            if(requestProperties.getVendorPlanId()==3){
+                log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called "+ " | msisdn:" + requestProperties.getMsisdn());
+                String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
+                if(str.equals("success")){
+                    loginRepository.updateLoginTable(requestProperties.getMsisdn());
+                    processLogInRequest(requestProperties);
+                }else {
+                    createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+                }
+
+
+            }
+            else{
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
             log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
 
@@ -48,6 +71,12 @@ public class LogInEventHandler implements RequestEventHandler {
             } else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
+            }
+
+
+
+
+
         } else {
             UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
@@ -161,4 +190,32 @@ public class LogInEventHandler implements RequestEventHandler {
         logInRecordRepository.save(loginRecordsEntity);
 //        loginRepository.updateLoginTable(requestProperties.getMsisdn());
     }
+
+
+    public String verifyOTP(long msisdn,long otp) throws URISyntaxException {
+        RestTemplate restTemplate=new RestTemplate();
+        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
+        String body="{" +
+                "\"Identifier\":"+"\""+msisdn+"\","+
+                "\"OTP\":\""+otp+"\","+
+                "\"param1\":" +"\"asdjfhjs\","+
+                "\"param2\":" +"\"android \","+
+                "\"param3\":" +"\"\""+
+                "}";
+        System.out.println(body);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type","application/json");
+        headers.set("Connection","keep-alive");
+        headers.set("Authorization","Bearer b65728a7-da4f-30c3-bc17-98165dd78256");
+        headers.set("Channel","test-channel");
+        HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
+        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
+        JSONObject json = new JSONObject(str.getBody());
+        log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
+        return json.getString("msg");
+    }
+
+
+
+
 }
