@@ -125,7 +125,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
-        logger.info(str.getStatusCode() + " " + str.getBody());
+        logger.info(str.getStatusCode() + " " + str.getBody()+" msisdn: "+msisdn);
         return json.getString("msg");
     }
 

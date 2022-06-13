@@ -64,7 +64,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private long otpnumber = 0;
 
     @Override
-    public void handle(RequestProperties requestProperties) {
+    public void handle(RequestProperties requestProperties) throws URISyntaxException {
 //        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         if (requestProperties.isOtp()) {
@@ -74,9 +74,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 return;
             }
             if(requestProperties.getVendorPlanId()==3){
-            log.info("Request sending using new API");
+                //new jazz api
+               String msg= verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
+                if(msg.equals("success")){
+                    loginRepository.updateLoginTable(requestProperties.getMsisdn());
+                    handleSubRequest(requestProperties);
+                }
+                else{
+                    createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
 
-
+                }
 
             }
             //else1 start
@@ -552,7 +559,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 
 
-    public String verifyOTP(String otp,long msisdn) throws URISyntaxException {
+    public String verifyOTP(long msisdn,long otp) throws URISyntaxException {
         RestTemplate restTemplate=new RestTemplate();
         String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
         String body="{" +
@@ -571,7 +578,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
-        log.info(str.getStatusCode()+" "+str.getBody());
+        log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
         return json.getString("msg");
     }
 
