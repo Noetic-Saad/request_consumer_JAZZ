@@ -206,7 +206,7 @@ public class LogInEventHandler implements RequestEventHandler {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
-        headers.set("Authorization","Bearer b65728a7-da4f-30c3-bc17-98165dd78256");
+        headers.set("Authorization","Bearer fa5f82c8-cbb7-322e-8775-7e30788198bc");
         headers.set("Channel","test-channel");
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
