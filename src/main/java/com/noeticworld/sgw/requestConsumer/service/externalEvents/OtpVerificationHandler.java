@@ -59,6 +59,12 @@ public class OtpVerificationHandler implements RequestEventHandler {
 
         if(vendorPlansEntity.getOperatorId()==1){
             sendOTP(requestProperties.getMsisdn());
+            LoginEntity loginEntity = new LoginEntity();
+            loginEntity.setMsisdn(requestProperties.getMsisdn());
+            loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
+            loginEntity.setTrackingId(requestProperties.getTrackerId());
+            loginEntity.setCode(0);
+            loginRepository.save(loginEntity);
         }
         else {
             // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
@@ -113,7 +119,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
                 "\"param1\":" +"\"asdjfhjs\","+
-                "\"param2\":" +"\"android \","+
+                "\"param2\":" +"\"android\","+
                 "\"param3\":" +"\"\""+
                 "}";
         System.out.println(body);
