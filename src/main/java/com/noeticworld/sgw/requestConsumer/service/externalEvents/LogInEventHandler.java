@@ -52,7 +52,7 @@ public class LogInEventHandler implements RequestEventHandler {
             if(requestProperties.getVendorPlanId()==3){
                 log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called "+ " | msisdn:" + requestProperties.getMsisdn());
                 String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
-                if(str.equals("success")){
+                if(str.equals("Success")){
                     loginRepository.updateLoginTable(requestProperties.getMsisdn());
                     processLogInRequest(requestProperties);
                 }else {
