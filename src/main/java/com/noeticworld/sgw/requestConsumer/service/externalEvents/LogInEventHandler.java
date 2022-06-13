@@ -52,7 +52,9 @@ public class LogInEventHandler implements RequestEventHandler {
             if(requestProperties.getVendorPlanId()==3){
                 log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called "+ " | msisdn:" + requestProperties.getMsisdn());
                 String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
+//                log.info();
                 if(str.equals("Success")){
+                    log.info("Inside Success");
                     loginRepository.updateLoginTable(requestProperties.getMsisdn());
                     processLogInRequest(requestProperties);
                 }else {
@@ -202,7 +204,7 @@ public class LogInEventHandler implements RequestEventHandler {
                 "\"param2\":" +"\"android \","+
                 "\"param3\":" +"\"\""+
                 "}";
-        System.out.println(body);
+        log.info(body);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
@@ -211,7 +213,7 @@ public class LogInEventHandler implements RequestEventHandler {
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
-        log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
+        log.info(str.getStatusCode()+" "+str.getBody()+ " msidn: "+msisdn);
         return json.getString("msg");
     }
 
