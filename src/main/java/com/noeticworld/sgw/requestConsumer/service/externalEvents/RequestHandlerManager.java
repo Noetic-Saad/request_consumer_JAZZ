@@ -7,6 +7,8 @@ import com.noeticworld.sgw.util.RequestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URISyntaxException;
+
 @Component
 public class RequestHandlerManager {
 
@@ -30,7 +32,7 @@ public class RequestHandlerManager {
     private AutLogInHandler autLogInHandler;
 
 
-    public void manage(RequestProperties requestProperties) {
+    public void manage(RequestProperties requestProperties) throws URISyntaxException {
         EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
 
         if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||

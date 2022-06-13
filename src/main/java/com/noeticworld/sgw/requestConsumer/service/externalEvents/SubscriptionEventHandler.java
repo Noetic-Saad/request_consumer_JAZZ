@@ -7,11 +7,18 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
 import com.noeticworld.sgw.util.*;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SubscriptionEventHandler implements RequestEventHandler {
@@ -65,6 +73,15 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
                 return;
             }
+            if(requestProperties.getVendorPlanId()==3){
+            log.info("Request sending using new API");
+
+
+
+            }
+            //else1 start
+            else{
+
             OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
             log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
@@ -74,6 +91,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             } else {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+            }
+           //else1 end
             }
         } else {
             handleSubRequest(requestProperties);
@@ -530,5 +549,34 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         }*/
 
     }
+
+
+
+    public String verifyOTP(String otp,long msisdn) throws URISyntaxException {
+        RestTemplate restTemplate=new RestTemplate();
+        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
+        String body="{" +
+                "\"Identifier\":"+"\""+msisdn+"\","+
+                "\"OTP\":\""+otp+"\","+
+                "\"param1\":" +"\"asdjfhjs\","+
+                "\"param2\":" +"\"android \","+
+                "\"param3\":" +"\"\""+
+                "}";
+        System.out.println(body);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type","application/json");
+        headers.set("Connection","keep-alive");
+        headers.set("Authorization","Bearer c4e6cfb8-f47a-38ab-9da8-d4b99fdb8804");
+        headers.set("Channel","test-channel");
+        HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
+        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
+        JSONObject json = new JSONObject(str.getBody());
+        log.info(str.getStatusCode()+" "+str.getBody());
+        return json.getString("msg");
+    }
+
+
+
+
 
 }

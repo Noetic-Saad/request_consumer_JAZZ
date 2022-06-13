@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URISyntaxException;
+
 @Service
 public class RequestProcessorService {
 
@@ -16,7 +18,7 @@ public class RequestProcessorService {
     @Autowired private RequestHandlerManager requestHandlerManager;
     @Autowired private ConfigurationDataManagerService configurationDataManagerService;
 
-    public void process(CustomMessage customMessage) {
+    public void process(CustomMessage customMessage) throws URISyntaxException {
         RequestProperties requestProperties = new RequestProperties(customMessage);
         requestHandlerManager.manage(requestProperties);
         log.info("CONSUMER SERVICE | REQUESTPROCESSORSERVICE CLASS | REQUEST PROCESSED FOR | "+ customMessage.getMsisdn());
