@@ -5,6 +5,7 @@ import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
+import com.noeticworld.sgw.util.TokenManager;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -196,7 +198,7 @@ public class LogInEventHandler implements RequestEventHandler {
 
     public String verifyOTP(long msisdn,long otp) throws URISyntaxException {
         RestTemplate restTemplate=new RestTemplate();
-        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
+//        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
                 "\"OTP\":\""+otp+"\","+
@@ -204,17 +206,29 @@ public class LogInEventHandler implements RequestEventHandler {
                 "\"param2\":" +"\"android \","+
                 "\"param3\":" +"\"\""+
                 "}";
-        log.info(body);
+        System.out.println(body);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
-        headers.set("Authorization","Bearer 11f94927-f1c1-315a-9ed3-e666347c9f4f");
+        headers.set("Authorization","Bearer "+TokenManager.accessToken);
         headers.set("Channel","test-channel");
-        HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
-        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
-        JSONObject json = new JSONObject(str.getBody());
-        log.info(str.getStatusCode()+" "+str.getBody()+ " msidn: "+msisdn);
-        return json.getString("msg");
+        try{
+            HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
+            ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
+            JSONObject json = new JSONObject(str.getBody());
+            log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
+            log.info(json.getString("msg")+" -----------");
+            return json.getString("msg");
+        }catch(
+                HttpClientErrorException e){
+            if(e.getStatusCode().value()==401){
+                System.out.println("calling");
+                TokenManager.getToken();
+                this.verifyOTP(msisdn,otp);
+            }
+        }
+
+        return "-1";
     }
 
 

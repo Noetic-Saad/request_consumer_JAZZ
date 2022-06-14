@@ -9,6 +9,7 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.util.MtClient;
 import com.noeticworld.sgw.util.MtProperties;
 import com.noeticworld.sgw.util.RequestProperties;
+import com.noeticworld.sgw.util.TokenManager;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -122,17 +124,28 @@ public class OtpVerificationHandler implements RequestEventHandler {
                 "\"param2\":" +"\"android\","+
                 "\"param3\":" +"\"\""+
                 "}";
-        System.out.println(body);
+        logger.info(body);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
-        headers.set("Authorization","Bearer 11f94927-f1c1-315a-9ed3-e666347c9f4f");
+        headers.set("Authorization","Bearer "+TokenManager.accessToken);
         headers.set("Channel","test-channel");
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
+        try{
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
         logger.info(str.getStatusCode() + " " + str.getBody()+" msisdn: "+msisdn);
         return json.getString("msg");
+        }catch(HttpClientErrorException e){
+            if(e.getStatusCode().value()==401){
+            System.out.println("calling");
+            TokenManager.getToken();
+            this.sendOTP(msisdn);
+        }
+
+            return "-1";
+        }
+
     }
 
 

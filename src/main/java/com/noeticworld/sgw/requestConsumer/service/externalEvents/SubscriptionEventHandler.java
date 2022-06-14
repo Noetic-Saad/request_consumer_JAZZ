@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -573,14 +574,25 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
-        headers.set("Authorization","Bearer 11f94927-f1c1-315a-9ed3-e666347c9f4f");
+        headers.set("Authorization","Bearer "+TokenManager.accessToken);
         headers.set("Channel","test-channel");
+        try{
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
         log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
         log.info(json.getString("msg")+" -----------");
         return json.getString("msg");
+    }catch(
+    HttpClientErrorException e){
+        if(e.getStatusCode().value()==401){
+            System.out.println("calling");
+            TokenManager.getToken();
+            this.verifyOTP(msisdn,otp);
+        }
+    }
+
+       return "-1";
     }
 
 
