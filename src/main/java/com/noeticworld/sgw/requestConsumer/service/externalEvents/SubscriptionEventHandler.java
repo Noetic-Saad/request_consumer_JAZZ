@@ -63,7 +63,6 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     @Autowired
     private LoginRepository loginRepository;
     private long otpnumber = 0;
-
     @Override
     public void handle(RequestProperties requestProperties) throws URISyntaxException {
 //        UsersEntity _user = usersRepository.findByMsisdn(requestProperties.getMsisdn());
@@ -74,7 +73,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
                 log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
                 return;
             }
-            if(requestProperties.getVendorPlanId()==3){
+            VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
+
+            if(vendorPlansEntity.getOperatorId()==1){
                 //new jazz api
                String msg= verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
                 if(msg.equals("success")){

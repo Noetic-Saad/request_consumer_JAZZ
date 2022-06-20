@@ -60,12 +60,12 @@ public class OtpVerificationHandler implements RequestEventHandler {
 
 
         if(vendorPlansEntity.getOperatorId()==1){
-            sendOTP(requestProperties.getMsisdn());
+           String otp= sendOTP(requestProperties.getMsisdn());
             LoginEntity loginEntity = new LoginEntity();
             loginEntity.setMsisdn(requestProperties.getMsisdn());
             loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
             loginEntity.setTrackingId(requestProperties.getTrackerId());
-            loginEntity.setCode(0);
+            loginEntity.setCode(Integer.valueOf(otp));
             loginRepository.save(loginEntity);
         }
         else {
@@ -117,7 +117,6 @@ public class OtpVerificationHandler implements RequestEventHandler {
     //send otp for jazz new
     public String sendOTP(long msisdn) throws URISyntaxException {
         RestTemplate restTemplate=new RestTemplate();
-        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
                 "\"param1\":" +"\"asdjfhjs\","+
@@ -135,7 +134,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);
         JSONObject json = new JSONObject(str.getBody());
         logger.info(str.getStatusCode() + " " + str.getBody()+" msisdn: "+msisdn);
-        return json.getString("msg");
+        return json.getJSONObject("data").getString("msg");
         }catch(HttpClientErrorException e){
             if(e.getStatusCode().value()==401){
             System.out.println("calling");
