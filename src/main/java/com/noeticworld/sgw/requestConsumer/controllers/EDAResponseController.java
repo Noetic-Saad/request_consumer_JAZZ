@@ -31,7 +31,7 @@ public class EDAResponseController {
     UnsubscriptionEventHandler unsubscriptionEventHandler;
 
     @PostMapping("/process-user")
-    public void userAcquisitionProcessForEdaRequest(@RequestBody Map<String, ?> requestMap) {
+    public void userAcquisitionProcessForEdaRequest(@RequestBody Map<String, Object> requestMap) {
         FiegnResponse fiegnResponse = new Gson().fromJson(requestMap.get("chargingResponse").toString(), FiegnResponse.class);
         long msisdn = (long) requestMap.get("msisdn");
 
@@ -45,7 +45,7 @@ public class EDAResponseController {
     }
 
     @PostMapping("/unsub-user")
-    public void unsubUserForEdaRequest(@RequestBody Map<String, ?> requestMap) {
+    public void unsubUserForEdaRequest(@RequestBody Map<String, Object> requestMap) {
         String correlationId = (String) requestMap.get("correlationId");
         String unsubRequestAction = (String) requestMap.get("unsubRequestAction");
         long msisdn = (long) requestMap.get("msisdn");

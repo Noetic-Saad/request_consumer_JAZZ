@@ -44,6 +44,8 @@ public class OtpVerificationHandler implements RequestEventHandler {
     @Autowired
     LoginRepository loginRepository;
 
+  Integer otpverify=0;
+
     @Override
     public void handle(RequestProperties requestProperties) throws URISyntaxException {
         // Do not send OTP to this MSISDN
@@ -56,20 +58,50 @@ public class OtpVerificationHandler implements RequestEventHandler {
         }
         MtProperties mtProperties = new MtProperties();
         VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
-        System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
+//        System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
 
 
         if(vendorPlansEntity.getOperatorId()==1){
+
            String otp= sendOTP(requestProperties.getMsisdn());
+           if(otp.equals(null) | otp.equals("0")){
+               System.out.println("OTP is = "+ otp);
+               return;
+           }
             LoginEntity loginEntity = new LoginEntity();
             loginEntity.setMsisdn(requestProperties.getMsisdn());
             loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
             loginEntity.setTrackingId(requestProperties.getTrackerId());
             loginEntity.setCode(Integer.valueOf(otp));
-            loginRepository.save(loginEntity);
-        }
+
+            //changes
+            logger.info("OTP="+ Integer.valueOf(otp));
+            mtProperties.setData("");
+            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+            mtProperties.setShortCode("By Jazz");
+            mtProperties.setPassword("");
+            mtProperties.setUsername("");
+            mtProperties.setServiceId("By Jazz");
+            if(Integer.valueOf(otp) != -1){
+                saveOtpRecords(mtProperties, Integer.valueOf(otp), vendorPlansEntity.getId());
+                System.out.println("Saving Jazz Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
+                System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number " + otp);
+            } else
+            {
+                saveOtpRecords(mtProperties, this.otpverify, vendorPlansEntity.getId());
+                System.out.println("Saving Jazz Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
+                System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number " + otp);
+            }
+
+                  loginRepository.save(loginEntity);
+
+
+    }
         else {
             // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+ //changes
+            System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
+
             String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_otp").getMsgText();
             String finalMessage = message.replaceAll("&otp", otpNumber.toString());
             mtProperties.setData(finalMessage);
@@ -85,7 +117,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
             }
             saveOtpRecords(mtProperties, otpNumber, vendorPlansEntity.getId());
 
-        System.out.println("Saving Jazz Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
+        System.out.println("Saving Zong  Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
         LoginEntity loginEntity = new LoginEntity();
         loginEntity.setMsisdn(requestProperties.getMsisdn());
         loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
@@ -101,6 +133,8 @@ public class OtpVerificationHandler implements RequestEventHandler {
     }
 
     public void saveOtpRecords(MtProperties mtProperties, Integer otpNumber, long vendorPlanId) {
+// logger.info("in Save OTP Records"+otpNumber);
+// logger.info("All "+ Timestamp.valueOf(LocalDateTime.now())+ " "+Long.parseLong(mtProperties.getMsisdn()) + " "+ otpNumber +" "+vendorPlanId  );
         OtpRecordsEntity otpRecordsEntity = new OtpRecordsEntity();
         otpRecordsEntity.setCdate(Timestamp.valueOf(LocalDateTime.now()));
         otpRecordsEntity.setMsisdn(Long.parseLong(mtProperties.getMsisdn()));
@@ -130,11 +164,29 @@ public class OtpVerificationHandler implements RequestEventHandler {
         headers.set("Authorization","Bearer "+TokenManager.accessToken);
         headers.set("Channel","test-channel");
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
-        try{
-        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);
-        JSONObject json = new JSONObject(str.getBody());
-        logger.info(str.getStatusCode() + " " + str.getBody()+" msisdn: "+msisdn);
-        return json.getJSONObject("data").getString("msg");
+        try {
+//        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);
+            ResponseEntity<String> str = restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/auth/sendOTP"), entity, String.class);
+            JSONObject json = new JSONObject(str.getBody());
+            //     logger.info(str.getStatusCode() + " " + str.getBody()+" msisdn: "+msisdn);
+
+            if (json.has("errorCode")) {
+                logger.info("This is postpaid = " + msisdn);
+                return null;
+            } else if (json.getString("resultCode").equals("ERR-0001")) {
+//                System.out.println("JSon Is null");
+                logger.info("new OTP will generate after 1 minute | " + msisdn);
+                return null;
+            } else  if (json.get("resultCode").equals("00"))
+            {
+
+                this.otpverify = Integer.parseInt(json.getJSONObject("data").getString("msg"));
+              System.out.println("Verify OTP"+ otpverify);
+
+
+            return json.getJSONObject("data").getString("msg");
+        }
+            return null;
         }catch(HttpClientErrorException e){
             if(e.getStatusCode().value()==401){
             System.out.println("calling");
@@ -142,7 +194,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
             this.sendOTP(msisdn);
         }
 
-            return "-1";
+            return String.valueOf(otpverify);
         }
 
     }

@@ -25,12 +25,14 @@ public class TokenManager {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type","application/x-www-form-urlencoded");
         headers.set("Connection","keep-alive");
-        headers.set("Authorization","Basic UnBaN0JFY3Y3ZllWdE9VdnhvNXpvWTJHZFBZYTp2dnVNSkF6VXFQSDl3QnZ5dUdkdmNTdjdIa2Nh");
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+//        headers.set("Authorization","Basic UnBaN0JFY3Y3ZllWdE9VdnhvNXpvWTJHZFBZYTp2dnVNSkF6VXFQSDl3QnZ5dUdkdmNTdjdIa2Nh");
+      headers.set("Authorization","Basic VDlQbThPYjdsS2ZZdmI5djhnNFRwNTdRckpRYTpyTXVNQlJsVXVwUUtnWVo3SFZfOHYyTWd3akFh");  
+      MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "client_credentials");
         HttpEntity<Map<String, Object>> entity = new HttpEntity(form, headers);
-        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/token"),entity,String.class);
-        JSONObject json = new JSONObject(str.getBody());
+// ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/token"),entity,String.class);
+ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/token/apimv2.6.0"),entity,String.class); 
+     JSONObject json = new JSONObject(str.getBody());
         System.out.println(str.getStatusCode()+" "+str.getBody());
         accessToken=json.getString("access_token");
         return json.getString("access_token");

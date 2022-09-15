@@ -214,8 +214,9 @@ public class LogInEventHandler implements RequestEventHandler {
         headers.set("Channel","test-channel");
         try{
             HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
-            ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
-            JSONObject json = new JSONObject(str.getBody());
+//            ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
+   ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/auth/verifyOTP"),entity,String.class); 
+          JSONObject json = new JSONObject(str.getBody());
             log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
             log.info(json.getString("msg")+" -----------");
             return json.getString("msg");
