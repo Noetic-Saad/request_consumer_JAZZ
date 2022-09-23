@@ -94,6 +94,7 @@ public class BillingService {
                     return null;
                 }
             }
+            log.info("After DBSS");
 
             VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
@@ -146,6 +147,8 @@ public class BillingService {
         Timestamp toDate = Timestamp.valueOf(LocalDate.now().atTime(23, 59));
 
         List<GamesBillingRecordEntity> gamesBillingRecordEntity = gamesBillingRecordsRepository.isAlreadyChargedForToday(msisdn, fromDate, toDate);
+        log.info("Check if = " + !gamesBillingRecordEntity.isEmpty());
+
         return !gamesBillingRecordEntity.isEmpty();
     }
 

@@ -66,13 +66,23 @@ public class LogInEventHandler implements RequestEventHandler {
 
             }
             else{
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
+                String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
+                if(str.equals("Success")){
+//                    log.info("Inside Success");
+               log.info("LOGIN EVENT HANDLER CLASS | OTP VERIFIED " + " | msisdn:" + requestProperties.getMsisdn() + " VENDOR PLAN ID | " + requestProperties.getVendorPlanId());
 
-            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-                loginRepository.updateLoginTable(requestProperties.getMsisdn());
-                processLogInRequest(requestProperties);
-            } else {
+                    loginRepository.updateLoginTable(requestProperties.getMsisdn());
+                    processLogInRequest(requestProperties);
+                }
+//            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+//            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
+//
+//            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+//                loginRepository.updateLoginTable(requestProperties.getMsisdn());
+//                processLogInRequest(requestProperties);
+//            }
+
+            else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
             }
             }
@@ -121,6 +131,7 @@ public class LogInEventHandler implements RequestEventHandler {
         UsersEntity usersEntity = usersRepository.findByMsisdn(requestProperties.getMsisdn());
 
         if (usersEntity == null || usersEntity.getUserStatusId() == null) {
+//            log.info("Inside If body of ProcessLogInRequest");
             subscriptionEventHandler.handleSubRequest(requestProperties);
             return;
         }
@@ -202,7 +213,7 @@ public class LogInEventHandler implements RequestEventHandler {
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
                 "\"OTP\":\""+otp+"\","+
-                "\"param1\":" +"\"asdjfhjs\","+
+                "\"param1\":" +"\"GAMENOW CASUALGAMEZ\","+
                 "\"param2\":" +"\"android \","+
                 "\"param3\":" +"\"\""+
                 "}";
@@ -211,7 +222,7 @@ public class LogInEventHandler implements RequestEventHandler {
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
         headers.set("Authorization","Bearer "+TokenManager.accessToken);
-        headers.set("Channel","test-channel");
+        headers.set("Channel","GAMENOWCASUAL");
         try{
             HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
 //            ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);

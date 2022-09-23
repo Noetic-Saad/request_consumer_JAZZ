@@ -64,7 +64,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         if(vendorPlansEntity.getOperatorId()==1){
 
            String otp= sendOTP(requestProperties.getMsisdn());
-           if(otp.equals(null) | otp.equals("0")){
+           if(otp.equals(null) || otp.equals("0")){
                System.out.println("OTP is = "+ otp);
                return;
            }
@@ -153,7 +153,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         RestTemplate restTemplate=new RestTemplate();
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
-                "\"param1\":" +"\"asdjfhjs\","+
+                "\"param1\":" +"\"GAMENOW CASUALGAMEZ\","+
                 "\"param2\":" +"\"android\","+
                 "\"param3\":" +"\"\""+
                 "}";
@@ -162,7 +162,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
         headers.set("Authorization","Bearer "+TokenManager.accessToken);
-        headers.set("Channel","test-channel");
+        headers.set("Channel","GAMENOWCASUAL");
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
         try {
 //        ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/sendOTP"),entity,String.class);

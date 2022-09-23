@@ -7,6 +7,7 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.requestConsumer.service.VendorPostBackService;
 import com.noeticworld.sgw.util.*;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -316,6 +317,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             fiegnResponse = requestProperties.getFiegnResponse();
         } else {
             fiegnResponse = billingService.charge(requestProperties);
+            log.info("FeignResponse**** | "+ fiegnResponse);
+
             log.info("********* Sending Request For Charging ******" + " | msisdn:" + requestProperties.getMsisdn());
         }
 
@@ -323,6 +326,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         VendorPlansEntity vendorPlansEntity = dataService.getVendorPlans(requestProperties.getVendorPlanId());
 
         if (fiegnResponse == null) {
+            log.info("Return from fiegnResponse");
+
             return;
         }
 
@@ -566,7 +571,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         String body="{" +
                 "\"Identifier\":"+"\""+msisdn+"\","+
                 "\"OTP\":\""+otp+"\","+
-                "\"param1\":" +"\"asdjfhjs\","+
+                "\"param1\":" +"\"GAMENOW CASUALGAMEZ\","+
                 "\"param2\":" +"\"android \","+
                 "\"param3\":" +"\"\""+
                 "}";
@@ -575,7 +580,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         headers.set("Content-Type","application/json");
         headers.set("Connection","keep-alive");
         headers.set("Authorization","Bearer "+TokenManager.accessToken);
-        headers.set("Channel","test-channel");
+        headers.set("Channel","GAMENOWCASUAL");
         try{
         HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
    ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/auth/verifyOTP"),entity,String.class); 
@@ -585,10 +590,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 
 
-//        JSONObject json = new JSONObject(str.getBody());
-//        log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
-//        log.info(json.getString("msg")+" -----------");
-//        return json.getString("msg");
+        JSONObject json = new JSONObject(str.getBody());
+        log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
+        log.info(json.getString("msg")+" -----------");
+        return json.getString("msg");
     }catch(
     HttpClientErrorException e){
         if(e.getStatusCode().value()==401){
