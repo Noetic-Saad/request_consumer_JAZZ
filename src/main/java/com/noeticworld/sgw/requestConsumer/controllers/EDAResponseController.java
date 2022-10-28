@@ -1,6 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.controllers;
 
 import com.google.gson.Gson;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.SubscriptionEventHandler;
@@ -45,7 +46,7 @@ public class EDAResponseController {
     }
 
     @PostMapping("/unsub-user")
-    public void unsubUserForEdaRequest(@RequestBody Map<String, Object> requestMap) {
+    public void unsubUserForEdaRequest(@RequestBody Map<String, Object> requestMap) throws UnirestException {
         String correlationId = (String) requestMap.get("correlationId");
         String unsubRequestAction = (String) requestMap.get("unsubRequestAction");
         long msisdn = (long) requestMap.get("msisdn");
