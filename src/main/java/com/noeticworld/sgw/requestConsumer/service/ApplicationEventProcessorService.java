@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.util.CustomMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public class ApplicationEventProcessorService implements ApplicationListener<Req
             requestProcessorService.process(customMessage);
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        } catch (UnirestException e) {
+            throw new RuntimeException(e);
         }
     }
 }

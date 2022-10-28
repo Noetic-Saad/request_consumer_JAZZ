@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.service.externalEvents.RequestHandlerManager;
 import com.noeticworld.sgw.util.CustomMessage;
 import com.noeticworld.sgw.util.RequestProperties;
@@ -18,7 +19,7 @@ public class RequestProcessorService {
     @Autowired private RequestHandlerManager requestHandlerManager;
     @Autowired private ConfigurationDataManagerService configurationDataManagerService;
 
-    public void process(CustomMessage customMessage) throws URISyntaxException {
+    public void process(CustomMessage customMessage) throws URISyntaxException, UnirestException {
         RequestProperties requestProperties = new RequestProperties(customMessage);
         requestHandlerManager.manage(requestProperties);
         log.info("CONSUMER SERVICE | REQUESTPROCESSORSERVICE CLASS | REQUEST PROCESSED FOR | "+ customMessage.getMsisdn());
