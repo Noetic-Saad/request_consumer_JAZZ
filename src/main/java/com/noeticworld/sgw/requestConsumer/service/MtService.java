@@ -149,14 +149,16 @@ public class MtService {
         mtProperties.setData(msg);
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
+        String bodyurl = "{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + msg + "\",\n    \"msisdn\":\"" + msisdn + "\"\n}";
+
 //        mtClient.sendMt(mtProperties);
         Unirest.setTimeouts(120, 120);
         com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
                 .header("Content-Type", "application/json")
 //                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
-                .body(mtProperties)
+                .body(bodyurl)
                 .asString();
-        log.info("Response From MT in SUBSCRIPTIONEVENT" + response1.getBody());
+        log.info("Response From MT in MTService" + response1.getBody());
         saveMessageRecord(msisdn, msg);
     }
 

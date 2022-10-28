@@ -517,12 +517,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 
         try {
+            String bodyurl = "{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + message + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}";
+
 //            mtClient.sendMt(mtProperties);
             Unirest.setTimeouts(120, 120);
             com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
                     .header("Content-Type", "application/json")
 //                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
-                    .body(mtProperties)
+                    .body(bodyurl)
                     .asString();
             log.info("Response From MT in SUBSCRIPTIONEVENT" + response1.getBody());
             mtService.saveMessageRecord(requestProperties.getMsisdn(), message);

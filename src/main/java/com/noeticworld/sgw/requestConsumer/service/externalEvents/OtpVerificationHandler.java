@@ -111,13 +111,20 @@ public class OtpVerificationHandler implements RequestEventHandler {
             mtProperties.setPassword("g@m3now");
             mtProperties.setUsername("gamenow@noetic");
             mtProperties.setServiceId("1061");
+      //      System.out.println(finalMessage);
+      //      System.out.println(requestProperties.getMsisdn());
+
             try {
-//                mtClient.sendMt(mtProperties);
+                String bodyurl = "{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}";
+        //        System.out.println("Body URL " + bodyurl);
+                //                mtClient.sendMt(mtProperties);
                 Unirest.setTimeouts(120, 120);
                 com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
                         .header("Content-Type", "application/json")
-//                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
-                        .body(mtProperties)
+                        .body(bodyurl)
+
+//                    .body("{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}")
+//                        .body(mtProperties)
                         .asString();
                 logger.info("Response From MT in OTPVERIFICATIONHANDLER" + response1.getBody());
             } catch (Exception e) {
