@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.MsisdnCorrelationsRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
@@ -42,7 +43,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     private ConfigurationDataManagerService dataService;
 
     @Override
-    public void handle(RequestProperties requestProperties) {
+    public void handle(RequestProperties requestProperties) throws UnirestException {
         log.info("UNSUBSCRIBE EVENT HANDLER CLASS | REQUEST RECEIVED FOR MSISDN " + requestProperties.getMsisdn() +
                 " | ACTION  | " + requestProperties.getRequestAction());
 

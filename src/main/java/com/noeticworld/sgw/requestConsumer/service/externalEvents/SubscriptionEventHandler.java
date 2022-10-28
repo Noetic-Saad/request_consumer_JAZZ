@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.mashape.unirest.http.Unirest;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.BillingService;
@@ -516,7 +517,14 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 
         try {
-            mtClient.sendMt(mtProperties);
+//            mtClient.sendMt(mtProperties);
+            Unirest.setTimeouts(120, 120);
+            com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+                    .header("Content-Type", "application/json")
+//                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
+                    .body(mtProperties)
+                    .asString();
+            log.info("Response From MT in SUBSCRIPTIONEVENT" + response1.getBody());
             mtService.saveMessageRecord(requestProperties.getMsisdn(), message);
         } catch (Exception e) {
             log.info("SubscriptionEventHandler | MT Exception | " + e.getCause());

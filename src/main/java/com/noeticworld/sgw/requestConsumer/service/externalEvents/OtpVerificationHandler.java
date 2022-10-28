@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.mashape.unirest.http.Unirest;
 import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
 import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
@@ -111,7 +112,14 @@ public class OtpVerificationHandler implements RequestEventHandler {
             mtProperties.setUsername("gamenow@noetic");
             mtProperties.setServiceId("1061");
             try {
-                mtClient.sendMt(mtProperties);
+//                mtClient.sendMt(mtProperties);
+                Unirest.setTimeouts(120, 120);
+                com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+                        .header("Content-Type", "application/json")
+//                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
+                        .body(mtProperties)
+                        .asString();
+                logger.info("Response From MT in OTPVERIFICATIONHANDLER" + response1.getBody());
             } catch (Exception e) {
                 logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
             }

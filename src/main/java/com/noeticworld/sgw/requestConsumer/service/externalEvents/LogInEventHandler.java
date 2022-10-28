@@ -46,12 +46,16 @@ public class LogInEventHandler implements RequestEventHandler {
     @Autowired
     LoginRepository loginRepository;
 
+    @Autowired
+    ConfigurationDataManagerService dataManagerService;
+
     @Override
     public void handle(RequestProperties requestProperties) throws URISyntaxException {
         if (requestProperties.isOtp()) {
+            VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
 
             //New jazz
-            if(requestProperties.getVendorPlanId()==3){
+            if(vendorPlansEntity.getOperatorId() ==1 ){
                 log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called "+ " | msisdn:" + requestProperties.getMsisdn());
                 String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
 //                log.info();
@@ -66,21 +70,13 @@ public class LogInEventHandler implements RequestEventHandler {
 
             }
             else{
-                String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
-                if(str.equals("Success")){
-//                    log.info("Inside Success");
-               log.info("LOGIN EVENT HANDLER CLASS | OTP VERIFIED " + " | msisdn:" + requestProperties.getMsisdn() + " VENDOR PLAN ID | " + requestProperties.getVendorPlanId());
+            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
 
-                    loginRepository.updateLoginTable(requestProperties.getMsisdn());
-                    processLogInRequest(requestProperties);
-                }
-//            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-//            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
-//
-//            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-//                loginRepository.updateLoginTable(requestProperties.getMsisdn());
-//                processLogInRequest(requestProperties);
-//            }
+            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+                loginRepository.updateLoginTable(requestProperties.getMsisdn());
+                processLogInRequest(requestProperties);
+            }
 
             else {
                 createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());

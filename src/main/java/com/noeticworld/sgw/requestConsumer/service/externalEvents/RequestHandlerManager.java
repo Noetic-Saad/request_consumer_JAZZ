@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.EventTypesEntity;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestActionCodeConstants;
@@ -32,7 +33,7 @@ public class RequestHandlerManager {
     private AutLogInHandler autLogInHandler;
 
 
-    public void manage(RequestProperties requestProperties) throws URISyntaxException {
+    public void manage(RequestProperties requestProperties) throws URISyntaxException, UnirestException {
         EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
 
         if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||

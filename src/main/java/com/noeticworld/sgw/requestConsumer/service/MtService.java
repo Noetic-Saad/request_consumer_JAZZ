@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.SubscriptionMessageEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
@@ -34,7 +36,7 @@ public class MtService {
     private UserStatusRepository userStatusRepository;
     private String msg = "";
 
-    public void sendSubMt(long msisdn, VendorPlansEntity vendorPlansEntity) {
+    public void sendSubMt(long msisdn, VendorPlansEntity vendorPlansEntity) throws UnirestException {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
@@ -86,7 +88,7 @@ public class MtService {
 
     }
 
-    public void sendUnsubMt(long msisdn, VendorPlansEntity vendorPlansEntity) {
+    public void sendUnsubMt(long msisdn, VendorPlansEntity vendorPlansEntity) throws UnirestException {
 
         if (vendorPlansEntity.getOperatorId() == dataService.getJazz()) {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
@@ -138,7 +140,7 @@ public class MtService {
 
     }
 
-    public void processMtRequest(long msisdn, String msg) {
+    public void processMtRequest(long msisdn, String msg) throws UnirestException {
 
         MtProperties mtProperties = new MtProperties();
         mtProperties.setUsername("gamenow@noetic");
@@ -147,8 +149,14 @@ public class MtService {
         mtProperties.setData(msg);
         mtProperties.setMsisdn(Long.toString(msisdn));
         mtProperties.setShortCode("3444");
-        mtClient.sendMt(mtProperties);
-
+//        mtClient.sendMt(mtProperties);
+        Unirest.setTimeouts(120, 120);
+        com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+                .header("Content-Type", "application/json")
+//                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
+                .body(mtProperties)
+                .asString();
+        log.info("Response From MT in SUBSCRIPTIONEVENT" + response1.getBody());
         saveMessageRecord(msisdn, msg);
     }
 
