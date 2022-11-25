@@ -26,9 +26,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SubscriptionEventHandler implements RequestEventHandler {
@@ -63,6 +61,9 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     private VendorPostBackService vendorPostBackService;
     @Autowired
     private LoginRepository loginRepository;
+
+    @Autowired
+    private RedisRepository redisRepository;
     private long otpnumber = 0;
     @Override
     public void handle(RequestProperties requestProperties) throws URISyntaxException {
@@ -92,7 +93,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             //else1 start
             else{
 
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            //OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
             log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
                 otpnumber = requestProperties.getOtpNumber();
@@ -463,7 +465,11 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         int i = 0;
         if (entity == null) {
             while (isNull) {
-                entity = requestRepository.findByCorrelationid(correlationId);
+                entity = redisRepository.findVendorRequestStatus(correlationId);
+                if(entity == null)
+                {
+                    entity = requestRepository.findByCorrelationid(correlationId);
+                }
                 System.out.println("ENTITY IS NULL TAKING TIME");
 
                 if (entity != null) {
@@ -480,6 +486,8 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         VendorRequestsStateEntity vre = requestRepository.save(entity);
+        redisRepository.saveVendorRequest(entity);
+        log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
 
@@ -617,6 +625,18 @@ public class SubscriptionEventHandler implements RequestEventHandler {
     }
 
 
+    private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn)
+    {
+        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(msisdn);
+        Collections.sort(otpRecordsEntityList, new Comparator<OtpRecordsEntity>() {
+            public int compare(OtpRecordsEntity o1, OtpRecordsEntity o2) {
+                if (o1.getCdate() == null || o2.getCdate() == null)
+                    return 0;
+                return o1.getCdate().compareTo(o2.getCdate());
+            }
+        });
+        return otpRecordsEntityList.get(0);
+    }
 
 
 

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class AutLogInHandler implements RequestEventHandler {
@@ -32,11 +35,15 @@ public class AutLogInHandler implements RequestEventHandler {
     @Autowired
     LogInRecordRepository logInRecordRepository;
 
+    @Autowired
+    RedisRepository redisRepository;
+
     @Override
     public void handle(RequestProperties requestProperties) {
 
         if (requestProperties.isOtp()) {
-            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+//            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+            OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
             log.info("AUTOLOGINHANDLER CLASS| OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
             if (otpRecordsEntity != null &&
                     otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
@@ -85,11 +92,19 @@ public class AutLogInHandler implements RequestEventHandler {
     private void createResponse(String desc, String resultStatus, String correlationId) {
         System.out.println("CORREALATIONID || " + correlationId);
         VendorRequestsStateEntity entity = null;
-        entity = requestRepository.findByCorrelationid(correlationId);
+        entity = redisRepository.findVendorRequestStatus(correlationId);
+        if(entity == null)
+        {
+            entity = requestRepository.findByCorrelationid(correlationId);
+        }
         boolean isNull = true;
         if (entity == null) {
             while (isNull) {
-                entity = requestRepository.findByCorrelationid(correlationId);
+                entity = redisRepository.findVendorRequestStatus(correlationId);
+                if(entity == null)
+                {
+                    entity = requestRepository.findByCorrelationid(correlationId);
+                }
                 if (entity != null) {
                     isNull = false;
                 }
@@ -100,6 +115,8 @@ public class AutLogInHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         requestRepository.save(entity);
+        redisRepository.saveVendorRequest(entity);
+        log.info("CONSUMER SERVICE | AUTOLOGINEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 
     private void saveLogInRecord(RequestProperties requestProperties, long vendorPlanId) {
@@ -114,5 +131,18 @@ public class AutLogInHandler implements RequestEventHandler {
         loginRecordsEntity.setMsisdn(requestProperties.getMsisdn());
         loginRecordsEntity.setVendorPlanId(vendorPlanId);
         logInRecordRepository.save(loginRecordsEntity);
+    }
+
+    private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn)
+    {
+        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(msisdn);
+        Collections.sort(otpRecordsEntityList, new Comparator<OtpRecordsEntity>() {
+            public int compare(OtpRecordsEntity o1, OtpRecordsEntity o2) {
+                if (o1.getCdate() == null || o2.getCdate() == null)
+                    return 0;
+                return o1.getCdate().compareTo(o2.getCdate());
+            }
+        });
+        return otpRecordsEntityList.get(0);
     }
 }

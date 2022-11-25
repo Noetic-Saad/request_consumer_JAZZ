@@ -2,10 +2,7 @@ package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.*;
-import com.noeticworld.sgw.requestConsumer.repository.MsisdnCorrelationsRepository;
-import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
-import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
-import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
+import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.requestConsumer.service.MtService;
 import com.noeticworld.sgw.util.RequestActionCodeConstants;
@@ -41,6 +38,9 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     private VendorRequestRepository requestRepository;
     @Autowired
     private ConfigurationDataManagerService dataService;
+
+    @Autowired
+    private RedisRepository redisRepository;
 
     @Override
     public void handle(RequestProperties requestProperties) throws UnirestException {
@@ -138,12 +138,21 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     }
 
     private void createResponse(String resultStatus, String correlationId) {
-        VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        VendorRequestsStateEntity entity = null;
+        entity = redisRepository.findVendorRequestStatus(correlationId);
+        if(entity == null)
+        {
+           entity = requestRepository.findByCorrelationid(correlationId);
+        }
         boolean isNull = true;
         if (entity == null) {
             log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | NULL ENTITY");
             while (isNull) {
-                entity = requestRepository.findByCorrelationid(correlationId);
+                entity = redisRepository.findVendorRequestStatus(correlationId);
+                if(entity == null)
+                {
+                    entity = requestRepository.findByCorrelationid(correlationId);
+                }
                 if (entity != null) {
                     isNull = false;
                 }
@@ -163,6 +172,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity.setDescription(ResponseTypeConstants.OTHER_ERROR_MSG);
         }
         requestRepository.save(entity);
+        redisRepository.saveVendorRequest(entity);
         log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED");
+        log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 }

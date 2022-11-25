@@ -6,6 +6,7 @@ import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.repository.LoginRepository;
 import com.noeticworld.sgw.requestConsumer.repository.OtpRecordRepository;
+import com.noeticworld.sgw.requestConsumer.repository.RedisRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.MtClient;
 import com.noeticworld.sgw.util.MtProperties;
@@ -44,6 +45,9 @@ public class OtpVerificationHandler implements RequestEventHandler {
     MtClient mtClient;
     @Autowired
     LoginRepository loginRepository;
+
+    @Autowired
+    RedisRepository redisRepository;
 
   Integer otpverify=0;
 
@@ -156,6 +160,8 @@ public class OtpVerificationHandler implements RequestEventHandler {
         otpRecordsEntity.setOtpNumber(otpNumber);
         otpRecordsEntity.setVendorPlanId(vendorPlanId);
         otpRecordRepository.save(otpRecordsEntity);
+        redisRepository.saveOtpRecord(otpRecordsEntity);
+        logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | OTP REOCRDS SAVED IN REDIS");
         logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | OTP REOCRDS SAVED");
     }
 

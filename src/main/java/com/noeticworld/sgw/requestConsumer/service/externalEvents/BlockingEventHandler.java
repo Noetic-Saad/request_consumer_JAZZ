@@ -4,6 +4,7 @@ import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorRequestsStateEntity;
+import com.noeticworld.sgw.requestConsumer.repository.RedisRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UserStatusRepository;
 import com.noeticworld.sgw.requestConsumer.repository.UsersRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
@@ -11,6 +12,8 @@ import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerServi
 import com.noeticworld.sgw.util.RequestProperties;
 import com.noeticworld.sgw.util.ResponseTypeConstants;
 import com.noeticworld.sgw.util.UserStatusTypeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ import java.util.Date;
 
 @Service
 public class BlockingEventHandler implements RequestEventHandler {
+    Logger log = LoggerFactory.getLogger(BlockingEventHandler.class.getName());
 
     @Autowired
     private UsersRepository usersRepository;
@@ -33,6 +37,9 @@ public class BlockingEventHandler implements RequestEventHandler {
 
     @Autowired
     private VendorRequestRepository requestRepository;
+
+    @Autowired
+    private RedisRepository redisRepository;
 
     @Override
     public void handle(RequestProperties requestProperties) {
@@ -77,11 +84,18 @@ public class BlockingEventHandler implements RequestEventHandler {
     }
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
-        VendorRequestsStateEntity entity = requestRepository.findByCorrelationid(correlationId);
+        VendorRequestsStateEntity entity = null;
+        entity = redisRepository.findVendorRequestStatus(correlationId);
+        if(entity == null)
+        {
+            entity = requestRepository.findByCorrelationid(correlationId);
+        }
         entity.setCdatetime(new Timestamp(new Date().getTime()));
         entity.setFetched(false);
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         requestRepository.save(entity);
+        redisRepository.saveVendorRequest(entity);
+        log.info("CONSUMER SERVICE | BLOCKINGEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 }

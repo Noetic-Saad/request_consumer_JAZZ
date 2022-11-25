@@ -3,6 +3,7 @@ package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 import com.noeticworld.sgw.requestConsumer.entities.LoginRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorRequestsStateEntity;
 import com.noeticworld.sgw.requestConsumer.repository.LogInRecordRepository;
+import com.noeticworld.sgw.requestConsumer.repository.RedisRepository;
 import com.noeticworld.sgw.requestConsumer.repository.VendorRequestRepository;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestProperties;
@@ -27,6 +28,9 @@ public class LogOutEventHandler implements RequestEventHandler {
     @Autowired
     ConfigurationDataManagerService dataManagerService;
 
+    @Autowired
+    RedisRepository redisRepository;
+
     @Override
     public void handle(RequestProperties requestProperties) {
 
@@ -49,11 +53,22 @@ public class LogOutEventHandler implements RequestEventHandler {
     }
 
     private void createRequestState(String resultStatusDescription, String resultStatus, RequestProperties requestProperties) {
-        VendorRequestsStateEntity vendorRequestsStateEntity = vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+        VendorRequestsStateEntity vendorRequestsStateEntity = null;
+        vendorRequestsStateEntity = redisRepository.findVendorRequestStatus(requestProperties.getCorrelationId());
+        if(vendorRequestsStateEntity == null)
+        {
+            vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+        }
+
         boolean isNull = true;
         if(vendorRequestsStateEntity==null){
             while (isNull){
-                vendorRequestsStateEntity  = vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+                vendorRequestsStateEntity  = redisRepository.findVendorRequestStatus(requestProperties.getCorrelationId());
+                if(vendorRequestsStateEntity == null)
+                {
+                    vendorRequestsStateEntity = vendorRequestRepository.findByCorrelationid(requestProperties.getCorrelationId());
+                }
+
                 if(vendorRequestsStateEntity!=null){
                     isNull = false;
                 }
@@ -62,6 +77,7 @@ public class LogOutEventHandler implements RequestEventHandler {
         vendorRequestsStateEntity.setResultStatus(resultStatus);
         vendorRequestsStateEntity.setDescription(resultStatusDescription);
         vendorRequestRepository.save(vendorRequestsStateEntity);
+        redisRepository.saveVendorRequest(vendorRequestsStateEntity);
     }
 
 }
