@@ -153,7 +153,7 @@ public class MtService {
 
 //        mtClient.sendMt(mtProperties);
         Unirest.setTimeouts(120, 120);
-        com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+        com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://localhost:9096/mt")
                 .header("Content-Type", "application/json")
 //                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
                 .body(bodyurl)

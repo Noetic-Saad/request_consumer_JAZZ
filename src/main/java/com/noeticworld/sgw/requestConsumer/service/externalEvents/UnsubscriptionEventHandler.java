@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
@@ -29,7 +31,7 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
     MsisdnCorrelationsRepository msisdnCorrelationsRepository;
     @Autowired
     MtService mtService;
-    private String DBSS_API = "http://192.168.127.58:10001";
+    private String DBSS_API = "http://localhost:10001";
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -172,7 +174,12 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             entity.setDescription(ResponseTypeConstants.OTHER_ERROR_MSG);
         }
         requestRepository.save(entity);
-        redisRepository.saveVendorRequest(entity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            redisRepository.saveVendorRequest(entity.getCorrelationid(), objectMapper.writeValueAsString(entity));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | RESPONSE CREATED");
         log.info("CONSUMER SERVICE | UNSUBSCRIPTIONEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }

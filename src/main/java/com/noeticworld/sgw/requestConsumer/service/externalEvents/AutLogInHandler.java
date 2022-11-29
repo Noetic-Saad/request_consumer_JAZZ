@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -115,7 +118,12 @@ public class AutLogInHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         requestRepository.save(entity);
-        redisRepository.saveVendorRequest(entity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            redisRepository.saveVendorRequest(entity.getCorrelationid(), objectMapper.writeValueAsString(entity));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         log.info("CONSUMER SERVICE | AUTOLOGINEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 
@@ -135,8 +143,16 @@ public class AutLogInHandler implements RequestEventHandler {
 
     private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn)
     {
-        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(msisdn);
-        Collections.sort(otpRecordsEntityList, new Comparator<OtpRecordsEntity>() {
+        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(String.valueOf(msisdn));
+
+        List<OtpRecordsEntity> recordsEntities = new ArrayList<>();
+        for (OtpRecordsEntity otpRecordsEntity : otpRecordsEntityList) {
+            if(otpRecordsEntity.getMsisdn().equals(msisdn))
+            {
+                recordsEntities.add(otpRecordsEntity);
+            }
+        }
+        Collections.sort(recordsEntities, new Comparator<OtpRecordsEntity>() {
             public int compare(OtpRecordsEntity o1, OtpRecordsEntity o2) {
                 if (o1.getCdate() == null || o2.getCdate() == null)
                     return 0;

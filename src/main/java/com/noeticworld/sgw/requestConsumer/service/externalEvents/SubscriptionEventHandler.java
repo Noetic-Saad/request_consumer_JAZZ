@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
@@ -486,7 +488,12 @@ public class SubscriptionEventHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         VendorRequestsStateEntity vre = requestRepository.save(entity);
-        redisRepository.saveVendorRequest(entity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            redisRepository.saveVendorRequest(entity.getCorrelationid(), objectMapper.writeValueAsString(entity));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
         log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | " + vre.getResultStatus() + " | REQUEST STATE UPDATED");
     }
@@ -529,7 +536,7 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
 //            mtClient.sendMt(mtProperties);
             Unirest.setTimeouts(120, 120);
-            com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+            com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://localhost:9096/mt")
                     .header("Content-Type", "application/json")
 //                    .body("{\n    \"username\" :\"" + this.username + "\",\n    \"password\":\"" + this.password + "\",\n    \"shortCode\":\"" + requestProperties.getShortcode() + "\",\n    \"serviceId\":" + this.serviceid + ",\n    \"data\":\"" + replymt + "\",\n    \"msisdn\":\"" + "92"+ requestProperties.getMsisdn() + "\"\n}")
                     .body(bodyurl)
@@ -627,8 +634,16 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
     private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn)
     {
-        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(msisdn);
-        Collections.sort(otpRecordsEntityList, new Comparator<OtpRecordsEntity>() {
+        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(String.valueOf(msisdn));
+
+        List<OtpRecordsEntity> recordsEntities = new ArrayList<>();
+        for (OtpRecordsEntity otpRecordsEntity : otpRecordsEntityList) {
+            if(otpRecordsEntity.getMsisdn().equals(msisdn))
+            {
+                recordsEntities.add(otpRecordsEntity);
+            }
+        }
+        Collections.sort(recordsEntities, new Comparator<OtpRecordsEntity>() {
             public int compare(OtpRecordsEntity o1, OtpRecordsEntity o2) {
                 if (o1.getCdate() == null || o2.getCdate() == null)
                     return 0;

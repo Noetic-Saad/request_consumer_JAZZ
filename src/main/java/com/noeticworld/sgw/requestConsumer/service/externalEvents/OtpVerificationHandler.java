@@ -1,5 +1,7 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
 import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
@@ -63,6 +65,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         }
         MtProperties mtProperties = new MtProperties();
         VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
+        System.out.println("Line-66 OTPVERIFICATION || " + vendorPlansEntity.toString());
 //        System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
 
 
@@ -123,7 +126,7 @@ public class OtpVerificationHandler implements RequestEventHandler {
         //        System.out.println("Body URL " + bodyurl);
                 //                mtClient.sendMt(mtProperties);
                 Unirest.setTimeouts(120, 120);
-                com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.159:9096/mt")
+                com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.69:9096/mt")
                         .header("Content-Type", "application/json")
                         .body(bodyurl)
 
@@ -160,7 +163,12 @@ public class OtpVerificationHandler implements RequestEventHandler {
         otpRecordsEntity.setOtpNumber(otpNumber);
         otpRecordsEntity.setVendorPlanId(vendorPlanId);
         otpRecordRepository.save(otpRecordsEntity);
-        redisRepository.saveOtpRecord(otpRecordsEntity);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            redisRepository.saveOtpRecord(String.valueOf(otpRecordsEntity.getMsisdn()), objectMapper.writeValueAsString(otpRecordsEntity));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | OTP REOCRDS SAVED IN REDIS");
         logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | OTP REOCRDS SAVED");
     }

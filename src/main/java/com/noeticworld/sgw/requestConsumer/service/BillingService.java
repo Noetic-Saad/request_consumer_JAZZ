@@ -86,7 +86,7 @@ public class BillingService {
                     createMsisdnCorrelation(requestProperties);
 
                     HttpResponse<String> response =
-                            Unirest.get("http://192.168.127.58:10001/dbss/product-activation/" + requestProperties.getMsisdn()
+                            Unirest.get("http://localhost:10001/dbss/product-activation/" + requestProperties.getMsisdn()
                                     + "/" + requestProperties.getCorrelationId()).asString();
 
                     log.info("BILLING SERVICE | DBSS RESPONSE | " + requestProperties.getMsisdn() + " | " + response.getStatus() +

@@ -1,5 +1,6 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
@@ -22,10 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class LogInEventHandler implements RequestEventHandler {
@@ -61,37 +59,31 @@ public class LogInEventHandler implements RequestEventHandler {
             VendorPlansEntity vendorPlansEntity = dataManagerService.getVendorPlans(requestProperties.getVendorPlanId());
 
             //New jazz
-            if(vendorPlansEntity.getOperatorId() ==1 ){
-                log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called "+ " | msisdn:" + requestProperties.getMsisdn());
-                String str=verifyOTP(requestProperties.getMsisdn(),requestProperties.getOtpNumber());
+            if (vendorPlansEntity.getOperatorId() == 1) {
+                log.info("LOGIN EVENT HANDLER CLASS | New OTP API Called " + " | msisdn:" + requestProperties.getMsisdn());
+                String str = verifyOTP(requestProperties.getMsisdn(), requestProperties.getOtpNumber());
 //                log.info();
-                if(str.equals("Success")){
+                if (str.equals("Success")) {
                     log.info("Inside Success");
                     loginRepository.updateLoginTable(requestProperties.getMsisdn());
                     processLogInRequest(requestProperties);
-                }else {
+                } else {
                     createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
                 }
 
 
-            }
-            else{
+            } else {
 //            OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
-            log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
+                OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
+                log.info("LOGIN EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber() + " | msisdn:" + requestProperties.getMsisdn());
 
-            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-                loginRepository.updateLoginTable(requestProperties.getMsisdn());
-                processLogInRequest(requestProperties);
+                if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+                    loginRepository.updateLoginTable(requestProperties.getMsisdn());
+                    processLogInRequest(requestProperties);
+                } else {
+                    createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+                }
             }
-
-            else {
-                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
-            }
-            }
-
-
-
 
 
         } else {
@@ -169,9 +161,10 @@ public class LogInEventHandler implements RequestEventHandler {
         try {
             VendorRequestsStateEntity entity = null;
             entity = redisRepository.findVendorRequestStatus(correlationId);
-            if(entity == null)
-            {
+            System.out.println("FindinRedis || " + entity.toString());
+            if (entity == null) {
                 entity = requestRepository.findByCorrelationid(correlationId);
+                System.out.println("FindinDB || " + entity.toString());
             }
             boolean isNull = true;
             int i = 0;
@@ -179,9 +172,10 @@ public class LogInEventHandler implements RequestEventHandler {
                 while (isNull) {
 
                     entity = redisRepository.findVendorRequestStatus(correlationId);
-                    if(entity == null)
-                    {
+                    System.out.println("FindinRedis || " + entity.toString());
+                    if (entity == null) {
                         entity = requestRepository.findByCorrelationid(correlationId);
+                        System.out.println("FindinDB || " + entity.toString());
                     }
 
                     i++;
@@ -199,7 +193,8 @@ public class LogInEventHandler implements RequestEventHandler {
             entity.setResultStatus(resultStatus);
             entity.setDescription(desc);
             requestRepository.save(entity);
-            redisRepository.saveVendorRequest(entity);
+            ObjectMapper objectMapper = new ObjectMapper();
+            redisRepository.saveVendorRequest(entity.getCorrelationid(), objectMapper.writeValueAsString(entity.toString()));
             log.info("CONSUMER SERVICE | LOGINEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
         } catch (Exception ex) {
             log.error("Error In Creating Response" + ex);
@@ -220,46 +215,52 @@ public class LogInEventHandler implements RequestEventHandler {
     }
 
 
-    public String verifyOTP(long msisdn,long otp) throws URISyntaxException {
-        RestTemplate restTemplate=new RestTemplate();
+    public String verifyOTP(long msisdn, long otp) throws URISyntaxException {
+        RestTemplate restTemplate = new RestTemplate();
 //        String param1="jnhuuu58sdf",param2="android",param3="",identifier="";
-        String body="{" +
-                "\"Identifier\":"+"\""+msisdn+"\","+
-                "\"OTP\":\""+otp+"\","+
-                "\"param1\":" +"\"GAMENOW CASUALGAMEZ\","+
-                "\"param2\":" +"\"android \","+
-                "\"param3\":" +"\"\""+
+        String body = "{" +
+                "\"Identifier\":" + "\"" + msisdn + "\"," +
+                "\"OTP\":\"" + otp + "\"," +
+                "\"param1\":" + "\"GAMENOW CASUALGAMEZ\"," +
+                "\"param2\":" + "\"android \"," +
+                "\"param3\":" + "\"\"" +
                 "}";
         System.out.println(body);
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type","application/json");
-        headers.set("Connection","keep-alive");
-        headers.set("Authorization","Bearer "+TokenManager.accessToken);
-        headers.set("Channel","GAMENOWCASUAL");
-        try{
+        headers.set("Content-Type", "application/json");
+        headers.set("Connection", "keep-alive");
+        headers.set("Authorization", "Bearer " + TokenManager.accessToken);
+        headers.set("Channel", "GAMENOWCASUAL");
+        try {
             HttpEntity<Map<String, Object>> entity = new HttpEntity(body, headers);
 //            ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apimtest.jazz.com.pk:8282/auth/verifyOTP"),entity,String.class);
-   ResponseEntity<String> str= restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/auth/verifyOTP"),entity,String.class); 
-          JSONObject json = new JSONObject(str.getBody());
-            log.info(str.getStatusCode()+" "+str.getBody()+ "msidn: "+msisdn);
-            log.info(json.getString("msg")+" -----------");
+            ResponseEntity<String> str = restTemplate.postForEntity(new URI("https://apim.jazz.com.pk/auth/verifyOTP"), entity, String.class);
+            JSONObject json = new JSONObject(str.getBody());
+            log.info(str.getStatusCode() + " " + str.getBody() + "msidn: " + msisdn);
+            log.info(json.getString("msg") + " -----------");
             return json.getString("msg");
-        }catch(
-                HttpClientErrorException e){
-            if(e.getStatusCode().value()==401){
+        } catch (
+                HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 401) {
                 System.out.println("calling");
                 TokenManager.getToken();
-                this.verifyOTP(msisdn,otp);
+                this.verifyOTP(msisdn, otp);
             }
         }
 
         return "-1";
     }
 
-    private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn)
-    {
-        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(msisdn);
-        Collections.sort(otpRecordsEntityList, new Comparator<OtpRecordsEntity>() {
+    private OtpRecordsEntity getTopOtpRecordFromMsidn(Long msisdn) {
+        List<OtpRecordsEntity> otpRecordsEntityList = redisRepository.findAllOTPOfMsisdn(String.valueOf(msisdn));
+
+        List<OtpRecordsEntity> recordsEntities = new ArrayList<>();
+        for (OtpRecordsEntity otpRecordsEntity : otpRecordsEntityList) {
+            if (otpRecordsEntity.getMsisdn().equals(msisdn)) {
+                recordsEntities.add(otpRecordsEntity);
+            }
+        }
+        Collections.sort(recordsEntities, new Comparator<OtpRecordsEntity>() {
             public int compare(OtpRecordsEntity o1, OtpRecordsEntity o2) {
                 if (o1.getCdate() == null || o2.getCdate() == null)
                     return 0;

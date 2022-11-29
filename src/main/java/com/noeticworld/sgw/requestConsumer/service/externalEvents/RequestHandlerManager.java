@@ -5,6 +5,8 @@ import com.noeticworld.sgw.requestConsumer.entities.EventTypesEntity;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
 import com.noeticworld.sgw.util.RequestActionCodeConstants;
 import com.noeticworld.sgw.util.RequestProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +33,15 @@ public class RequestHandlerManager {
     private LogOutEventHandler logOutEventHandler;
     @Autowired
     private AutLogInHandler autLogInHandler;
+    Logger log = LoggerFactory.getLogger(RequestHandlerManager.class.getName());
 
 
     public void manage(RequestProperties requestProperties) throws URISyntaxException, UnirestException {
         EventTypesEntity eventTypesEntity = configurationDataManagerService.getRequestEventsEntity(requestProperties.getRequestAction());
+
+        log.info("CHECK || " + requestProperties );
+        log.info("CHECKEVENTTYPESENTITY || " + eventTypesEntity.toString() );
+
 
         if (eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_USER_INITIATED) ||
                 eventTypesEntity.getCode().equals(RequestActionCodeConstants.SUBSCRIPTION_REQUEST_TELCO_INITIATED) ||

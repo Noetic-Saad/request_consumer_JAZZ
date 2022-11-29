@@ -1,12 +1,13 @@
 package com.noeticworld.sgw.requestConsumer.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
 @Table(name = "otp_records", schema = "public", catalog = "sgw")
-public class OtpRecordsEntity {
+public class OtpRecordsEntity implements Serializable {
     private long id;
     private Long msisdn;
     private Long vendorPlanId;
