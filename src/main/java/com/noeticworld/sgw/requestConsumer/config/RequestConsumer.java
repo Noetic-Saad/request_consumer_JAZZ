@@ -20,7 +20,7 @@ public class RequestConsumer {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    @RabbitListener(queues = {"subscriptionQueue"})
+    @RabbitListener(queues = {"JazzChargingQueue"})
     public void receive(String msg) {
 
         try {

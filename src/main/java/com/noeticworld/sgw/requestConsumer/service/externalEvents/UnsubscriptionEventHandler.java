@@ -67,7 +67,8 @@ public class UnsubscriptionEventHandler implements RequestEventHandler {
             log.info("UNSUBSCRIBE EVENT HANDLER CLASS | DBSS | " + requestProperties.getMsisdn() + " | " + response.getStatus() +
                     " | " + response.getBody());
             return;
-        } else {
+        }
+        else {
             VendorPlansEntity vendorPlans = dataService.getVendorPlans(_user.getVendorPlanId());
             String resultCode = "";
             try {

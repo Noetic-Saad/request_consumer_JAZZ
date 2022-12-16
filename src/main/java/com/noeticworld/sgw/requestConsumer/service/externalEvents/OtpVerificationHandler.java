@@ -2,7 +2,6 @@ package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
 import com.noeticworld.sgw.requestConsumer.entities.LoginEntity;
 import com.noeticworld.sgw.requestConsumer.entities.OtpRecordsEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
@@ -105,48 +104,48 @@ public class OtpVerificationHandler implements RequestEventHandler {
 
 
     }
-        else {
-            // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
- //changes
-            System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
-
-            String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_otp").getMsgText();
-            String finalMessage = message.replaceAll("&otp", otpNumber.toString());
-            mtProperties.setData(finalMessage);
-            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
-            mtProperties.setShortCode("3444");
-            mtProperties.setPassword("g@m3now");
-            mtProperties.setUsername("gamenow@noetic");
-            mtProperties.setServiceId("1061");
-      //      System.out.println(finalMessage);
-      //      System.out.println(requestProperties.getMsisdn());
-
-            try {
-                String bodyurl = "{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}";
-        //        System.out.println("Body URL " + bodyurl);
-                //                mtClient.sendMt(mtProperties);
-                Unirest.setTimeouts(120, 120);
-                com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.69:9096/mt")
-                        .header("Content-Type", "application/json")
-                        .body(bodyurl)
-
-//                    .body("{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}")
-//                        .body(mtProperties)
-                        .asString();
-                logger.info("Response From MT in OTPVERIFICATIONHANDLER" + response1.getBody());
-            } catch (Exception e) {
-                logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
-            }
-            saveOtpRecords(mtProperties, otpNumber, vendorPlansEntity.getId());
-
-        System.out.println("Saving Zong  Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
-        LoginEntity loginEntity = new LoginEntity();
-        loginEntity.setMsisdn(requestProperties.getMsisdn());
-        loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
-        loginEntity.setTrackingId(requestProperties.getTrackerId());
-        loginEntity.setCode(otpNumber);
-        loginRepository.save(loginEntity);
-        }
+//        else {
+//            // MtMessageSettingsEntity mtMessageSettingsEntity = dataManagerService.getMtMessageSetting(vendorPlansEntity.getId());
+// //changes
+//            System.out.println("vendorPlansEntity.getPlanName()" + vendorPlansEntity.getPlanName() + requestProperties.getVendorPlanId() + " | OTP Number" + otpNumber);
+//
+//            String message = dataManagerService.getMtMessage(vendorPlansEntity.getPlanName() + "_otp").getMsgText();
+//            String finalMessage = message.replaceAll("&otp", otpNumber.toString());
+//            mtProperties.setData(finalMessage);
+//            mtProperties.setMsisdn(Long.toString(requestProperties.getMsisdn()));
+//            mtProperties.setShortCode("3444");
+//            mtProperties.setPassword("g@m3now");
+//            mtProperties.setUsername("gamenow@noetic");
+//            mtProperties.setServiceId("1061");
+//      //      System.out.println(finalMessage);
+//      //      System.out.println(requestProperties.getMsisdn());
+//
+//            try {
+//                String bodyurl = "{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}";
+//        //        System.out.println("Body URL " + bodyurl);
+//                //                mtClient.sendMt(mtProperties);
+//                Unirest.setTimeouts(120, 120);
+//                com.mashape.unirest.http.HttpResponse<String> response1 = Unirest.post("http://192.168.127.69:9096/mt")
+//                        .header("Content-Type", "application/json")
+//                        .body(bodyurl)
+//
+////                    .body("{\n    \"username\" :\"" + "gamenow@noetic" + "\",\n    \"password\":\"" + "g@m3now" + "\",\n    \"shortCode\":\"" + "3444" + "\",\n    \"serviceId\":" + "1061" + ",\n    \"data\":\"" + finalMessage + "\",\n    \"msisdn\":\"" + requestProperties.getMsisdn() + "\"\n}")
+////                        .body(mtProperties)
+//                        .asString();
+//                logger.info("Response From MT in OTPVERIFICATIONHANDLER" + response1.getBody());
+//            } catch (Exception e) {
+//                logger.info("CONSUMER SERVICE | OTPVERIFICATIONHANDLER CLASS | EXCEPTION CAUGHT | " + e.getCause());
+//            }
+//            saveOtpRecords(mtProperties, otpNumber, vendorPlansEntity.getId());
+//
+//        System.out.println("Saving Zong  Msisdn In Login Table : " + " Vendor Plan id : " + requestProperties.getVendorPlanId() );
+//        LoginEntity loginEntity = new LoginEntity();
+//        loginEntity.setMsisdn(requestProperties.getMsisdn());
+//        loginEntity.setUpdateddate(Timestamp.valueOf(LocalDateTime.now()));
+//        loginEntity.setTrackingId(requestProperties.getTrackerId());
+//        loginEntity.setCode(otpNumber);
+//        loginRepository.save(loginEntity);
+//        }
     }
 
     private boolean isNotSentOTPToThisMsisdn(RequestProperties requestProperties) {

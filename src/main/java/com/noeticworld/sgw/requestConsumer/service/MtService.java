@@ -60,13 +60,15 @@ public class MtService {
                 log.info("Free Trial Expired " + msg);
             }
 
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
-            msg = dataService.getMtMessage("telenor_sub").getMsgText();
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getUfone()) {
-            msg = dataService.getMtMessage("ufone_sub").getMsgText();
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getZong()) {
-            msg = dataService.getMtMessage("zong_sub").getMsgText();
-        } else {
+        }
+//        else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
+//            msg = dataService.getMtMessage("telenor_sub").getMsgText();
+//        } else if (vendorPlansEntity.getOperatorId() == dataService.getUfone()) {
+//            msg = dataService.getMtMessage("ufone_sub").getMsgText();
+//        } else if (vendorPlansEntity.getOperatorId() == dataService.getZong()) {
+//            msg = dataService.getMtMessage("zong_sub").getMsgText();
+//        }
+        else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
             UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
             if (userstatus != null) {
@@ -109,14 +111,16 @@ public class MtService {
                 msg = dataService.getMtMessage("jazz_unsub").getMsgText();
                 log.info("*********Free Trial Expired***********" + msg);
             }
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
-            msg = dataService.getMtMessage("telenor_unsub").getMsgText();
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getUfone()) {
-            msg = dataService.getMtMessage("ufone_unsub").getMsgText();
-        } else if (vendorPlansEntity.getOperatorId() == dataService.getZong()) {
-
-            msg = dataService.getMtMessage("zong_unsub").getMsgText();
-        } else {
+        }
+//        else if (vendorPlansEntity.getOperatorId() == dataService.getTelenor()) {
+//            msg = dataService.getMtMessage("telenor_unsub").getMsgText();
+//        } else if (vendorPlansEntity.getOperatorId() == dataService.getUfone()) {
+//            msg = dataService.getMtMessage("ufone_unsub").getMsgText();
+//        } else if (vendorPlansEntity.getOperatorId() == dataService.getZong()) {
+//
+//            msg = dataService.getMtMessage("zong_unsub").getMsgText();
+//        }
+        else {
             Timestamp fromDate = Timestamp.valueOf(LocalDate.now().atStartOfDay());
             UsersEntity userstatus = usersRepository.returnUserStatusId(msisdn);
             if (userstatus != null) {

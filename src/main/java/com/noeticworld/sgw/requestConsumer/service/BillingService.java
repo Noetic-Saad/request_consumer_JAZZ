@@ -63,13 +63,15 @@ public class BillingService {
             fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
             fiegnResponse.setMsg("ALREADY SUBSCRIBED");
             return fiegnResponse;
-        } else if (user.getOperatorId() == 4 && isAlreadyChargedFor7Days(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
-            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED FOR 7 DAYS | " + requestProperties.getMsisdn());
-            fiegnResponse.setCode(110);
-            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
-            fiegnResponse.setMsg("ALREADY SUBSCRIBED");
-            return fiegnResponse;
-        } else {
+        }
+//        else if (user.getOperatorId() == 4 && isAlreadyChargedFor7Days(requestProperties.getMsisdn()) && latestUserStatus.getStatusId() != 2) {
+//            log.info("BILLING SERVICE | CHARGING CLASS | ALREADY CHARGED FOR 7 DAYS | " + requestProperties.getMsisdn());
+//            fiegnResponse.setCode(110);
+//            fiegnResponse.setCorrelationId(requestProperties.getCorrelationId());
+//            fiegnResponse.setMsg("ALREADY SUBSCRIBED");
+//            return fiegnResponse;
+//        }
+        else {
             // ----- DBSS Call for Jazz GameNow -----
             if (user.getOperatorId() == 1) {
                 /*
@@ -114,7 +116,8 @@ public class BillingService {
             }
             chargeRequestProperties.setIsRenewal(0);
 
-            fiegnResponse = billingClient.charge(chargeRequestProperties);
+            log.info("BILLING SERVICE | CHARGING CLASS | FEIGN CLIENT CHARGE ");
+//            fiegnResponse = billingClient.charge(chargeRequestProperties);
             return fiegnResponse;
         }
 
@@ -133,12 +136,12 @@ public class BillingService {
         return whiteListedEDAsMSISDN.stream().anyMatch(msisdn -> msisdn == requestProperties.getMsisdn());
     }
 
-    private boolean isAlreadyChargedFor7Days(long msisdn) {
-        LocalDateTime toDate = LocalDateTime.now();
-        LocalDateTime fromDate = toDate.minusDays(7);
-        List<GamesBillingRecordEntity> entity = gamesBillingRecordsRepository.isAlreadyChargedFor7Days(msisdn, Timestamp.valueOf(fromDate), Timestamp.valueOf(toDate));
-        return !entity.isEmpty();
-    }
+//    private boolean isAlreadyChargedFor7Days(long msisdn) {
+//        LocalDateTime toDate = LocalDateTime.now();
+//        LocalDateTime fromDate = toDate.minusDays(7);
+//        List<GamesBillingRecordEntity> entity = gamesBillingRecordsRepository.isAlreadyChargedFor7Days(msisdn, Timestamp.valueOf(fromDate), Timestamp.valueOf(toDate));
+//        return !entity.isEmpty();
+//    }
 
     private boolean isAlreadyChargedToday(long msisdn) {
         log.info("BILLING SERVICE | CHARGING CLASS | CHECKING IF ALREADY CHARGED TODAY | " + msisdn);

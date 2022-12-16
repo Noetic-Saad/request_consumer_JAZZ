@@ -93,21 +93,21 @@ public class SubscriptionEventHandler implements RequestEventHandler {
 
             }
             //else1 start
-            else{
-
-            //OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
-            OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
-            log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
-            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
-                otpnumber = requestProperties.getOtpNumber();
-                loginRepository.updateLoginTable(requestProperties.getMsisdn());
-                handleSubRequest(requestProperties);
-            } else {
-                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
-                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
-            }
-           //else1 end
-            }
+//            else{
+//
+//            //OtpRecordsEntity otpRecordsEntity = otpRecordRepository.findtoprecord(requestProperties.getMsisdn());
+//            OtpRecordsEntity otpRecordsEntity = getTopOtpRecordFromMsidn(requestProperties.getMsisdn());
+//            log.info("SUBSCRIPTION EVENT HANDLER CLASS | OTP RECORD FOUND IN DB IS " + otpRecordsEntity.getOtpNumber());
+//            if (otpRecordsEntity != null && otpRecordsEntity.getOtpNumber() == requestProperties.getOtpNumber()) {
+//                otpnumber = requestProperties.getOtpNumber();
+//                loginRepository.updateLoginTable(requestProperties.getMsisdn());
+//                handleSubRequest(requestProperties);
+//            } else {
+//                log.info("CONSUMER SERVICE | SUBSCIPTIONEVENTHANDLER CLASS | OTP IS INVALID FOR | " + requestProperties.getMsisdn());
+//                createResponse(dataService.getResultStatusDescription(ResponseTypeConstants.INVALID_OTP), ResponseTypeConstants.INVALID_OTP, requestProperties.getCorrelationId());
+//            }
+//           //else1 end
+//            }
         } else {
             handleSubRequest(requestProperties);
         }
@@ -292,9 +292,10 @@ public class SubscriptionEventHandler implements RequestEventHandler {
             if (isZongFreeTrialUser) {
                 // If this is a zong free trial user, give one day free trial and if gets charged, give 7 day subscription.
                 usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(hours, minutes))));
-            } else {
-                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
             }
+//            else {
+//                usersStatusEntity.setExpiryDatetime(Timestamp.valueOf(LocalDateTime.of(LocalDate.now().plusDays(7), LocalTime.of(hours, minutes))));
+//            }
 
         }
         usersStatusEntity.setAttempts(1);
