@@ -1,7 +1,5 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noeticworld.sgw.requestConsumer.entities.*;
 import com.noeticworld.sgw.requestConsumer.repository.*;
 import com.noeticworld.sgw.requestConsumer.service.ConfigurationDataManagerService;
@@ -95,7 +93,7 @@ public class AutLogInHandler implements RequestEventHandler {
     private void createResponse(String desc, String resultStatus, String correlationId) {
         System.out.println("CORREALATIONID || " + correlationId);
         VendorRequestsStateEntity entity = null;
-        entity = redisRepository.findVendorRequestStatus(correlationId);
+        entity = requestRepository.findByCorrelationid(correlationId);
         if(entity == null)
         {
             entity = requestRepository.findByCorrelationid(correlationId);
@@ -103,7 +101,7 @@ public class AutLogInHandler implements RequestEventHandler {
         boolean isNull = true;
         if (entity == null) {
             while (isNull) {
-                entity = redisRepository.findVendorRequestStatus(correlationId);
+                entity = requestRepository.findByCorrelationid(correlationId);
                 if(entity == null)
                 {
                     entity = requestRepository.findByCorrelationid(correlationId);
@@ -118,12 +116,6 @@ public class AutLogInHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         requestRepository.save(entity);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            redisRepository.saveVendorRequest(entity.getCorrelationid(), objectMapper.writeValueAsString(entity));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         log.info("CONSUMER SERVICE | AUTOLOGINEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 

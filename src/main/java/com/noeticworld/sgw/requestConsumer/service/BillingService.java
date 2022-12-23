@@ -148,10 +148,10 @@ public class BillingService {
                             "\n    \"shortcode\":\"" + chargeRequestProperties.getShortcode() + "\"\n}";
                 }
 
-                com.mashape.unirest.http.Unirest.setTimeouts(120, 120);
+//                com.mashape.unirest.http.Unirest.setTimeouts(120, 120);
                 com.mashape.unirest.http.HttpResponse<String> response1 = null;
                 ObjectMapper objectMapper = new ObjectMapper();
-                response1 = com.mashape.unirest.http.Unirest.post("http://localhost:9099/charge")
+                response1 = com.mashape.unirest.http.Unirest.post("https://dcbbilling.mmsdp.com/charge")
                         .header("Content-Type", "application/json")
                         .body(objectMapper.writeValueAsString( new ChargeRequestProperties(chargeRequestProperties)))
                         .asString();
