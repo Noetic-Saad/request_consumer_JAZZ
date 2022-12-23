@@ -1,6 +1,5 @@
 package com.noeticworld.sgw.requestConsumer.service.externalEvents;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noeticworld.sgw.requestConsumer.entities.UsersEntity;
 import com.noeticworld.sgw.requestConsumer.entities.UsersStatusEntity;
 import com.noeticworld.sgw.requestConsumer.entities.VendorPlansEntity;
@@ -86,7 +85,7 @@ public class BlockingEventHandler implements RequestEventHandler {
 
     private void createResponse(String desc, String resultStatus, String correlationId) {
         VendorRequestsStateEntity entity = null;
-        entity = redisRepository.findVendorRequestStatus(correlationId);
+        entity = requestRepository.findByCorrelationid(correlationId);
         if(entity == null)
         {
             entity = requestRepository.findByCorrelationid(correlationId);
@@ -96,8 +95,6 @@ public class BlockingEventHandler implements RequestEventHandler {
         entity.setResultStatus(resultStatus);
         entity.setDescription(desc);
         requestRepository.save(entity);
-        ObjectMapper objectMapper = new ObjectMapper();
-        redisRepository.saveVendorRequest(entity);
         log.info("CONSUMER SERVICE | BLOCKINGEVENTHANDLER CLASS | " + entity.getResultStatus() + " | REQUEST STATUS SAVED IN REDIS");
     }
 }
